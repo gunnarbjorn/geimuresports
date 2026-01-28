@@ -123,8 +123,8 @@ const Index = () => {
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {stats.map((stat, index) => <Card key={index} className="bg-card/50 border-border card-hover backdrop-blur-sm">
-                  <CardContent className="flex items-center justify-center gap-4 p-6">
-                    <stat.icon className="h-8 w-8 text-primary" />
+                  <CardContent className="flex items-center justify-start sm:justify-center gap-4 px-5 py-5 sm:p-6">
+                    <stat.icon className="h-8 w-8 text-primary flex-shrink-0" />
                     <div className="text-left">
                       <p className="font-display text-2xl font-bold text-foreground">{stat.value}</p>
                       <p className="text-sm text-muted-foreground">{stat.label}</p>
