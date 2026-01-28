@@ -2,10 +2,8 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { Facebook, Mail, MapPin } from "lucide-react";
-
 const HafaSamband = () => {
-  return (
-    <Layout>
+  return <Layout>
       {/* Hero */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 hero-glow opacity-50" />
@@ -35,12 +33,7 @@ const HafaSamband = () => {
                   </div>
                   <div>
                     <h3 className="font-display font-bold mb-1">Netfang</h3>
-                    <a 
-                      href="mailto:geimur@geimur.is" 
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      geimur@geimur.is
-                    </a>
+                    <a href="mailto:geimur@geimur.is" className="text-muted-foreground hover:text-primary transition-colors">rafgeimur@gmail.com</a>
                   </div>
                 </CardContent>
               </Card>
@@ -52,12 +45,7 @@ const HafaSamband = () => {
                   </div>
                   <div>
                     <h3 className="font-display font-bold mb-1">Facebook</h3>
-                    <a 
-                      href="https://facebook.com/rafgeimur" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
+                    <a href="https://facebook.com/rafgeimur" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
                       /rafgeimur
                     </a>
                   </div>
@@ -93,8 +81,6 @@ const HafaSamband = () => {
           </div>
         </div>
       </section>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default HafaSamband;
