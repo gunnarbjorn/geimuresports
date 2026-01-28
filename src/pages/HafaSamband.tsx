@@ -5,7 +5,7 @@ import { Facebook, Mail, MapPin } from "lucide-react";
 const HafaSamband = () => {
   return <Layout>
       {/* Hero */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
+      <section className="relative hero-section overflow-hidden">
         <div className="absolute inset-0 hero-glow opacity-50" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
