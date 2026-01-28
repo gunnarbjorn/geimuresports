@@ -23,10 +23,10 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-2 sm:px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group -ml-1 sm:ml-0">
             <img alt="Geimur" className="h-10 w-auto lg:h-12 transition-transform group-hover:scale-105" src="/lovable-uploads/0bc8e031-7767-44c9-ace9-477801e8816c.png" />
             <span className="font-display font-bold text-lg lg:text-xl text-foreground">
               GEIMUR
