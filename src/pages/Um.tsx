@@ -88,7 +88,7 @@ const Um = () => {
       </section>
 
       {/* Mission */}
-      <section className="py-20 lg:py-32 bg-card/30">
+      <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
@@ -125,9 +125,9 @@ const Um = () => {
       </section>
 
       {/* Values */}
-      <section className="py-20 lg:py-32">
+      <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center section-heading-spacing">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Okkar gildi
             </h2>
@@ -157,9 +157,9 @@ const Um = () => {
       </section>
 
       {/* Team */}
-      <section className="py-20 lg:py-32 bg-card/30">
+      <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center section-heading-spacing">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Teymið
             </h2>
@@ -192,7 +192,7 @@ const Um = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 lg:py-32">
+      <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
           <Card className="bg-gradient-to-r from-card to-secondary border-primary/20 max-w-4xl mx-auto overflow-hidden relative">
             <div className="absolute inset-0 hero-glow opacity-50" />

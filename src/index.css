@@ -190,4 +190,17 @@
       hsl(var(--geimur-red)) 100%
     );
   }
+
+  /* Mobile section spacing - reduced by ~30% */
+  .section-spacing {
+    @apply py-12 lg:py-20;
+  }
+
+  .section-spacing-lg {
+    @apply py-14 lg:py-32;
+  }
+
+  .section-heading-spacing {
+    @apply mb-10 lg:mb-16;
+  }
 }

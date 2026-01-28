@@ -21,7 +21,7 @@ const HafaSamband = () => {
       </section>
 
       {/* Contact Section */}
-      <section className="py-12 lg:py-20">
+      <section className="section-spacing">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Contact Info */}

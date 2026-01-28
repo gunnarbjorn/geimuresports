@@ -66,9 +66,9 @@ const Mot = () => {
       </section>
 
       {/* Tournaments Grid */}
-      <section className="py-20 lg:py-32 bg-card/30">
+      <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center section-heading-spacing">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Komandi mót
             </h2>
@@ -129,9 +129,9 @@ const Mot = () => {
       </section>
 
       {/* How Registration Works */}
-      <section className="py-20 lg:py-32">
+      <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center section-heading-spacing">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Hvernig skráning virkar
             </h2>
@@ -155,10 +155,10 @@ const Mot = () => {
       </section>
 
       {/* Registration Form */}
-      <section id="skraning" className="py-20 lg:py-32 bg-card/30">
+      <section id="skraning" className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 lg:mb-12">
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
                 Skráning í mót
               </h2>

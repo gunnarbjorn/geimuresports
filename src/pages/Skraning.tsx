@@ -30,7 +30,7 @@ const Skraning = () => {
       </section>
 
       {/* Quick Links */}
-      <section className="py-12">
+      <section className="py-8 lg:py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <Card className="bg-card border-border card-hover group">
@@ -89,7 +89,7 @@ const Skraning = () => {
       </section>
 
       {/* Forms Section */}
-      <section className="py-12 lg:py-20">
+      <section className="section-spacing">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <Accordion type="single" collapsible defaultValue="aefingar" className="space-y-6">
