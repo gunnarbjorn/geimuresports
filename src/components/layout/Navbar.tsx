@@ -28,7 +28,7 @@ export function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <img alt="Geimur" className="h-10 w-auto lg:h-12 transition-transform group-hover:scale-105" src="/lovable-uploads/0bc8e031-7767-44c9-ace9-477801e8816c.png" />
-            <span className="font-display font-bold text-lg lg:text-xl text-foreground hidden sm:block">
+            <span className="font-display font-bold text-lg lg:text-xl text-foreground">
               GEIMUR
             </span>
           </Link>
