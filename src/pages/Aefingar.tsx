@@ -76,9 +76,9 @@ const Aefingar = () => {
       </section>
 
       {/* Schedule */}
-      <section className="py-20 lg:py-32 bg-card/30">
+      <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center section-heading-spacing">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Vikuleg stundaskrá
             </h2>
@@ -107,9 +107,9 @@ const Aefingar = () => {
       </section>
 
       {/* How a Session Works */}
-      <section className="py-20 lg:py-32">
+      <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center section-heading-spacing">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Hvernig æfing fer fram
             </h2>
@@ -149,10 +149,10 @@ const Aefingar = () => {
       </section>
 
       {/* Signup Form */}
-      <section id="skraning" className="py-20 lg:py-32 bg-card/30">
+      <section id="skraning" className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 lg:mb-12">
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
                 Skráning í æfingar
               </h2>
@@ -171,7 +171,7 @@ const Aefingar = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 lg:py-32">
+      <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
           <Card className="bg-gradient-to-r from-card to-secondary border-primary/20 max-w-4xl mx-auto overflow-hidden relative">
             <div className="absolute inset-0 hero-glow opacity-50" />
