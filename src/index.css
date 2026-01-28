@@ -204,12 +204,12 @@
     @apply mb-8 lg:mb-12;
   }
 
-  /* Hero sections - reduced height */
+  /* Hero sections - more top spacing from nav */
   .hero-section {
-    @apply py-14 lg:py-24;
+    @apply pt-20 pb-14 lg:pt-32 lg:pb-24;
   }
 
   .hero-section-lg {
-    @apply py-16 lg:py-28;
+    @apply pt-24 pb-16 lg:pt-36 lg:pb-28;
   }
 }
