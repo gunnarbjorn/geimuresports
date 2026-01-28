@@ -82,7 +82,7 @@ const faqs = [{
 const Index = () => {
   return <Layout>
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[75vh] lg:min-h-[80vh] flex items-center justify-center overflow-hidden">
         {/* Hero Glow Background */}
         <div className="absolute inset-0 hero-glow" />
         

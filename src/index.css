@@ -191,16 +191,25 @@
     );
   }
 
-  /* Mobile section spacing - reduced by ~30% */
+  /* Section spacing - tighter on mobile, slightly reduced on desktop */
   .section-spacing {
-    @apply py-12 lg:py-20;
+    @apply py-10 lg:py-16;
   }
 
   .section-spacing-lg {
-    @apply py-14 lg:py-32;
+    @apply py-12 lg:py-24;
   }
 
   .section-heading-spacing {
-    @apply mb-10 lg:mb-16;
+    @apply mb-8 lg:mb-12;
+  }
+
+  /* Hero sections - reduced height */
+  .hero-section {
+    @apply py-14 lg:py-24;
+  }
+
+  .hero-section-lg {
+    @apply py-16 lg:py-28;
   }
 }
