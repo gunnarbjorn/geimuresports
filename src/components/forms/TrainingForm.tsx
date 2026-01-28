@@ -1,0 +1,203 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2, CheckCircle } from "lucide-react";
+import { trainingGroups } from "@/data/tournaments";
+import { supabase } from "@/integrations/supabase/client";
+
+const trainingSchema = z.object({
+  fullName: z.string().min(2, "Nafn verður að vera að minnsta kosti 2 stafir").max(100),
+  age: z.number().min(6, "Lágmarks aldur er 6 ára").max(99),
+  email: z.string().email("Ógilt netfang").max(255),
+  phone: z.string().min(7, "Símanúmer verður að vera að minnsta kosti 7 tölustafir").max(20),
+  group: z.string().min(1, "Vinsamlegast veldu æfingahóp"),
+  message: z.string().max(1000).optional(),
+});
+
+type TrainingFormData = z.infer<typeof trainingSchema>;
+
+export function TrainingForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm<TrainingFormData>({
+    resolver: zodResolver(trainingSchema),
+  });
+
+  const onSubmit = async (data: TrainingFormData) => {
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-notification", {
+        body: {
+          type: "training",
+          data: {
+            fullName: data.fullName,
+            age: data.age,
+            email: data.email,
+            phone: data.phone,
+            group: trainingGroups.find(g => g.value === data.group)?.label || data.group,
+            message: data.message || "",
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast.success("Skráning tókst!", {
+        description: "Við munum hafa samband við þig fljótlega.",
+      });
+      reset();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Villa kom upp", {
+        description: "Vinsamlegast reyndu aftur síðar.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isSubmitted) {
+    return (
+      <div className="text-center py-8">
+        <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4" />
+        <h3 className="font-display text-2xl font-bold mb-2">Takk fyrir skráninguna!</h3>
+        <p className="text-muted-foreground mb-6">
+          Við höfum móttekið skráninguna þína og munum hafa samband við þig fljótlega.
+        </p>
+        <Button onClick={() => setIsSubmitted(false)} variant="outline">
+          Skrá annan
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="fullName">Fullt nafn *</Label>
+          <Input
+            id="fullName"
+            {...register("fullName")}
+            placeholder="Jón Jónsson"
+            className="bg-secondary border-border"
+          />
+          {errors.fullName && (
+            <p className="text-sm text-destructive">{errors.fullName.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="age">Aldur *</Label>
+          <Input
+            id="age"
+            type="number"
+            {...register("age", { valueAsNumber: true })}
+            placeholder="12"
+            className="bg-secondary border-border"
+          />
+          {errors.age && (
+            <p className="text-sm text-destructive">{errors.age.message}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="email">Netfang *</Label>
+          <Input
+            id="email"
+            type="email"
+            {...register("email")}
+            placeholder="jon@example.is"
+            className="bg-secondary border-border"
+          />
+          {errors.email && (
+            <p className="text-sm text-destructive">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone">Símanúmer *</Label>
+          <Input
+            id="phone"
+            {...register("phone")}
+            placeholder="555-1234"
+            className="bg-secondary border-border"
+          />
+          {errors.phone && (
+            <p className="text-sm text-destructive">{errors.phone.message}</p>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="group">Veldu æfingahóp *</Label>
+        <Select onValueChange={(value) => setValue("group", value)}>
+          <SelectTrigger className="bg-secondary border-border">
+            <SelectValue placeholder="Veldu hóp" />
+          </SelectTrigger>
+          <SelectContent className="bg-card border-border">
+            {trainingGroups.map((group) => (
+              <SelectItem key={group.value} value={group.value}>
+                {group.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.group && (
+          <p className="text-sm text-destructive">{errors.group.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="message">Skilaboð (valfrjálst)</Label>
+        <Textarea
+          id="message"
+          {...register("message")}
+          placeholder="Ef þú vilt láta okkur vita af einhverju..."
+          className="bg-secondary border-border min-h-[100px]"
+        />
+        {errors.message && (
+          <p className="text-sm text-destructive">{errors.message.message}</p>
+        )}
+      </div>
+
+      <Button
+        type="submit"
+        className="w-full btn-primary-gradient"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Sendi...
+          </>
+        ) : (
+          "Skrá mig í æfingar"
+        )}
+      </Button>
+    </form>
+  );
+}
