@@ -12,6 +12,18 @@ const corsHeaders = {
 const NOTIFICATION_EMAIL = "rafgeimur@gmail.com";
 const FROM_EMAIL = "Geimur <no-reply@geimuresports.is>";
 
+// HTML escape function to prevent XSS in email templates
+function escapeHtml(str: unknown): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+  return String(str ?? '').replace(/[&<>"']/g, (m) => map[m]);
+}
+
 interface NotificationRequest {
   type: "training" | "tournament" | "contact";
   data: Record<string, unknown>;
@@ -20,37 +32,37 @@ interface NotificationRequest {
 function formatTrainingEmail(data: Record<string, unknown>): string {
   return `
     <h1>Ný æfingaskráning</h1>
-    <p><strong>Nafn:</strong> ${data.fullName}</p>
-    <p><strong>Aldur:</strong> ${data.age}</p>
-    <p><strong>Netfang:</strong> ${data.email}</p>
-    <p><strong>Símanúmer:</strong> ${data.phone}</p>
-    <p><strong>Æfingahópur:</strong> ${data.group}</p>
-    ${data.message ? `<p><strong>Skilaboð:</strong> ${data.message}</p>` : ""}
+    <p><strong>Nafn:</strong> ${escapeHtml(data.fullName)}</p>
+    <p><strong>Aldur:</strong> ${escapeHtml(data.age)}</p>
+    <p><strong>Netfang:</strong> ${escapeHtml(data.email)}</p>
+    <p><strong>Símanúmer:</strong> ${escapeHtml(data.phone)}</p>
+    <p><strong>Æfingahópur:</strong> ${escapeHtml(data.group)}</p>
+    ${data.message ? `<p><strong>Skilaboð:</strong> ${escapeHtml(data.message)}</p>` : ""}
   `;
 }
 
 function formatTournamentEmail(data: Record<string, unknown>): string {
   return `
     <h1>Ný mótsskráning</h1>
-    <p><strong>Nafn:</strong> ${data.fullName}</p>
-    <p><strong>Epic nafn:</strong> ${data.epicName}</p>
-    <p><strong>Netfang:</strong> ${data.email}</p>
-    <p><strong>Símanúmer:</strong> ${data.phone}</p>
-    <p><strong>Mót:</strong> ${data.tournament}</p>
-    <p><strong>Dagsetning:</strong> ${data.tournamentDate}</p>
-    <p><strong>Flokkur:</strong> ${data.category}</p>
-    ${data.teammates ? `<p><strong>Liðsfélagar:</strong> ${data.teammates}</p>` : ""}
+    <p><strong>Nafn:</strong> ${escapeHtml(data.fullName)}</p>
+    <p><strong>Epic nafn:</strong> ${escapeHtml(data.epicName)}</p>
+    <p><strong>Netfang:</strong> ${escapeHtml(data.email)}</p>
+    <p><strong>Símanúmer:</strong> ${escapeHtml(data.phone)}</p>
+    <p><strong>Mót:</strong> ${escapeHtml(data.tournament)}</p>
+    <p><strong>Dagsetning:</strong> ${escapeHtml(data.tournamentDate)}</p>
+    <p><strong>Flokkur:</strong> ${escapeHtml(data.category)}</p>
+    ${data.teammates ? `<p><strong>Liðsfélagar:</strong> ${escapeHtml(data.teammates)}</p>` : ""}
   `;
 }
 
 function formatContactEmail(data: Record<string, unknown>): string {
   return `
     <h1>Ný fyrirspurn</h1>
-    <p><strong>Nafn:</strong> ${data.name}</p>
-    <p><strong>Netfang:</strong> ${data.email}</p>
-    <p><strong>Efni:</strong> ${data.subject}</p>
+    <p><strong>Nafn:</strong> ${escapeHtml(data.name)}</p>
+    <p><strong>Netfang:</strong> ${escapeHtml(data.email)}</p>
+    <p><strong>Efni:</strong> ${escapeHtml(data.subject)}</p>
     <p><strong>Skilaboð:</strong></p>
-    <p>${data.message}</p>
+    <p>${escapeHtml(data.message)}</p>
   `;
 }
 
@@ -58,9 +70,9 @@ function formatContactEmail(data: Record<string, unknown>): string {
 function formatTrainingConfirmation(data: Record<string, unknown>): string {
   return `
     <h1>Takk fyrir skráninguna!</h1>
-    <p>Hæ ${data.fullName},</p>
+    <p>Hæ ${escapeHtml(data.fullName)},</p>
     <p>Við höfum móttekið skráningu þína í æfingar hjá Geimur Esports.</p>
-    <p><strong>Æfingahópur:</strong> ${data.group}</p>
+    <p><strong>Æfingahópur:</strong> ${escapeHtml(data.group)}</p>
     <p>Við munum hafa samband fljótlega með frekari upplýsingar.</p>
     <br>
     <p>Kveðja,<br>Geimur Esports</p>
@@ -70,12 +82,12 @@ function formatTrainingConfirmation(data: Record<string, unknown>): string {
 function formatTournamentConfirmation(data: Record<string, unknown>): string {
   return `
     <h1>Skráning móttekin!</h1>
-    <p>Hæ ${data.fullName},</p>
-    <p>Þú ert nú skráð/ur í mótið <strong>${data.tournament}</strong>.</p>
-    <p><strong>Dagsetning:</strong> ${data.tournamentDate}</p>
-    <p><strong>Flokkur:</strong> ${data.category}</p>
-    <p><strong>Epic nafn:</strong> ${data.epicName}</p>
-    ${data.teammates ? `<p><strong>Liðsfélagar:</strong> ${data.teammates}</p>` : ""}
+    <p>Hæ ${escapeHtml(data.fullName)},</p>
+    <p>Þú ert nú skráð/ur í mótið <strong>${escapeHtml(data.tournament)}</strong>.</p>
+    <p><strong>Dagsetning:</strong> ${escapeHtml(data.tournamentDate)}</p>
+    <p><strong>Flokkur:</strong> ${escapeHtml(data.category)}</p>
+    <p><strong>Epic nafn:</strong> ${escapeHtml(data.epicName)}</p>
+    ${data.teammates ? `<p><strong>Liðsfélagar:</strong> ${escapeHtml(data.teammates)}</p>` : ""}
     <p>Við munum senda þér frekari upplýsingar um mótið nær því.</p>
     <br>
     <p>Gangi þér vel!<br>Geimur Esports</p>
@@ -85,9 +97,9 @@ function formatTournamentConfirmation(data: Record<string, unknown>): string {
 function formatContactConfirmation(data: Record<string, unknown>): string {
   return `
     <h1>Takk fyrir fyrirspurnina!</h1>
-    <p>Hæ ${data.name},</p>
+    <p>Hæ ${escapeHtml(data.name)},</p>
     <p>Við höfum móttekið fyrirspurn þína og munum svara eins fljótt og auðið er.</p>
-    <p><strong>Efni:</strong> ${data.subject}</p>
+    <p><strong>Efni:</strong> ${escapeHtml(data.subject)}</p>
     <br>
     <p>Kveðja,<br>Geimur Esports</p>
   `;
