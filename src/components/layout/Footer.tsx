@@ -45,7 +45,7 @@ export function Footer() {
                 <Facebook size={20} />
               </a>
               <a
-                href="mailto:geimur@geimur.is"
+                href="mailto:rafgeimur@gmail.com"
                 className="p-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors text-foreground hover:text-primary"
                 aria-label="Email"
               >
@@ -76,8 +76,8 @@ export function Footer() {
             <h3 className="font-display font-semibold text-foreground mb-4">Hafa samband</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <a href="mailto:geimur@geimur.is" className="hover:text-primary transition-colors">
-                  geimur@geimur.is
+                <a href="mailto:rafgeimur@gmail.com" className="hover:text-primary transition-colors">
+                  rafgeimur@gmail.com
                 </a>
               </li>
               <li>
