@@ -172,7 +172,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
-      from: "Geimur <onboarding@resend.dev>",
+      from: "Geimur <no-reply@geimuresports.is>",
       to: [NOTIFICATION_EMAIL],
       subject: getSubject(type, data),
       html,
@@ -181,12 +181,12 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Admin email sent:", adminEmailResponse);
 
     // Send confirmation email to registrant
-    const registrantEmail = (data.email as string) || (data.name && type === "contact" ? null : null);
+    const registrantEmail = data.email as string;
     let confirmationResponse = null;
     
     if (registrantEmail) {
       confirmationResponse = await resend.emails.send({
-        from: "Geimur <onboarding@resend.dev>",
+        from: "Geimur <no-reply@geimuresports.is>",
         to: [registrantEmail],
         subject: getConfirmationSubject(type, data),
         html: confirmationHtml,
