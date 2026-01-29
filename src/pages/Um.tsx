@@ -46,9 +46,7 @@ const Um = () => {
                 <img src={geimurLogo} alt="Geimur" className="h-40 md:h-56 w-auto opacity-90" />
               </div>
               <div className="lg:w-2/3 text-center lg:text-left">
-                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                  Um Geimur
-                </h1>
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">Hvað er Geimur?</h1>
                 <p className="text-lg md:text-xl text-muted-foreground mb-6">
                   Geimur er rafíþróttafélag stofnað til að efla íslenska leikara á fagmannlegan og 
                   heilbrigðan hátt. Við trúum að tölvuleikir geti verið vettvangur fyrir persónulegan 
