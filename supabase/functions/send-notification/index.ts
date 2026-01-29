@@ -53,6 +53,45 @@ function formatContactEmail(data: Record<string, unknown>): string {
   `;
 }
 
+// Confirmation emails for registrants
+function formatTrainingConfirmation(data: Record<string, unknown>): string {
+  return `
+    <h1>Takk fyrir skráninguna!</h1>
+    <p>Hæ ${data.fullName},</p>
+    <p>Við höfum móttekið skráningu þína í æfingar hjá Geimur Esports.</p>
+    <p><strong>Æfingahópur:</strong> ${data.group}</p>
+    <p>Við munum hafa samband fljótlega með frekari upplýsingar.</p>
+    <br>
+    <p>Kveðja,<br>Geimur Esports</p>
+  `;
+}
+
+function formatTournamentConfirmation(data: Record<string, unknown>): string {
+  return `
+    <h1>Skráning móttekin!</h1>
+    <p>Hæ ${data.fullName},</p>
+    <p>Þú ert nú skráð/ur í mótið <strong>${data.tournament}</strong>.</p>
+    <p><strong>Dagsetning:</strong> ${data.tournamentDate}</p>
+    <p><strong>Flokkur:</strong> ${data.category}</p>
+    <p><strong>Epic nafn:</strong> ${data.epicName}</p>
+    ${data.teammates ? `<p><strong>Liðsfélagar:</strong> ${data.teammates}</p>` : ""}
+    <p>Við munum senda þér frekari upplýsingar um mótið nær því.</p>
+    <br>
+    <p>Gangi þér vel!<br>Geimur Esports</p>
+  `;
+}
+
+function formatContactConfirmation(data: Record<string, unknown>): string {
+  return `
+    <h1>Takk fyrir fyrirspurnina!</h1>
+    <p>Hæ ${data.name},</p>
+    <p>Við höfum móttekið fyrirspurn þína og munum svara eins fljótt og auðið er.</p>
+    <p><strong>Efni:</strong> ${data.subject}</p>
+    <br>
+    <p>Kveðja,<br>Geimur Esports</p>
+  `;
+}
+
 function getSubject(type: string, data: Record<string, unknown>): string {
   switch (type) {
     case "training":
@@ -63,6 +102,19 @@ function getSubject(type: string, data: Record<string, unknown>): string {
       return `Fyrirspurn: ${data.subject}`;
     default:
       return "Ný skráning";
+  }
+}
+
+function getConfirmationSubject(type: string, data: Record<string, unknown>): string {
+  switch (type) {
+    case "training":
+      return `Staðfesting: Skráning í æfingar - Geimur Esports`;
+    case "tournament":
+      return `Staðfesting: ${data.tournament} - Geimur Esports`;
+    case "contact":
+      return `Staðfesting: Fyrirspurn móttekin - Geimur Esports`;
+    default:
+      return "Staðfesting - Geimur Esports";
   }
 }
 
@@ -99,32 +151,55 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Format email based on type
     let html: string;
+    let confirmationHtml: string;
     switch (type) {
       case "training":
         html = formatTrainingEmail(data);
+        confirmationHtml = formatTrainingConfirmation(data);
         break;
       case "tournament":
         html = formatTournamentEmail(data);
+        confirmationHtml = formatTournamentConfirmation(data);
         break;
       case "contact":
         html = formatContactEmail(data);
+        confirmationHtml = formatContactConfirmation(data);
         break;
       default:
         html = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        confirmationHtml = html;
     }
 
-    // Send email notification
-    const emailResponse = await resend.emails.send({
+    // Send notification email to admin
+    const adminEmailResponse = await resend.emails.send({
       from: "Geimur <onboarding@resend.dev>",
       to: [NOTIFICATION_EMAIL],
       subject: getSubject(type, data),
       html,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Admin email sent:", adminEmailResponse);
+
+    // Send confirmation email to registrant
+    const registrantEmail = (data.email as string) || (data.name && type === "contact" ? null : null);
+    let confirmationResponse = null;
+    
+    if (registrantEmail) {
+      confirmationResponse = await resend.emails.send({
+        from: "Geimur <onboarding@resend.dev>",
+        to: [registrantEmail],
+        subject: getConfirmationSubject(type, data),
+        html: confirmationHtml,
+      });
+      console.log("Confirmation email sent to registrant:", confirmationResponse);
+    }
 
     return new Response(
-      JSON.stringify({ success: true, id: emailResponse.data?.id }),
+      JSON.stringify({ 
+        success: true, 
+        adminEmailId: adminEmailResponse.data?.id,
+        confirmationEmailId: confirmationResponse?.data?.id 
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json", ...corsHeaders },
