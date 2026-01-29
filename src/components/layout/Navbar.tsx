@@ -14,7 +14,7 @@ const navLinks = [{
   label: "Mót"
 }, {
   href: "/um",
-  label: "Um Geimur"
+  label: "Um okkur"
 }, {
   href: "/hafa-samband",
   label: "Hafðu samband"
