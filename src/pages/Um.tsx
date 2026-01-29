@@ -2,59 +2,40 @@ import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Award, 
-  Users, 
-  Heart,
-  ArrowRight,
-  Gamepad2
-} from "lucide-react";
+import { Award, Users, Heart, ArrowRight, Gamepad2 } from "lucide-react";
 import geimurLogo from "@/assets/geimur-logo.png";
-
-const values = [
-  {
-    title: "Fagmennska",
-    description: "Við nálgumst rafíþróttir á fagmannlegan hátt með skipulögðum æfingum og markmiðssetningu.",
-    icon: Award,
-  },
-  {
-    title: "Liðsandi",
-    description: "Samvinna og stuðningur er í öndvegi. Við lærum saman og styðjum hvort annað.",
-    icon: Users,
-  },
-  {
-    title: "Heilbrigðar venjur",
-    description: "Gaming er frábært – en heilsa er fyrst. Hreyfing, hvíld og jafnvægi eru hluti af leiknum.",
-    icon: Heart,
-  },
-];
-
-const team = [
-  {
-    name: "Sigurður Karlsson",
-    role: "Aðalþjálfari",
-    description: "10+ ára reynsla í keppnisleikjum. Sérhæfir sig í strategy og game sense.",
-  },
-  {
-    name: "Anna Björnsdóttir",
-    role: "Fortnite þjálfari",
-    description: "Fyrrum keppnisleikari. Sérfræðingur í building og mechanics.",
-  },
-  {
-    name: "Ólafur Magnússon",
-    role: "Unglingaþjálfari",
-    description: "Menntun í íþróttaþjálfun. Einbeitir sér að jákvæðu andrúmslofti.",
-  },
-  {
-    name: "Kristín Eiríksdóttir",
-    role: "Foreldraráðgjafi",
-    description: "Aðstoðar foreldra við að skilja og styðja við gaming-ferðalag barna sinna.",
-  },
-];
-
+const values = [{
+  title: "Fagmennska",
+  description: "Við nálgumst rafíþróttir á fagmannlegan hátt með skipulögðum æfingum og markmiðssetningu.",
+  icon: Award
+}, {
+  title: "Liðsandi",
+  description: "Samvinna og stuðningur er í öndvegi. Við lærum saman og styðjum hvort annað.",
+  icon: Users
+}, {
+  title: "Heilbrigðar venjur",
+  description: "Gaming er frábært – en heilsa er fyrst. Hreyfing, hvíld og jafnvægi eru hluti af leiknum.",
+  icon: Heart
+}];
+const team = [{
+  name: "Sigurður Karlsson",
+  role: "Aðalþjálfari",
+  description: "10+ ára reynsla í keppnisleikjum. Sérhæfir sig í strategy og game sense."
+}, {
+  name: "Anna Björnsdóttir",
+  role: "Fortnite þjálfari",
+  description: "Fyrrum keppnisleikari. Sérfræðingur í building og mechanics."
+}, {
+  name: "Ólafur Magnússon",
+  role: "Unglingaþjálfari",
+  description: "Menntun í íþróttaþjálfun. Einbeitir sér að jákvæðu andrúmslofti."
+}, {
+  name: "Kristín Eiríksdóttir",
+  role: "Foreldraráðgjafi",
+  description: "Aðstoðar foreldra við að skilja og styðja við gaming-ferðalag barna sinna."
+}];
 const Um = () => {
-  return (
-    <Layout>
+  return <Layout>
       {/* Hero */}
       <section className="relative hero-section-lg overflow-hidden">
         <div className="absolute inset-0 hero-glow opacity-50" />
@@ -62,11 +43,7 @@ const Um = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/3 flex justify-center">
-                <img 
-                  src={geimurLogo} 
-                  alt="Geimur" 
-                  className="h-40 md:h-56 w-auto opacity-90"
-                />
+                <img src={geimurLogo} alt="Geimur" className="h-40 md:h-56 w-auto opacity-90" />
               </div>
               <div className="lg:w-2/3 text-center lg:text-left">
                 <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
@@ -77,10 +54,7 @@ const Um = () => {
                   heilbrigðan hátt. Við trúum að tölvuleikir geti verið vettvangur fyrir persónulegan 
                   þroska, liðsanda og markvissa þjálfun.
                 </p>
-                <p className="text-muted-foreground">
-                  Við sameinum tölvuleiki, hreyfingu og liðsanda til að efla bæði leikni og 
-                  persónulegan þroska.
-                </p>
+                
               </div>
             </div>
           </div>
@@ -137,8 +111,7 @@ const Um = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {values.map((value, index) => (
-              <Card key={index} className="bg-card border-border card-hover text-center">
+            {values.map((value, index) => <Card key={index} className="bg-card border-border card-hover text-center">
                 <CardHeader>
                   <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <value.icon className="h-8 w-8 text-primary" />
@@ -150,8 +123,7 @@ const Um = () => {
                     {value.description}
                   </CardDescription>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -169,8 +141,7 @@ const Um = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {team.map((member, index) => (
-              <Card key={index} className="bg-card border-border card-hover">
+            {team.map((member, index) => <Card key={index} className="bg-card border-border card-hover">
                 <CardHeader className="text-center">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center mx-auto mb-4">
                     <span className="font-display text-2xl font-bold text-primary">
@@ -185,8 +156,7 @@ const Um = () => {
                     {member.description}
                   </CardDescription>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -213,8 +183,6 @@ const Um = () => {
           </Card>
         </div>
       </section>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Um;
