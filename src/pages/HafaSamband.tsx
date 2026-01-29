@@ -33,7 +33,7 @@ const HafaSamband = () => {
                   </div>
                   <div>
                     <h3 className="font-display font-bold mb-1">Netfang</h3>
-                    <a href="mailto:geimur@geimur.is" className="text-muted-foreground hover:text-primary transition-colors">rafgeimur@gmail.com</a>
+                    <a href="mailto:rafgeimur@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">rafgeimur@gmail.com</a>
                   </div>
                 </CardContent>
               </Card>
