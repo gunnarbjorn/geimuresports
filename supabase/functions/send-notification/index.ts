@@ -1,5 +1,6 @@
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from "https://esm.sh/zod@3.25.76";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -11,6 +12,38 @@ const corsHeaders = {
 
 const NOTIFICATION_EMAIL = "rafgeimur@gmail.com";
 const FROM_EMAIL = "Geimur <no-reply@geimuresports.is>";
+
+// Server-side validation schemas
+const trainingSchema = z.object({
+  fullName: z.string().trim().min(2, "Nafn verður að vera að minnsta kosti 2 stafir").max(100),
+  age: z.number().min(6).max(99),
+  email: z.string().trim().email("Ógilt netfang").max(255),
+  phone: z.string().trim().min(7).max(20),
+  group: z.string().trim().min(1).max(120),
+  message: z.string().trim().max(500).optional().default(""),
+});
+
+const tournamentSchema = z.object({
+  fullName: z.string().trim().min(2).max(100),
+  epicName: z.string().trim().min(1).max(120),
+  email: z.string().trim().email().max(255),
+  phone: z.string().trim().min(7).max(20),
+  tournament: z.string().trim().min(1).max(120),
+  tournamentDate: z.string().trim().min(1).max(120),
+  category: z.string().trim().min(1).max(120),
+  teammates: z.string().trim().max(500).optional().default(""),
+});
+
+const contactSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  email: z.string().trim().email().max(255),
+  subject: z.string().trim().min(3).max(200),
+  message: z.string().trim().min(10).max(500),
+});
+
+type TrainingData = z.infer<typeof trainingSchema>;
+type TournamentData = z.infer<typeof tournamentSchema>;
+type ContactData = z.infer<typeof contactSchema>;
 
 // HTML escape function to prevent XSS in email templates
 function escapeHtml(str: unknown): string {
@@ -29,7 +62,7 @@ interface NotificationRequest {
   data: Record<string, unknown>;
 }
 
-function formatTrainingEmail(data: Record<string, unknown>): string {
+function formatTrainingEmail(data: TrainingData): string {
   return `
     <h1>Ný æfingaskráning</h1>
     <p><strong>Nafn:</strong> ${escapeHtml(data.fullName)}</p>
@@ -41,7 +74,7 @@ function formatTrainingEmail(data: Record<string, unknown>): string {
   `;
 }
 
-function formatTournamentEmail(data: Record<string, unknown>): string {
+function formatTournamentEmail(data: TournamentData): string {
   return `
     <h1>Ný mótsskráning</h1>
     <p><strong>Nafn:</strong> ${escapeHtml(data.fullName)}</p>
@@ -55,7 +88,7 @@ function formatTournamentEmail(data: Record<string, unknown>): string {
   `;
 }
 
-function formatContactEmail(data: Record<string, unknown>): string {
+function formatContactEmail(data: ContactData): string {
   return `
     <h1>Ný fyrirspurn</h1>
     <p><strong>Nafn:</strong> ${escapeHtml(data.name)}</p>
@@ -67,7 +100,7 @@ function formatContactEmail(data: Record<string, unknown>): string {
 }
 
 // Confirmation emails for registrants
-function formatTrainingConfirmation(data: Record<string, unknown>): string {
+function formatTrainingConfirmation(data: TrainingData): string {
   return `
     <h1>Takk fyrir skráninguna!</h1>
     <p>Hæ ${escapeHtml(data.fullName)},</p>
@@ -79,7 +112,7 @@ function formatTrainingConfirmation(data: Record<string, unknown>): string {
   `;
 }
 
-function formatTournamentConfirmation(data: Record<string, unknown>): string {
+function formatTournamentConfirmation(data: TournamentData): string {
   return `
     <h1>Skráning móttekin!</h1>
     <p>Hæ ${escapeHtml(data.fullName)},</p>
@@ -94,7 +127,7 @@ function formatTournamentConfirmation(data: Record<string, unknown>): string {
   `;
 }
 
-function formatContactConfirmation(data: Record<string, unknown>): string {
+function formatContactConfirmation(data: ContactData): string {
   return `
     <h1>Takk fyrir fyrirspurnina!</h1>
     <p>Hæ ${escapeHtml(data.name)},</p>
@@ -105,29 +138,43 @@ function formatContactConfirmation(data: Record<string, unknown>): string {
   `;
 }
 
-function getSubject(type: string, data: Record<string, unknown>): string {
+function getSubject(type: string, data: TrainingData | TournamentData | ContactData): string {
   switch (type) {
     case "training":
-      return `Ný æfingaskráning: ${data.fullName}`;
+      return `Ný æfingaskráning: ${(data as TrainingData).fullName}`;
     case "tournament":
-      return `Ný mótsskráning: ${data.fullName} - ${data.tournament}`;
+      return `Ný mótsskráning: ${(data as TournamentData).fullName} - ${(data as TournamentData).tournament}`;
     case "contact":
-      return `Fyrirspurn: ${data.subject}`;
+      return `Fyrirspurn: ${(data as ContactData).subject}`;
     default:
       return "Ný skráning";
   }
 }
 
-function getConfirmationSubject(type: string, data: Record<string, unknown>): string {
+function getConfirmationSubject(type: string, data: TrainingData | TournamentData | ContactData): string {
   switch (type) {
     case "training":
       return `Staðfesting: Skráning í æfingar - Geimur Esports`;
     case "tournament":
-      return `Staðfesting: ${data.tournament} - Geimur Esports`;
+      return `Staðfesting: ${(data as TournamentData).tournament} - Geimur Esports`;
     case "contact":
       return `Staðfesting: Fyrirspurn móttekin - Geimur Esports`;
     default:
       return "Staðfesting - Geimur Esports";
+  }
+}
+
+// Validates and sanitizes data based on type, throws ZodError on failure
+function validateAndSanitizeData(type: string, data: Record<string, unknown>): TrainingData | TournamentData | ContactData {
+  switch (type) {
+    case "training":
+      return trainingSchema.parse(data);
+    case "tournament":
+      return tournamentSchema.parse(data);
+    case "contact":
+      return contactSchema.parse(data);
+    default:
+      throw new Error("Ógild tegund skráningar");
   }
 }
 
@@ -142,12 +189,36 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { type, data }: NotificationRequest = await req.json();
-    console.log(`Processing ${type} notification:`, data);
+    const { type, data: rawData }: NotificationRequest = await req.json();
+    console.log(`Processing ${type} notification`);
 
     // Validate required fields
-    if (!type || !data) {
-      throw new Error("Missing required fields: type and data");
+    if (!type || !rawData) {
+      return new Response(
+        JSON.stringify({ error: "Vantar nauðsynleg gögn" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Validate type
+    if (!["training", "tournament", "contact"].includes(type)) {
+      return new Response(
+        JSON.stringify({ error: "Ógild tegund skráningar" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Server-side validation and sanitization
+    let validatedData: TrainingData | TournamentData | ContactData;
+    try {
+      validatedData = validateAndSanitizeData(type, rawData);
+    } catch (validationError) {
+      console.error("Validation error:", validationError);
+      // Return generic validation error to client (don't expose details)
+      return new Response(
+        JSON.stringify({ error: "Ógild gögn. Vinsamlegast athugaðu alla reiti." }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Create Supabase client with service role for database operations
@@ -187,7 +258,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Add client IP to data for rate limiting tracking
-    const dataWithIp = { ...data, client_ip: clientIp };
+    const dataWithIp = { ...validatedData, client_ip: clientIp };
 
     // Save to database
     const { error: dbError } = await supabase
@@ -196,7 +267,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (dbError) {
       console.error("Database insert error:", dbError);
-      throw new Error(`Failed to save registration: ${dbError.message}`);
+      // Return generic error to client
+      return new Response(
+        JSON.stringify({ error: "Villa við vistun. Vinsamlegast reyndu aftur." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
     console.log("Registration saved to database");
 
@@ -205,19 +280,19 @@ const handler = async (req: Request): Promise<Response> => {
     let confirmationHtml: string;
     switch (type) {
       case "training":
-        html = formatTrainingEmail(data);
-        confirmationHtml = formatTrainingConfirmation(data);
+        html = formatTrainingEmail(validatedData as TrainingData);
+        confirmationHtml = formatTrainingConfirmation(validatedData as TrainingData);
         break;
       case "tournament":
-        html = formatTournamentEmail(data);
-        confirmationHtml = formatTournamentConfirmation(data);
+        html = formatTournamentEmail(validatedData as TournamentData);
+        confirmationHtml = formatTournamentConfirmation(validatedData as TournamentData);
         break;
       case "contact":
-        html = formatContactEmail(data);
-        confirmationHtml = formatContactConfirmation(data);
+        html = formatContactEmail(validatedData as ContactData);
+        confirmationHtml = formatContactConfirmation(validatedData as ContactData);
         break;
       default:
-        html = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        html = `<pre>${escapeHtml(JSON.stringify(validatedData, null, 2))}</pre>`;
         confirmationHtml = html;
     }
 
@@ -225,7 +300,7 @@ const handler = async (req: Request): Promise<Response> => {
     const adminEmailResponse = await resend.emails.send({
       from: FROM_EMAIL,
       to: [NOTIFICATION_EMAIL],
-      subject: getSubject(type, data),
+      subject: getSubject(type, validatedData),
       html,
     });
 
@@ -233,30 +308,29 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (adminEmailResponse?.error) {
       console.error("Admin email send error:", adminEmailResponse.error);
-      throw new Error(`Failed to send admin email: ${adminEmailResponse.error.message}`);
+      return new Response(
+        JSON.stringify({ error: "Villa við sendingu. Vinsamlegast reyndu aftur." }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Send confirmation email to registrant
-    const registrantEmail = data.email as string;
+    const registrantEmail = 'email' in validatedData ? validatedData.email : null;
     let confirmationResponse = null;
     
     if (registrantEmail) {
       confirmationResponse = await resend.emails.send({
         from: FROM_EMAIL,
         to: [registrantEmail],
-        subject: getConfirmationSubject(type, data),
+        subject: getConfirmationSubject(type, validatedData),
         html: confirmationHtml,
       });
       console.log("Confirmation email sent to registrant:", confirmationResponse);
 
       if (confirmationResponse?.error) {
-        console.error(
-          "Confirmation email send error:",
-          confirmationResponse.error
-        );
-        throw new Error(
-          `Failed to send confirmation email: ${confirmationResponse.error.message}`
-        );
+        console.error("Confirmation email send error:", confirmationResponse.error);
+        // Don't fail the whole request if confirmation email fails
+        console.warn("Continuing despite confirmation email failure");
       }
     }
 
@@ -272,11 +346,12 @@ const handler = async (req: Request): Promise<Response> => {
       }
     );
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error in send-notification function:", errorMessage);
+    // Log detailed error server-side only
+    console.error("Error in send-notification function:", error);
     
+    // Return generic error to client (no internal details)
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: "Villa kom upp. Vinsamlegast reyndu aftur síðar." }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
