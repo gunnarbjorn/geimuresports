@@ -10,6 +10,7 @@ const corsHeaders = {
 };
 
 const NOTIFICATION_EMAIL = "rafgeimur@gmail.com";
+const FROM_EMAIL = "Geimur <no-reply@geimuresports.is>";
 
 interface NotificationRequest {
   type: "training" | "tournament" | "contact";
@@ -172,7 +173,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
-      from: "Geimur <no-reply@geimuresports.is>",
+      from: FROM_EMAIL,
       to: [NOTIFICATION_EMAIL],
       subject: getSubject(type, data),
       html,
@@ -180,18 +181,33 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Admin email sent:", adminEmailResponse);
 
+    if (adminEmailResponse?.error) {
+      console.error("Admin email send error:", adminEmailResponse.error);
+      throw new Error(`Failed to send admin email: ${adminEmailResponse.error.message}`);
+    }
+
     // Send confirmation email to registrant
     const registrantEmail = data.email as string;
     let confirmationResponse = null;
     
     if (registrantEmail) {
       confirmationResponse = await resend.emails.send({
-        from: "Geimur <no-reply@geimuresports.is>",
+        from: FROM_EMAIL,
         to: [registrantEmail],
         subject: getConfirmationSubject(type, data),
         html: confirmationHtml,
       });
       console.log("Confirmation email sent to registrant:", confirmationResponse);
+
+      if (confirmationResponse?.error) {
+        console.error(
+          "Confirmation email send error:",
+          confirmationResponse.error
+        );
+        throw new Error(
+          `Failed to send confirmation email: ${confirmationResponse.error.message}`
+        );
+      }
     }
 
     return new Response(
