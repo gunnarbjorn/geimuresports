@@ -119,6 +119,10 @@ function getConfirmationSubject(type: string, data: Record<string, unknown>): st
   }
 }
 
+// Rate limiting settings
+const RATE_LIMIT_MAX = 5; // Max submissions per time window
+const RATE_LIMIT_WINDOW_MINUTES = 60; // Time window in minutes
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -134,15 +138,49 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Missing required fields: type and data");
     }
 
-    // Create Supabase client with service role for database insert
+    // Create Supabase client with service role for database operations
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Get client IP for rate limiting
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
+                     req.headers.get("cf-connecting-ip") || 
+                     "unknown";
+    
+    // Check rate limit - count recent submissions from this IP
+    const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000).toISOString();
+    
+    const { count, error: countError } = await supabase
+      .from("registrations")
+      .select("*", { count: "exact", head: true })
+      .gte("created_at", windowStart)
+      .eq("data->>client_ip", clientIp);
+
+    if (countError) {
+      console.error("Rate limit check error:", countError);
+      // Continue anyway - don't block legitimate users due to rate limit check failure
+    } else if (count !== null && count >= RATE_LIMIT_MAX) {
+      console.warn(`Rate limit exceeded for IP: ${clientIp} (${count} submissions in ${RATE_LIMIT_WINDOW_MINUTES} min)`);
+      return new Response(
+        JSON.stringify({ 
+          error: "Of margar skráningar. Vinsamlegast reyndu aftur síðar.",
+          code: "RATE_LIMIT_EXCEEDED"
+        }),
+        {
+          status: 429,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    // Add client IP to data for rate limiting tracking
+    const dataWithIp = { ...data, client_ip: clientIp };
+
     // Save to database
     const { error: dbError } = await supabase
       .from("registrations")
-      .insert({ type, data });
+      .insert({ type, data: dataWithIp });
 
     if (dbError) {
       console.error("Database insert error:", dbError);
