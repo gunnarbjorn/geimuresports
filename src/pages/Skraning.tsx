@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrainingForm } from "@/components/forms/TrainingForm";
-import { TournamentForm } from "@/components/forms/TournamentForm";
+import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
 import {
   Accordion,
   AccordionContent,
@@ -130,10 +130,10 @@ const Skraning = () => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6">
-                  <p className="text-muted-foreground mb-6">
-                    Fylltu út eyðublaðið hér að neðan til að skrá þig í Fortnite mót.
-                  </p>
-                  <TournamentForm />
+                  <div className="mb-4">
+                    <p className="text-sm text-muted-foreground">Elko-deildin Vor 2026 – Duos</p>
+                  </div>
+                  <ElkoRegistrationForm />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
