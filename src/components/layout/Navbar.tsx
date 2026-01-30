@@ -26,7 +26,11 @@ export function Navbar() {
       <div className="mx-auto px-3 sm:px-4 lg:container">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 sm:gap-3 group"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <img alt="Geimur" className="h-10 w-auto lg:h-12 transition-transform group-hover:scale-105" src="/lovable-uploads/0bc8e031-7767-44c9-ace9-477801e8816c.png" />
             <span className="font-display font-bold text-lg lg:text-xl text-foreground">
               GEIMUR
