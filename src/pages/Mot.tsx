@@ -1,3 +1,4 @@
+import { useState, type MouseEvent } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +18,8 @@ import {
   ExternalLink,
   ChevronDown,
   ShieldCheck,
-  MessageCircle
+  MessageCircle,
+  Copy
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -26,6 +28,54 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
+
+const DiscordSupportActions = () => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(DISCORD_INVITE_URL);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Fallback: do nothing (user can still copy the visible URL)
+    }
+  };
+
+  return (
+    <div className="pt-4 border-t border-border space-y-3">
+      <a
+        href={DISCORD_INVITE_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        referrerPolicy="no-referrer"
+        onClick={(e) => e.stopPropagation()}
+        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
+      >
+        <MessageCircle className="h-4 w-4" />
+        Discord aðstoð & spurningar
+        <ExternalLink className="h-4 w-4" />
+      </a>
+
+      <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+        <Button type="button" variant="outline" size="sm" onClick={handleCopy} className="sm:w-auto">
+          <Copy className="mr-2 h-4 w-4" />
+          {copied ? "Afritað!" : "Afrita hlekk"}
+        </Button>
+        <p className="text-xs text-muted-foreground">
+          Ef þú færð villu við að opna: afritaðu hlekkinn og opnaðu í nýjum vafra.
+        </p>
+      </div>
+
+      <p className="text-xs text-muted-foreground break-all">
+        Beinn hlekkur: <span className="text-foreground">{DISCORD_INVITE_URL}</span>
+      </p>
+    </div>
+  );
+};
 
 const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
   const isComingSoon = tournament.isComingSoon;
@@ -291,20 +341,7 @@ const Mot = () => {
                       </ul>
                     </div>
                     
-                    <div className="pt-4 border-t border-border">
-                      <a
-                        href="https://discord.com/invite/57P9SAy4Fq"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        referrerPolicy="no-referrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
-                      >
-                        <MessageCircle className="h-4 w-4" />
-                        Discord aðstoð & spurningar
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </div>
+                    <DiscordSupportActions />
                   </div>
                 </AccordionContent>
               </AccordionItem>
