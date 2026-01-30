@@ -49,20 +49,32 @@ const upcomingEvents = [{
 const packages = [{
   name: "Nýliðar",
   description: "Fyrir þá sem eru að byrja.",
-  features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hópstarf og félagsskapur", "Aðgang að Discord"],
-  cta: "Senda fyrirspurn"
+  sessionsPerWeek: 1,
+  monthlyPrice: 9900,
+  threeMonthPrice: 24900,
+  features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hámark 10 í hóp", "Aðgangur að Discord"],
 }, {
   name: "Framhald",
   description: "Fyrir þá sem vilja þróast.",
-  features: ["2-3x æfingar í viku", "Ítarleg þjálfun", "Mótþátttaka", "Einstaklingsráðgjöf"],
-  cta: "Senda fyrirspurn",
+  sessionsPerWeek: 2,
+  monthlyPrice: 14900,
+  threeMonthPrice: 37900,
+  features: ["2x æfingar í viku", "Ítarleg þjálfun", "Hámark 10 í hóp", "Mótþátttaka"],
   featured: true
 }, {
   name: "Foreldri + barn",
   description: "Spilaðu saman.",
-  features: ["1x æfing í viku", "Sérhópar fyrir fjölskyldur", "Skemmtilegt og fræðandi", "Byggt á samveru"],
-  cta: "Senda fyrirspurn"
+  sessionsPerWeek: 1,
+  monthlyPrice: 12900,
+  threeMonthPrice: 32900,
+  features: ["1x æfing í viku", "Sérhópar fyrir fjölskyldur", "Hámark 10 í hóp", "Skemmtilegt og fræðandi"],
 }];
+
+const formatPrice = (price: number) => price.toLocaleString('is-IS');
+const calculatePerSession = (monthlyPrice: number, sessionsPerWeek: number) => {
+  const sessionsPerMonth = sessionsPerWeek * 4;
+  return Math.round(monthlyPrice / sessionsPerMonth);
+};
 const faqs = [{
   question: "Hvaða aldurshópar eru hjá ykkur?",
   answer: "Við tökum við spilurum frá 8 ára og upp í fullorðna. Hópum er skipt eftir aldri og leikni til að tryggja að allir fái viðeigandi áskoranir."
@@ -211,36 +223,71 @@ const Index = () => {
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               Æfingapakkar
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Veldu pakkann sem hentar þér best. Verð tilkynnt.
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-6">
+              100% online Fortnite þjálfun fyrir börn og unglinga um allt land.
             </p>
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground max-w-2xl mx-auto">
+              <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
+                <Gamepad2 className="h-4 w-4 text-primary" /> Hámark 10 í hóp
+              </span>
+              <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
+                <Target className="h-4 w-4 text-primary" /> Eigin PS eða PC
+              </span>
+              <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">
+                <Users className="h-4 w-4 text-primary" /> Fyrir 8–16 ára
+              </span>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {packages.map((pkg, index) => <Card key={index} className={`bg-card border-border card-hover relative ${pkg.featured ? 'border-primary glow-red-sm' : ''}`}>
-                {pkg.featured && <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            {packages.map((pkg, index) => (
+              <Card key={index} className={`bg-card border-border card-hover relative ${pkg.featured ? 'border-primary glow-red-sm' : ''}`}>
+                {pkg.featured && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <span className="px-4 py-1 rounded-full text-xs font-bold bg-primary text-primary-foreground">
                       Vinsælast
                     </span>
-                  </div>}
-                <CardHeader className="text-center">
+                  </div>
+                )}
+                <CardHeader className="text-center pt-8">
                   <CardTitle className="font-display text-2xl">{pkg.name}</CardTitle>
                   <CardDescription>{pkg.description}</CardDescription>
+                  
+                  {/* Pricing */}
+                  <div className="mt-4 space-y-3">
+                    <div className="p-3 rounded-lg bg-muted/50">
+                      <p className="text-xs text-muted-foreground mb-1">Mánaðarlega</p>
+                      <p className="text-2xl font-bold text-foreground">{formatPrice(pkg.monthlyPrice)} kr</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        ≈ {formatPrice(calculatePerSession(pkg.monthlyPrice, pkg.sessionsPerWeek))} kr á æfingu
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                      <p className="text-xs text-primary mb-1">3 mánaða áskrift</p>
+                      <p className="text-xl font-bold text-foreground">{formatPrice(pkg.threeMonthPrice)} kr</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Sparaðu {formatPrice(pkg.monthlyPrice * 3 - pkg.threeMonthPrice)} kr
+                      </p>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3 mb-6">
-                    {pkg.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-center gap-3 text-sm">
+                    {pkg.features.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-center gap-3 text-sm">
                         <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <span className="text-primary text-xs">✓</span>
                         </div>
                         {feature}
-                      </li>)}
+                      </li>
+                    ))}
                   </ul>
                   <Button asChild className={`w-full ${pkg.featured ? 'btn-primary-gradient' : ''}`} variant={pkg.featured ? 'default' : 'outline'}>
-                    <Link to="/hafa-samband">{pkg.cta}</Link>
+                    <Link to="/aefingar#skraning">Skrá mig – {pkg.name}</Link>
                   </Button>
                 </CardContent>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
       </section>
