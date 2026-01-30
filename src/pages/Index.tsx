@@ -44,7 +44,7 @@ const upcomingEvents = [{
   title: "Æfingakvöld – nýliðar velkomnir",
   date: "Hvern þriðjudag",
   type: "Æfing",
-  link: "/aefingar"
+  link: "/aefingar?group=nylidar#skraning"
 }];
 const packages = [{
   name: "Nýliðar",
