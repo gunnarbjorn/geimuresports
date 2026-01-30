@@ -39,7 +39,7 @@ const elkoTournamentSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
   phone: z.string().trim().min(7).max(20),
   kennitala: z.string().trim().min(10).max(15),
-  birthDate: z.string().trim().min(1).max(20),
+  birthDate: z.string().trim().max(20).optional(),
   discordUserId: z.string().trim().min(17).max(20),
   epicId: z.string().trim().min(3).max(100),
   fortniteName: z.string().trim().min(3).max(50),
@@ -114,8 +114,8 @@ function formatElkoTournamentEmail(data: ElkoTournamentData): string {
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Nafn:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.fullName)}</td></tr>
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Netfang:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.email)}</td></tr>
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Símanúmer:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.phone)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Kennitala:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.kennitala)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Fæðingardagur:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.birthDate)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Kennitala:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.kennitala)}</td></tr>${data.birthDate ? `
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Fæðingardagur:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.birthDate)}</td></tr>` : ''}
       </table>
       
       <h2 style="color: #333; margin-top: 20px;">Leikjaupplýsingar</h2>
