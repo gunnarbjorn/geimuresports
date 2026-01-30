@@ -36,8 +36,8 @@ const benefits = [{
   icon: Trophy
 }];
 const upcomingEvents = [{
-  title: "Fortnite mót – Opinn flokkur",
-  date: "15. febrúar 2026",
+  title: "Elko-deildin Vor 2026 – Duos",
+  date: "11. feb – 4. mars",
   type: "Mót",
   link: "/mot"
 }, {
