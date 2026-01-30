@@ -34,6 +34,19 @@ const tournamentSchema = z.object({
   teammates: z.string().trim().max(500).optional().default(""),
 });
 
+const elkoTournamentSchema = z.object({
+  email: z.string().trim().email("Ógilt netfang").max(255),
+  fullName: z.string().trim().min(2).max(100),
+  phone: z.string().trim().min(7).max(20),
+  kennitala: z.string().trim().min(10).max(15),
+  birthDate: z.string().trim().min(1).max(20),
+  discordUserId: z.string().trim().min(17).max(20),
+  epicId: z.string().trim().min(3).max(100),
+  fortniteName: z.string().trim().min(3).max(50),
+  teammateName: z.string().trim().min(3).max(50),
+  orderId: z.string().trim().min(5).max(50),
+});
+
 const contactSchema = z.object({
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().email().max(255),
@@ -43,6 +56,7 @@ const contactSchema = z.object({
 
 type TrainingData = z.infer<typeof trainingSchema>;
 type TournamentData = z.infer<typeof tournamentSchema>;
+type ElkoTournamentData = z.infer<typeof elkoTournamentSchema>;
 type ContactData = z.infer<typeof contactSchema>;
 
 // HTML escape function to prevent XSS in email templates
@@ -58,7 +72,7 @@ function escapeHtml(str: unknown): string {
 }
 
 interface NotificationRequest {
-  type: "training" | "tournament" | "contact";
+  type: "training" | "tournament" | "elko-tournament" | "contact";
   data: Record<string, unknown>;
 }
 
@@ -85,6 +99,38 @@ function formatTournamentEmail(data: TournamentData): string {
     <p><strong>Dagsetning:</strong> ${escapeHtml(data.tournamentDate)}</p>
     <p><strong>Flokkur:</strong> ${escapeHtml(data.category)}</p>
     ${data.teammates ? `<p><strong>Liðsfélagar:</strong> ${escapeHtml(data.teammates)}</p>` : ""}
+  `;
+}
+
+function formatElkoTournamentEmail(data: ElkoTournamentData): string {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h1 style="color: #D83A2E; border-bottom: 2px solid #D83A2E; padding-bottom: 10px;">
+        🎮 Ný skráning í Elko-deildina Vor 2026
+      </h1>
+      
+      <h2 style="color: #333; margin-top: 20px;">Persónuupplýsingar</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Nafn:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.fullName)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Netfang:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.email)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Símanúmer:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.phone)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Kennitala:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.kennitala)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Fæðingardagur:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.birthDate)}</td></tr>
+      </table>
+      
+      <h2 style="color: #333; margin-top: 20px;">Leikjaupplýsingar</h2>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Discord User ID:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.discordUserId)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Epic ID:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.epicId)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Fortnite nafn:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.fortniteName)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Liðsfélagi:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.teammateName)}</td></tr>
+      </table>
+      
+      <h2 style="color: #333; margin-top: 20px;">Greiðsla</h2>
+      <p style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
+        <strong>Order ID:</strong> ${escapeHtml(data.orderId)}
+      </p>
+    </div>
   `;
 }
 
@@ -127,6 +173,52 @@ function formatTournamentConfirmation(data: TournamentData): string {
   `;
 }
 
+function formatElkoTournamentConfirmation(data: ElkoTournamentData): string {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #fff; padding: 30px; border-radius: 12px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #D83A2E; margin: 0;">🎮 Skráning móttekin!</h1>
+        <p style="color: #888; margin-top: 10px;">Elko-deildin Vor 2026 – Duos</p>
+      </div>
+      
+      <p style="color: #ccc;">Hæ <strong style="color: #fff;">${escapeHtml(data.fullName)}</strong>,</p>
+      <p style="color: #ccc;">Takk fyrir að skrá þig í Elko-deildina! Hér eru upplýsingarnar þínar:</p>
+      
+      <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #D83A2E;">Fortnite nafn:</strong> ${escapeHtml(data.fortniteName)}</p>
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #D83A2E;">Liðsfélagi:</strong> ${escapeHtml(data.teammateName)}</p>
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #D83A2E;">Order ID:</strong> ${escapeHtml(data.orderId)}</p>
+      </div>
+      
+      <h2 style="color: #D83A2E; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Næstu skref</h2>
+      <ol style="color: #ccc; line-height: 1.8;">
+        <li>Gakktu úr skugga um að þú sért á <a href="https://discord.gg/57P9SAy4Fq" style="color: #D83A2E;">Fortnite á Íslandi Discord</a></li>
+        <li>Lestu reglurnar vel fyrir mótið</li>
+        <li>Undirbúðu þig fyrir fyrsta mótakvöld <strong style="color: #fff;">11. febrúar 2026</strong></li>
+      </ol>
+      
+      <h2 style="color: #D83A2E; border-bottom: 1px solid #333; padding-bottom: 10px;">📅 Mótadagsetningar</h2>
+      <ul style="color: #ccc; line-height: 1.8; list-style: none; padding: 0;">
+        <li>🎮 11. febrúar 2026</li>
+        <li>🎮 18. febrúar 2026</li>
+        <li>🎮 26. febrúar 2026</li>
+        <li>🏆 4. mars 2026 (úrslit)</li>
+      </ul>
+      
+      <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;">
+        <p style="color: #888; margin: 0; font-size: 14px;">
+          Ef þú hefur spurningar, hafðu samband á Discord eða sendu okkur email.
+        </p>
+      </div>
+      
+      <p style="color: #888; margin-top: 30px; text-align: center;">
+        Gangi þér vel!<br>
+        <strong style="color: #D83A2E;">Geimur Esports</strong>
+      </p>
+    </div>
+  `;
+}
+
 function formatContactConfirmation(data: ContactData): string {
   return `
     <h1>Takk fyrir fyrirspurnina!</h1>
@@ -138,12 +230,14 @@ function formatContactConfirmation(data: ContactData): string {
   `;
 }
 
-function getSubject(type: string, data: TrainingData | TournamentData | ContactData): string {
+function getSubject(type: string, data: TrainingData | TournamentData | ElkoTournamentData | ContactData): string {
   switch (type) {
     case "training":
       return `Ný æfingaskráning: ${(data as TrainingData).fullName}`;
     case "tournament":
       return `Ný mótsskráning: ${(data as TournamentData).fullName} - ${(data as TournamentData).tournament}`;
+    case "elko-tournament":
+      return `🎮 Elko-deildin: ${(data as ElkoTournamentData).fullName} + ${(data as ElkoTournamentData).teammateName}`;
     case "contact":
       return `Fyrirspurn: ${(data as ContactData).subject}`;
     default:
@@ -151,12 +245,14 @@ function getSubject(type: string, data: TrainingData | TournamentData | ContactD
   }
 }
 
-function getConfirmationSubject(type: string, data: TrainingData | TournamentData | ContactData): string {
+function getConfirmationSubject(type: string, data: TrainingData | TournamentData | ElkoTournamentData | ContactData): string {
   switch (type) {
     case "training":
       return `Staðfesting: Skráning í æfingar - Geimur Esports`;
     case "tournament":
       return `Staðfesting: ${(data as TournamentData).tournament} - Geimur Esports`;
+    case "elko-tournament":
+      return `🎮 Staðfesting: Elko-deildin Vor 2026 - Geimur Esports`;
     case "contact":
       return `Staðfesting: Fyrirspurn móttekin - Geimur Esports`;
     default:
@@ -165,12 +261,14 @@ function getConfirmationSubject(type: string, data: TrainingData | TournamentDat
 }
 
 // Validates and sanitizes data based on type, throws ZodError on failure
-function validateAndSanitizeData(type: string, data: Record<string, unknown>): TrainingData | TournamentData | ContactData {
+function validateAndSanitizeData(type: string, data: Record<string, unknown>): TrainingData | TournamentData | ElkoTournamentData | ContactData {
   switch (type) {
     case "training":
       return trainingSchema.parse(data);
     case "tournament":
       return tournamentSchema.parse(data);
+    case "elko-tournament":
+      return elkoTournamentSchema.parse(data);
     case "contact":
       return contactSchema.parse(data);
     default:
@@ -201,7 +299,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Validate type
-    if (!["training", "tournament", "contact"].includes(type)) {
+    if (!["training", "tournament", "elko-tournament", "contact"].includes(type)) {
       return new Response(
         JSON.stringify({ error: "Ógild tegund skráningar" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -209,7 +307,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Server-side validation and sanitization
-    let validatedData: TrainingData | TournamentData | ContactData;
+    let validatedData: TrainingData | TournamentData | ElkoTournamentData | ContactData;
     try {
       validatedData = validateAndSanitizeData(type, rawData);
     } catch (validationError) {
@@ -286,6 +384,10 @@ const handler = async (req: Request): Promise<Response> => {
       case "tournament":
         html = formatTournamentEmail(validatedData as TournamentData);
         confirmationHtml = formatTournamentConfirmation(validatedData as TournamentData);
+        break;
+      case "elko-tournament":
+        html = formatElkoTournamentEmail(validatedData as ElkoTournamentData);
+        confirmationHtml = formatElkoTournamentConfirmation(validatedData as ElkoTournamentData);
         break;
       case "contact":
         html = formatContactEmail(validatedData as ContactData);
