@@ -51,14 +51,12 @@ const packages = [{
   description: "Fyrir þá sem eru að byrja.",
   sessionsPerWeek: 1,
   monthlyPrice: 9900,
-  threeMonthPrice: 24900,
   features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hámark 10 í hóp", "Aðgangur að Discord"],
 }, {
   name: "Framhald",
   description: "Fyrir þá sem vilja þróast.",
   sessionsPerWeek: 2,
   monthlyPrice: 14900,
-  threeMonthPrice: 37900,
   features: ["2x æfingar í viku", "Ítarleg þjálfun", "Hámark 10 í hóp", "Mótþátttaka"],
   featured: true
 }, {
@@ -66,7 +64,6 @@ const packages = [{
   description: "Spilaðu saman.",
   sessionsPerWeek: 1,
   monthlyPrice: 12900,
-  threeMonthPrice: 32900,
   features: ["1x æfing í viku", "Sérhópar fyrir fjölskyldur", "Hámark 10 í hóp", "Skemmtilegt og fræðandi"],
 }];
 
@@ -76,20 +73,23 @@ const calculatePerSession = (monthlyPrice: number, sessionsPerWeek: number) => {
   return Math.round(monthlyPrice / sessionsPerMonth);
 };
 const faqs = [{
-  question: "Hvaða aldurshópar eru hjá ykkur?",
-  answer: "Við tökum við spilurum frá 8 ára og upp í fullorðna. Hópum er skipt eftir aldri og leikni til að tryggja að allir fái viðeigandi áskoranir."
+  question: "Hvernig virka online æfingarnar?",
+  answer: "Æfingarnar fara fram 100% online í gegnum Discord. Þjálfarinn tengist við hópinn og fer yfir mechanics, strategy og game sense í beinni útsendingu. Þátttakendur spila saman og fá endurgjöf í rauntíma."
 }, {
-  question: "Þarf ég að koma með eigin tölvu?",
-  answer: "Já, þátttakendur þurfa að koma með eigin tölvu/console. Við leggjum til aðstöðu, internetið og þjálfunina."
+  question: "Hvaða aldurshópar eru hjá ykkur?",
+  answer: "Við tökum við spilurum frá 8 ára og upp í 16 ára. Hópum er skipt eftir aldri og leikni til að tryggja að allir fái viðeigandi áskoranir."
+}, {
+  question: "Þarf ég að eiga eigin PlayStation eða PC?",
+  answer: "Já, þátttakendur þurfa að hafa aðgang að eigin PlayStation eða PC með Fortnite uppsett. Þar sem æfingarnar eru online þarftu einnig stöðuga nettengingu og Discord."
 }, {
   question: "Er ég of léleg/ur til að taka þátt?",
-  answer: "Alls ekki! Við tökum á móti öllum, óháð leikni. Markmið okkar er að hjálpa þér að þróast á þínum hraða."
+  answer: "Alls ekki! Við tökum á móti öllum, óháð leikni. Markmið okkar er að hjálpa þér að þróast á þínum hraða í litlum hópum með hámark 10 þátttakendum."
 }, {
-  question: "Hvernig virka mótin?",
-  answer: "Við höldum bæði innri mót fyrir félagsmenn og tökum þátt í opinberum mótum. Öll mót eru kynnt með góðum fyrirvara."
+  question: "Hvernig virkar greiðslan?",
+  answer: "Greitt er mánaðarlega án skuldbindinga. Þú getur sagt upp hvenær sem er og engin binding er á áskriftinni."
 }, {
   question: "Hvað með foreldra – mega þeir vera með?",
-  answer: "Foreldrar eru alltaf velkomnir! Við bjóðum einnig upp á sérstaka foreldra+barn hópa þar sem hægt er að spila saman."
+  answer: "Já! Við bjóðum upp á sérstakan 'Foreldri + barn' pakka þar sem foreldri og barn spila og læra saman í online æfingum."
 }];
 const Index = () => {
   return <Layout>
@@ -254,20 +254,13 @@ const Index = () => {
                   <CardDescription>{pkg.description}</CardDescription>
                   
                   {/* Pricing */}
-                  <div className="mt-4 space-y-3">
-                    <div className="p-3 rounded-lg bg-muted/50">
-                      <p className="text-xs text-muted-foreground mb-1">Mánaðarlega</p>
-                      <p className="text-2xl font-bold text-foreground">{formatPrice(pkg.monthlyPrice)} kr</p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                  <div className="mt-4">
+                    <div className="p-4 rounded-lg bg-muted/50">
+                      <p className="text-3xl font-bold text-foreground">{formatPrice(pkg.monthlyPrice)} kr<span className="text-base font-normal text-muted-foreground">/mán</span></p>
+                      <p className="text-sm text-muted-foreground mt-1">
                         ≈ {formatPrice(calculatePerSession(pkg.monthlyPrice, pkg.sessionsPerWeek))} kr á æfingu
                       </p>
-                    </div>
-                    <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
-                      <p className="text-xs text-primary mb-1">3 mánaða áskrift</p>
-                      <p className="text-xl font-bold text-foreground">{formatPrice(pkg.threeMonthPrice)} kr</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Sparaðu {formatPrice(pkg.monthlyPrice * 3 - pkg.threeMonthPrice)} kr
-                      </p>
+                      <p className="text-xs text-primary mt-2">Greitt mánaðarlega. Engin binding.</p>
                     </div>
                   </div>
                 </CardHeader>
