@@ -16,7 +16,7 @@ const schedule = [
   { day: "Þriðjudagar", time: "17:00 - 18:30", group: "Nýliðar" },
   { day: "Miðvikudagar", time: "17:00 - 18:30", group: "Framhald" },
   { day: "Fimmtudagar", time: "17:00 - 18:30", group: "Framhald" },
-  { day: "Laugardagar", time: "10:00 - 11:30", group: "Foreldri + barn" },
+  { day: "Sunnudagar", time: "10:00 - 12:00", group: "Foreldri + barn" },
 ];
 
 const sessionSteps = [
