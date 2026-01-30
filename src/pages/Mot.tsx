@@ -2,39 +2,30 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { tournaments, Tournament } from "@/data/tournaments";
+import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
 import { 
   Calendar, 
   MapPin, 
   Users, 
   Trophy,
-  ArrowRight,
   Gamepad2,
   Lock,
   Coins,
   Gift,
   Monitor,
   Tv,
-  ExternalLink
+  ExternalLink,
+  ChevronDown,
+  ShieldCheck,
+  MessageCircle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-const registrationSteps = [
-  {
-    step: 1,
-    title: "Veldu mót",
-    description: "Skoðaðu komandi mót og veldu það sem hentar þér best.",
-  },
-  {
-    step: 2,
-    title: "Greiðsla & skráning",
-    description: "Smelltu á takkan og fylgdu leiðbeiningum til að skrá þig.",
-  },
-  {
-    step: 3,
-    title: "Discord & undirbúningur",
-    description: "Gakktu úr skugga um að þú sért skráður á Discord og tilbúin/n.",
-  },
-];
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
   const isComingSoon = tournament.isComingSoon;
@@ -138,12 +129,12 @@ const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
         ) : (
           <Button 
             className="w-full btn-primary-gradient"
-            asChild
+            onClick={() => {
+              document.getElementById('skraning')?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
-            <a href={tournament.ctaUrl} target="_blank" rel="noopener noreferrer">
-              {tournament.ctaText || "Skrá mig í mót"}
-              <ExternalLink className="ml-2 h-4 w-4" />
-            </a>
+            {tournament.ctaText || "Skrá mig í mót"}
+            <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
         )}
         
@@ -229,28 +220,101 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* How Registration Works */}
-      <section className="section-spacing-lg">
+      {/* Registration Form Section */}
+      <section id="skraning" className="section-spacing-lg">
         <div className="container mx-auto px-4">
-          <div className="text-center section-heading-spacing">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              Hvernig skráning virkar
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Einföld skref til að taka þátt í móti.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {registrationSteps.map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                  <span className="font-display text-2xl font-bold text-primary">{item.step}</span>
+          <div className="max-w-2xl mx-auto">
+            <Card className="bg-card border-border overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Trophy className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="font-display text-xl md:text-2xl">
+                      Skráning í mót
+                    </CardTitle>
+                    <CardDescription>
+                      Elko-deildin Vor 2026 – Duos
+                    </CardDescription>
+                  </div>
                 </div>
-                <h3 className="font-display text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
+              </CardHeader>
+              <CardContent className="p-6 md:p-8">
+                <ElkoRegistrationForm />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Rules & Trust Section */}
+      <section className="section-spacing-lg bg-card/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <Accordion type="single" collapsible className="space-y-4">
+              <AccordionItem value="rules" className="bg-card border border-border rounded-xl overflow-hidden">
+                <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-muted/50">
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck className="h-5 w-5 text-primary" />
+                    <span className="font-display font-semibold">Reglur & mikilvægar upplýsingar</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-sm text-primary">Aldurstakmörk</h4>
+                      <ul className="text-sm text-muted-foreground space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Allir spilarar þurfa að vera 13 ára eða eldri
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Yngri en 13 ára mega keppa með leyfi foreldra
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-sm text-primary">Hegðun & viðurlög</h4>
+                      <ul className="text-sm text-muted-foreground space-y-2">
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Brot á reglum getur leitt til banns úr mótum
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary">•</span>
+                          Allir keppendur þurfa að vera á Discord á meðan mót stendur
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <div className="pt-4 border-t border-border">
+                      <Button asChild variant="outline" className="w-full">
+                        <a 
+                          href="https://discord.gg/57P9SAy4Fq" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Discord aðstoð & spurningar
+                          <ExternalLink className="ml-2 h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            
+            {/* Trust Note */}
+            <div className="mt-8 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 text-muted-foreground text-sm">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span>Skráning og mót eru í samstarfi við Rafíþróttasamband Íslands</span>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
