@@ -293,7 +293,7 @@ const Mot = () => {
                     
                     <div className="pt-4 border-t border-border">
                       <a
-                        href="https://discord.gg/57P9SAy4Fq"
+                        href="https://discord.com/invite/57P9SAy4Fq"
                         target="_blank"
                         rel="noopener noreferrer"
                         referrerPolicy="no-referrer"
