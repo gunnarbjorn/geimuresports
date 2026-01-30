@@ -1,18 +1,22 @@
-import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TournamentForm } from "@/components/forms/TournamentForm";
 import { tournaments, Tournament } from "@/data/tournaments";
 import { 
   Calendar, 
   MapPin, 
   Users, 
-  Clock,
   Trophy,
   ArrowRight,
-  Gamepad2
+  Gamepad2,
+  Lock,
+  Coins,
+  Gift,
+  Monitor,
+  Tv,
+  ExternalLink
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const registrationSteps = [
   {
@@ -22,22 +26,163 @@ const registrationSteps = [
   },
   {
     step: 2,
-    title: "Fylltu út skráningu",
-    description: "Sendu okkur Epic nafnið þitt og veldu flokk (Solo/Duo/Squad).",
+    title: "Greiðsla & skráning",
+    description: "Smelltu á takkan og fylgdu leiðbeiningum til að skrá þig.",
   },
   {
     step: 3,
-    title: "Fáðu staðfestingu",
-    description: "Þú færð tölvupóst með upplýsingum og leiðbeiningum.",
+    title: "Discord & undirbúningur",
+    description: "Gakktu úr skugga um að þú sért skráður á Discord og tilbúin/n.",
   },
 ];
 
-const Mot = () => {
-  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
+  const isComingSoon = tournament.isComingSoon;
+  
+  return (
+    <Card className={`bg-card border-border flex flex-col ${isComingSoon ? 'opacity-80' : 'card-hover'}`}>
+      <CardHeader>
+        <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <div className="flex gap-2 flex-wrap">
+            {tournament.tags?.map((tag) => (
+              <Badge key={tag} variant="secondary" className="bg-primary/10 text-primary border-0">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+          {isComingSoon ? (
+            <Lock className="h-5 w-5 text-muted-foreground" />
+          ) : (
+            <Trophy className="h-5 w-5 text-accent" />
+          )}
+        </div>
+        <CardTitle className="font-display text-xl">{tournament.name}</CardTitle>
+        <CardDescription className="text-base">{tournament.description}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col justify-between">
+        <div className="space-y-3 mb-6">
+          {/* Dates */}
+          {tournament.dates.length > 0 && (
+            <div className="flex items-start gap-3 text-sm">
+              <Calendar className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <span className="font-medium">Tímabil:</span>
+                <p className="text-muted-foreground">{tournament.dates.join(' · ')}</p>
+              </div>
+            </div>
+          )}
+          
+          {/* Format */}
+          {tournament.format && (
+            <div className="flex items-center gap-3 text-sm">
+              <Gamepad2 className="h-4 w-4 text-primary shrink-0" />
+              <span><span className="font-medium">Format:</span> {tournament.format}</span>
+            </div>
+          )}
+          
+          {/* Location */}
+          <div className="flex items-center gap-3 text-sm">
+            <MapPin className="h-4 w-4 text-primary shrink-0" />
+            <span><span className="font-medium">Staðsetning:</span> {tournament.location}</span>
+          </div>
+          
+          {/* Age limit */}
+          {tournament.ageLimit && (
+            <div className="flex items-center gap-3 text-sm">
+              <Users className="h-4 w-4 text-primary shrink-0" />
+              <span><span className="font-medium">Aldur:</span> {tournament.ageLimit}</span>
+            </div>
+          )}
+          
+          {/* Entry fee */}
+          {tournament.entryFee && (
+            <div className="flex items-center gap-3 text-sm">
+              <Coins className="h-4 w-4 text-primary shrink-0" />
+              <span><span className="font-medium">Þátttökugjald:</span> {tournament.entryFee}</span>
+            </div>
+          )}
+          
+          {/* Prize pool */}
+          {tournament.prizePool && (
+            <div className="flex items-center gap-3 text-sm">
+              <Gift className="h-4 w-4 text-primary shrink-0" />
+              <span><span className="font-medium">Verðlaunafé:</span> {tournament.prizePool}</span>
+            </div>
+          )}
+          
+          {/* Coming soon specific details */}
+          {isComingSoon && (
+            <>
+              <div className="flex items-center gap-3 text-sm">
+                <Monitor className="h-4 w-4 text-primary shrink-0" />
+                <span>100 manna lobby</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm">
+                <Tv className="h-4 w-4 text-primary shrink-0" />
+                <span>Livestream & stemning</span>
+              </div>
+            </>
+          )}
+        </div>
+        
+        {/* CTA Button */}
+        {isComingSoon ? (
+          <Button 
+            className="w-full" 
+            variant="outline"
+            disabled
+          >
+            <Lock className="mr-2 h-4 w-4" />
+            {tournament.ctaText || "Tilkynnt síðar"}
+          </Button>
+        ) : (
+          <Button 
+            className="w-full btn-primary-gradient"
+            asChild
+          >
+            <a href={tournament.ctaUrl} target="_blank" rel="noopener noreferrer">
+              {tournament.ctaText || "Skrá mig í mót"}
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
+        )}
+        
+        {/* Note */}
+        {tournament.note && (
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            {tournament.discordUrl ? (
+              <>
+                {tournament.note.split('Discord').map((part, i) => 
+                  i === 0 ? part : (
+                    <span key={i}>
+                      <a 
+                        href={tournament.discordUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Discord
+                      </a>
+                      {part}
+                    </span>
+                  )
+                )}
+              </>
+            ) : tournament.note}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
-  const scrollToForm = () => {
-    document.getElementById('skraning')?.scrollIntoView({ behavior: 'smooth' });
-  };
+const Mot = () => {
+  // Filter active and coming soon tournaments
+  const activeTournaments = tournaments.filter(t => !t.isComingSoon);
+  const comingSoonTournaments = tournaments.filter(t => t.isComingSoon);
+  
+  // If there's only one active tournament, hide the coming soon section
+  const showComingSoon = activeTournaments.length === 0 || comingSoonTournaments.length > 0;
 
   return (
     <Layout>
@@ -57,10 +202,6 @@ const Mot = () => {
               Taktu þátt í skipulögðum Fortnite mótum og mæt þig við aðra spilara. 
               Solo, Duo og Squad flokkar í boði.
             </p>
-            <Button size="lg" className="btn-primary-gradient" onClick={scrollToForm}>
-              Skrá mig í mót
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
           </div>
         </div>
       </section>
@@ -77,52 +218,12 @@ const Mot = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {tournaments.map((tournament) => (
-              <Card key={tournament.id} className="bg-card border-border card-hover flex flex-col">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      {tournament.category}
-                    </span>
-                    <Trophy className="h-5 w-5 text-accent" />
-                  </div>
-                  <CardTitle className="font-display text-xl">{tournament.name}</CardTitle>
-                  <CardDescription>{tournament.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 flex flex-col justify-between">
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-3 text-sm">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <span>{tournament.date}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <MapPin className="h-4 w-4 text-primary" />
-                      <span>{tournament.location}</span>
-                    </div>
-                    {tournament.ageLimit && (
-                      <div className="flex items-center gap-3 text-sm">
-                        <Users className="h-4 w-4 text-primary" />
-                        <span>{tournament.ageLimit}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      <span>Skráningarfrestur: {tournament.deadline}</span>
-                    </div>
-                  </div>
-                  <Button 
-                    className="w-full btn-primary-gradient"
-                    onClick={() => {
-                      setSelectedTournament(tournament);
-                      scrollToForm();
-                    }}
-                  >
-                    Skrá mig í mót
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {activeTournaments.map((tournament) => (
+              <TournamentCard key={tournament.id} tournament={tournament} />
+            ))}
+            {showComingSoon && comingSoonTournaments.map((tournament) => (
+              <TournamentCard key={tournament.id} tournament={tournament} />
             ))}
           </div>
         </div>
@@ -150,28 +251,6 @@ const Mot = () => {
                 <p className="text-muted-foreground">{item.description}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Registration Form */}
-      <section id="skraning" className="section-spacing-lg bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-8 lg:mb-12">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-                Skráning í mót
-              </h2>
-              <p className="text-muted-foreground text-lg">
-                Fylltu út eyðublaðið til að skrá þig í mót.
-              </p>
-            </div>
-            
-            <Card className="bg-card border-border">
-              <CardContent className="p-6 md:p-8">
-                <TournamentForm preselectedTournament={selectedTournament || undefined} />
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>

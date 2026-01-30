@@ -1,42 +1,51 @@
 export interface Tournament {
   id: string;
   name: string;
-  date: string;
-  category: "Solo" | "Duo" | "Squad";
+  dates: string[];
+  category: "Solo" | "Duo" | "Squad" | "LAN";
+  format?: string;
   ageLimit?: string;
   location: string;
-  deadline: string;
   description: string;
+  entryFee?: string;
+  prizePool?: string;
+  ctaUrl?: string;
+  ctaText?: string;
+  isComingSoon?: boolean;
+  note?: string;
+  discordUrl?: string;
+  tags?: string[];
 }
 
 export const tournaments: Tournament[] = [
   {
-    id: "fortnite-open-feb",
-    name: "Fortnite Opið Mót",
-    date: "15. febrúar 2026",
-    category: "Solo",
-    location: "Online",
-    deadline: "12. febrúar 2026",
-    description: "Opið mót fyrir alla aldurshópa. Keppt í Solo flokki.",
-  },
-  {
-    id: "fortnite-duo-mars",
-    name: "Duo Vorleikur",
-    date: "8. mars 2026",
+    id: "elko-deild-vor-2026",
+    name: "Elko-deildin Vor 2026 – Duos",
+    dates: ["11. feb", "18. feb", "26. feb", "4. mars (úrslit)"],
     category: "Duo",
-    ageLimit: "12-18 ára",
+    format: "Duos Build",
+    ageLimit: "13+ (yngri með leyfi foreldra)",
     location: "Online",
-    deadline: "5. mars 2026",
-    description: "Duo mót fyrir unglinga. Finndu þér félaga og skráðu þig!",
+    description: "Fortnite Duo mót fyrir keppendur á Íslandi. Keppt er í Duos Build yfir fjögur mótakvöld með úrslitum í mars.",
+    entryFee: "2.000 kr á einstakling",
+    prizePool: "Auglýst síðar",
+    ctaUrl: "https://linkar.rafithrottir.is/greida-elko-deildina",
+    ctaText: "Skrá mig í mót",
+    note: "Allir keppendur þurfa að vera með Discord aðgang og skráðir á Fortnite á Íslandi Discord.",
+    discordUrl: "https://discord.gg/57P9SAy4Fq",
+    tags: ["Duo", "Online"],
   },
   {
-    id: "fortnite-squad-april",
-    name: "Squad Bikar",
-    date: "19. apríl 2026",
-    category: "Squad",
-    location: "Á staðnum (TBD)",
-    deadline: "15. apríl 2026",
-    description: "Stærsta mót tímabilsins! Squad keppni með verðlaunum.",
+    id: "arena-lan-coming-soon",
+    name: "Stórt Fortnite mót í Arena – Coming Soon",
+    dates: [],
+    category: "LAN",
+    location: "Arena Gaming",
+    description: "Stórt staðarmót í Arena Gaming. 100 keppendur í sama lobby, 5 leikir spilaðir, fjör, tilboð, streymi á staðnum og verðlaun.",
+    isComingSoon: true,
+    ctaText: "Tilkynnt síðar",
+    note: "Skráning opnar síðar. Fylgstu með á samfélagsmiðlum.",
+    tags: ["LAN", "100 manna lobby"],
   },
 ];
 
