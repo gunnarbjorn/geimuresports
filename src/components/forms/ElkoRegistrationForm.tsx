@@ -2,22 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { format } from "date-fns";
-import { is } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { toast } from "sonner";
 import { 
   Loader2, 
   CheckCircle, 
-  CalendarIcon, 
   CreditCard,
   ClipboardList,
   PartyPopper,
@@ -33,12 +24,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+
 const elkoFormSchema = z.object({
   email: z.string().trim().email("Ógilt netfang").max(255),
   fullName: z.string().trim().min(2, "Nafn verður að vera að minnsta kosti 2 stafir").max(100),
   phone: z.string().trim().min(7, "Símanúmer verður að vera að minnsta kosti 7 tölustafir").max(20),
   kennitala: z.string().trim().regex(/^\d{6}-?\d{4}$/, "Kennitala verður að vera á réttu formi (t.d. 010199-2389)"),
-  birthDate: z.date({ required_error: "Vinsamlegast veldu fæðingardag" }),
   discordUserId: z.string().trim().min(17, "Discord User ID verður að vera að minnsta kosti 17 tölustafir").max(20).regex(/^\d+$/, "Discord User ID inniheldur aðeins tölustafi"),
   epicId: z.string().trim().min(3, "Epic ID verður að vera að minnsta kosti 3 stafir").max(100),
   fortniteName: z.string().trim().min(3, "Fortnite nafn verður að vera að minnsta kosti 3 stafir").max(50),
@@ -125,7 +116,7 @@ export function ElkoRegistrationForm() {
     resolver: zodResolver(elkoFormSchema),
   });
 
-  const birthDate = watch("birthDate");
+  
 
   const onSubmit = async (data: ElkoFormData) => {
     setIsSubmitting(true);
@@ -138,7 +129,7 @@ export function ElkoRegistrationForm() {
             fullName: data.fullName,
             phone: data.phone,
             kennitala: data.kennitala,
-            birthDate: format(data.birthDate, "dd.MM.yyyy"),
+            
             discordUserId: data.discordUserId,
             epicId: data.epicId,
             fortniteName: data.fortniteName,
@@ -243,21 +234,16 @@ export function ElkoRegistrationForm() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                asChild
-                className="btn-primary-gradient flex-1"
-                size="lg"
+              <a 
+                href="https://bit.ly/Elko-deildin-Greidsla" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn-primary-gradient flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-11 px-8"
               >
-                <a 
-                  href="https://bit.ly/Elko-deildin-Greidsla" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <CreditCard className="mr-2 h-5 w-5" />
-                  Greiða þátttökugjald
-                  <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
+                <CreditCard className="h-5 w-5" />
+                Greiða þátttökugjald
+                <ExternalLink className="h-4 w-4" />
+              </a>
             </div>
           </div>
           
@@ -349,44 +335,8 @@ export function ElkoRegistrationForm() {
               </div>
             </div>
 
-            {/* Birth Date & Discord ID */}
+            {/* Discord ID & Epic ID */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Fæðingardagur *</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal bg-secondary border-border",
-                        !birthDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {birthDate ? format(birthDate, "dd. MMMM yyyy", { locale: is }) : "Veldu dagsetningu"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={birthDate}
-                      onSelect={(date) => date && setValue("birthDate", date)}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      defaultMonth={new Date(2010, 0)}
-                      captionLayout="dropdown-buttons"
-                      fromYear={1960}
-                      toYear={new Date().getFullYear()}
-                      className={cn("p-3 pointer-events-auto")}
-                    />
-                  </PopoverContent>
-                </Popover>
-                {errors.birthDate && (
-                  <p className="text-sm text-destructive">{errors.birthDate.message}</p>
-                )}
-              </div>
-
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="discordUserId">Discord User ID *</Label>
@@ -411,10 +361,7 @@ export function ElkoRegistrationForm() {
                   <p className="text-sm text-destructive">{errors.discordUserId.message}</p>
                 )}
               </div>
-            </div>
 
-            {/* Epic ID & Fortnite Name */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="epicId">Epic ID *</Label>
@@ -437,13 +384,16 @@ export function ElkoRegistrationForm() {
                   <p className="text-sm text-destructive">{errors.epicId.message}</p>
                 )}
               </div>
+            </div>
 
+            {/* Fortnite Name & Teammate */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="fortniteName">Fortnite nafn *</Label>
+                <Label htmlFor="fortniteName">Hvað heitir þú í Fortnite? *</Label>
                 <Input
                   id="fortniteName"
                   {...register("fortniteName")}
-                  placeholder="YourFortniteNick"
+                  placeholder="Fortnite nafnið þitt"
                   className="bg-secondary border-border"
                 />
                 <p className="text-xs text-muted-foreground">
@@ -453,23 +403,23 @@ export function ElkoRegistrationForm() {
                   <p className="text-sm text-destructive">{errors.fortniteName.message}</p>
                 )}
               </div>
-            </div>
 
-            {/* Teammate & Order ID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="teammateName">Nafn liðsfélaga í Fortnite *</Label>
+                <Label htmlFor="teammateName">Hvað heitir liðsfélagi þinn í Fortnite? *</Label>
                 <Input
                   id="teammateName"
                   {...register("teammateName")}
-                  placeholder="TeammateFortniteNick"
+                  placeholder="Fortnite nafn liðsfélaga"
                   className="bg-secondary border-border"
                 />
                 {errors.teammateName && (
                   <p className="text-sm text-destructive">{errors.teammateName.message}</p>
                 )}
               </div>
+            </div>
 
+            {/* Order ID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="orderId">Order ID (frá greiðslu) *</Label>
                 <Input
