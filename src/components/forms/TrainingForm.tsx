@@ -112,7 +112,9 @@ export function TrainingForm() {
           }}
         >
           <SelectTrigger className="bg-secondary border-border">
-            <SelectValue placeholder="Veldu hóp" />
+            <SelectValue placeholder="Veldu hóp">
+              {selectedGroup && trainingGroups.find(g => g.value === selectedGroup)?.label}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-card border-border z-50">
             {trainingGroups.map((group) => (
