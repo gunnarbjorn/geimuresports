@@ -48,12 +48,14 @@ const upcomingEvents = [{
 }];
 const packages = [{
   name: "Nýliðar",
+  value: "nylidar",
   description: "Fyrir þá sem eru að byrja.",
   sessionsPerWeek: 1,
   monthlyPrice: 12900,
   features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hámark 10 í hóp", "Aðgangur að Discord"],
 }, {
   name: "Framhald",
+  value: "framhald",
   description: "Fyrir þá sem vilja þróast.",
   sessionsPerWeek: 2,
   monthlyPrice: 19900,
@@ -61,6 +63,7 @@ const packages = [{
   featured: true
 }, {
   name: "Foreldri + barn",
+  value: "foreldri-barn",
   description: "Spilaðu saman.",
   sessionsPerWeek: 1,
   monthlyPrice: 16900,
@@ -277,7 +280,7 @@ const Index = () => {
                     ))}
                   </ul>
                   <Button asChild className={`w-full ${pkg.featured ? 'btn-primary-gradient' : ''}`} variant={pkg.featured ? 'default' : 'outline'}>
-                    <Link to="/aefingar#skraning">Skrá mig – {pkg.name}</Link>
+                    <Link to={`/aefingar?group=${pkg.value}#skraning`}>Skrá mig – {pkg.name}</Link>
                   </Button>
                 </CardContent>
               </Card>
