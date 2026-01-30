@@ -23,7 +23,7 @@ const tournamentSchema = z.object({
   email: z.string().email("Ógilt netfang").max(255),
   phone: z.string().min(7, "Símanúmer verður að vera að minnsta kosti 7 tölustafir").max(20),
   tournamentId: z.string().min(1, "Vinsamlegast veldu mót"),
-  category: z.enum(["Solo", "Duo", "Squad"]),
+  category: z.enum(["Solo", "Duo", "Squad", "LAN"]),
   teammates: z.string().max(200).optional(),
 });
 
@@ -39,6 +39,9 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>(
     preselectedTournament?.category || ""
   );
+
+  // Filter out coming soon tournaments for the form
+  const availableTournaments = tournaments.filter(t => !t.isComingSoon);
 
   const {
     register,
@@ -71,7 +74,7 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
             email: data.email,
             phone: data.phone,
             tournament: tournament?.name || data.tournamentId,
-            tournamentDate: tournament?.date || "",
+            tournamentDate: tournament?.dates.join(', ') || "",
             category: data.category,
             teammates: data.teammates || "",
           },
@@ -176,7 +179,7 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
             defaultValue={preselectedTournament?.id}
             onValueChange={(value) => {
               setValue("tournamentId", value);
-              const tournament = tournaments.find(t => t.id === value);
+              const tournament = availableTournaments.find(t => t.id === value);
               if (tournament) {
                 setValue("category", tournament.category);
                 setSelectedCategory(tournament.category);
@@ -187,9 +190,9 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
               <SelectValue placeholder="Veldu mót" />
             </SelectTrigger>
             <SelectContent className="bg-card border-border">
-              {tournaments.map((tournament) => (
+              {availableTournaments.map((tournament) => (
                 <SelectItem key={tournament.id} value={tournament.id}>
-                  {tournament.name} - {tournament.date}
+                  {tournament.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -204,7 +207,7 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
           <Select 
             value={selectedCategory}
             onValueChange={(value) => {
-              setValue("category", value as "Solo" | "Duo" | "Squad");
+              setValue("category", value as "Solo" | "Duo" | "Squad" | "LAN");
               setSelectedCategory(value);
             }}
           >
@@ -215,6 +218,7 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
               <SelectItem value="Solo">Solo</SelectItem>
               <SelectItem value="Duo">Duo</SelectItem>
               <SelectItem value="Squad">Squad</SelectItem>
+              <SelectItem value="LAN">LAN</SelectItem>
             </SelectContent>
           </Select>
           {errors.category && (
