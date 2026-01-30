@@ -50,7 +50,26 @@ export const tournaments: Tournament[] = [
 ];
 
 export const trainingGroups = [
-  { value: "nylidar", label: "Nýliðar" },
-  { value: "framhald", label: "Framhald" },
-  { value: "foreldri-barn", label: "Foreldri + barn" },
+  { 
+    value: "nylidar", 
+    label: "Nýliðar", 
+    description: "Fyrir þá sem eru að byrja",
+    sessionsPerWeek: "1x í viku",
+    price: "12.900 kr/mán"
+  },
+  { 
+    value: "framhald", 
+    label: "Framhald", 
+    description: "Fyrir þá sem vilja þróast",
+    sessionsPerWeek: "2x í viku",
+    price: "19.900 kr/mán",
+    featured: true
+  },
+  { 
+    value: "foreldri-barn", 
+    label: "Foreldri + barn", 
+    description: "Spilaðu saman",
+    sessionsPerWeek: "1x í viku",
+    price: "16.900 kr/mán"
+  },
 ];
