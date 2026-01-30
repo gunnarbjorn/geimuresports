@@ -19,11 +19,13 @@ import { trainingGroups } from "@/data/tournaments";
 import { supabase } from "@/integrations/supabase/client";
 
 const trainingSchema = z.object({
+  group: z.string().min(1, "Vinsamlegast veldu æfingahóp"),
   fullName: z.string().min(2, "Nafn verður að vera að minnsta kosti 2 stafir").max(100),
   age: z.number().min(6, "Lágmarks aldur er 6 ára").max(99),
   email: z.string().email("Ógilt netfang").max(255),
   phone: z.string().min(7, "Símanúmer verður að vera að minnsta kosti 7 tölustafir").max(20),
-  group: z.string().min(1, "Vinsamlegast veldu æfingahóp"),
+  parentName: z.string().max(100).optional(),
+  parentAge: z.number().min(18).max(99).optional().or(z.literal("")),
   message: z.string().max(1000).optional(),
 });
 
@@ -32,6 +34,7 @@ type TrainingFormData = z.infer<typeof trainingSchema>;
 export function TrainingForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState<string>("");
 
   const {
     register,
@@ -42,6 +45,8 @@ export function TrainingForm() {
   } = useForm<TrainingFormData>({
     resolver: zodResolver(trainingSchema),
   });
+
+  const isParentChild = selectedGroup === "foreldri-barn";
 
   const onSubmit = async (data: TrainingFormData) => {
     setIsSubmitting(true);
@@ -55,6 +60,8 @@ export function TrainingForm() {
             email: data.email,
             phone: data.phone,
             group: trainingGroups.find(g => g.value === data.group)?.label || data.group,
+            parentName: data.parentName || "",
+            parentAge: data.parentAge || "",
             message: data.message || "",
           },
         },
@@ -67,6 +74,7 @@ export function TrainingForm() {
         description: "Við munum hafa samband við þig fljótlega.",
       });
       reset();
+      setSelectedGroup("");
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Villa kom upp", {
@@ -94,35 +102,110 @@ export function TrainingForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="fullName">Fullt nafn *</Label>
-          <Input
-            id="fullName"
-            {...register("fullName")}
-            placeholder="Jón Jónsson"
-            className="bg-secondary border-border"
-          />
-          {errors.fullName && (
-            <p className="text-sm text-destructive">{errors.fullName.message}</p>
-          )}
-        </div>
+      {/* Group Selection - First */}
+      <div className="space-y-2">
+        <Label htmlFor="group">Veldu æfingahóp *</Label>
+        <Select 
+          onValueChange={(value) => {
+            setValue("group", value);
+            setSelectedGroup(value);
+          }}
+        >
+          <SelectTrigger className="bg-secondary border-border">
+            <SelectValue placeholder="Veldu hóp" />
+          </SelectTrigger>
+          <SelectContent className="bg-card border-border z-50">
+            {trainingGroups.map((group) => (
+              <SelectItem key={group.value} value={group.value} className="py-3">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{group.label}</span>
+                    {group.featured && (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-primary/20 text-primary">Vinsælast</span>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">{group.sessionsPerWeek} · {group.price}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {errors.group && (
+          <p className="text-sm text-destructive">{errors.group.message}</p>
+        )}
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="age">Aldur *</Label>
-          <Input
-            id="age"
-            type="number"
-            {...register("age", { valueAsNumber: true })}
-            placeholder="12"
-            className="bg-secondary border-border"
-          />
-          {errors.age && (
-            <p className="text-sm text-destructive">{errors.age.message}</p>
-          )}
+      {/* Child Info */}
+      <div className="space-y-4">
+        <h4 className="font-medium text-sm text-muted-foreground">
+          {isParentChild ? "Upplýsingar um barn" : "Upplýsingar um þátttakanda"}
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">{isParentChild ? "Nafn barns *" : "Fullt nafn *"}</Label>
+            <Input
+              id="fullName"
+              {...register("fullName")}
+              placeholder={isParentChild ? "Nafn barns" : "Jón Jónsson"}
+              className="bg-secondary border-border"
+            />
+            {errors.fullName && (
+              <p className="text-sm text-destructive">{errors.fullName.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="age">{isParentChild ? "Aldur barns *" : "Aldur *"}</Label>
+            <Input
+              id="age"
+              type="number"
+              {...register("age", { valueAsNumber: true })}
+              placeholder="12"
+              className="bg-secondary border-border"
+            />
+            {errors.age && (
+              <p className="text-sm text-destructive">{errors.age.message}</p>
+            )}
+          </div>
         </div>
       </div>
 
+      {/* Parent Info - Only shown for Foreldri + barn */}
+      {isParentChild && (
+        <div className="space-y-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <h4 className="font-medium text-sm text-primary">Upplýsingar um foreldri</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="parentName">Nafn foreldris *</Label>
+              <Input
+                id="parentName"
+                {...register("parentName")}
+                placeholder="Nafn foreldris"
+                className="bg-secondary border-border"
+              />
+              {errors.parentName && (
+                <p className="text-sm text-destructive">{errors.parentName.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="parentAge">Aldur foreldris</Label>
+              <Input
+                id="parentAge"
+                type="number"
+                {...register("parentAge", { valueAsNumber: true })}
+                placeholder="35"
+                className="bg-secondary border-border"
+              />
+              {errors.parentAge && (
+                <p className="text-sm text-destructive">{errors.parentAge.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contact Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="email">Netfang *</Label>
@@ -150,33 +233,6 @@ export function TrainingForm() {
             <p className="text-sm text-destructive">{errors.phone.message}</p>
           )}
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="group">Veldu æfingahóp *</Label>
-        <Select onValueChange={(value) => setValue("group", value)}>
-          <SelectTrigger className="bg-secondary border-border">
-            <SelectValue placeholder="Veldu hóp" />
-          </SelectTrigger>
-          <SelectContent className="bg-card border-border z-50">
-            {trainingGroups.map((group) => (
-              <SelectItem key={group.value} value={group.value} className="py-3">
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{group.label}</span>
-                    {group.featured && (
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-primary/20 text-primary">Vinsælast</span>
-                    )}
-                  </div>
-                  <span className="text-xs text-muted-foreground">{group.sessionsPerWeek} · {group.price}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.group && (
-          <p className="text-sm text-destructive">{errors.group.message}</p>
-        )}
       </div>
 
       <div className="space-y-2">
