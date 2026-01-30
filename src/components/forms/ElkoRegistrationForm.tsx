@@ -380,7 +380,7 @@ export function ElkoRegistrationForm() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Label htmlFor="epicId">Epic ID *</Label>
                   <a 
                     href="https://epicgames.com/account/personal" 
@@ -389,6 +389,15 @@ export function ElkoRegistrationForm() {
                     className="text-xs text-primary hover:underline"
                   >
                     Finna Epic ID
+                  </a>
+                  <span className="text-xs text-muted-foreground">·</span>
+                  <a 
+                    href="https://www.epicgames.com/help/en-US/account-c-202300000001645/account-security-c-202300000001755/what-is-an-epic-games-account-id-and-where-can-i-find-it-a202300000011535" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Hjálp
                   </a>
                 </div>
                 <Input
