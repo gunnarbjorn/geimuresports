@@ -158,10 +158,18 @@ export function TrainingForm() {
           <SelectTrigger className="bg-secondary border-border">
             <SelectValue placeholder="Veldu hóp" />
           </SelectTrigger>
-          <SelectContent className="bg-card border-border">
+          <SelectContent className="bg-card border-border z-50">
             {trainingGroups.map((group) => (
-              <SelectItem key={group.value} value={group.value}>
-                {group.label}
+              <SelectItem key={group.value} value={group.value} className="py-3">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{group.label}</span>
+                    {group.featured && (
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-primary/20 text-primary">Vinsælast</span>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">{group.sessionsPerWeek} · {group.price}</span>
+                </div>
               </SelectItem>
             ))}
           </SelectContent>
