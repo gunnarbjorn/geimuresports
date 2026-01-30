@@ -30,7 +30,7 @@ const elkoFormSchema = z.object({
   fullName: z.string().trim().min(2, "Nafn verður að vera að minnsta kosti 2 stafir").max(100),
   phone: z.string().trim().min(7, "Símanúmer verður að vera að minnsta kosti 7 tölustafir").max(20),
   kennitala: z.string().trim().regex(/^\d{6}-?\d{4}$/, "Kennitala verður að vera á réttu formi (t.d. 010199-2389)"),
-  discordUserId: z.string().trim().min(17, "Discord User ID verður að vera að minnsta kosti 17 tölustafir").max(20).regex(/^\d+$/, "Discord User ID inniheldur aðeins tölustafi"),
+  discordUserId: z.string().trim().min(17, "Discord User ID þarf að vera tölur (minnst 17 stafir).").max(20).regex(/^\d+$/, "Discord User ID þarf að vera tölur (minnst 17 stafir)."),
   epicId: z.string().trim().min(3, "Epic ID verður að vera að minnsta kosti 3 stafir").max(100),
   fortniteName: z.string().trim().min(3, "Fortnite nafn verður að vera að minnsta kosti 3 stafir").max(50),
   teammateName: z.string().trim().min(3, "Nafn liðsfélaga verður að vera að minnsta kosti 3 stafir").max(50),
@@ -345,8 +345,22 @@ export function ElkoRegistrationForm() {
                       <TooltipTrigger asChild>
                         <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent className="max-w-xs">
-                        <p>Hægri-smelltu á nafnið þitt á Discord og veldu "Copy User ID"</p>
+                      <TooltipContent className="max-w-sm p-4" side="top">
+                        <div className="space-y-2 text-sm">
+                          <p className="font-semibold">Hvernig finn ég Discord User ID?</p>
+                          <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+                            <li>Opnaðu Discord</li>
+                            <li>Smelltu á ⚙️ Stillingar</li>
+                            <li>Veldu <span className="font-medium text-foreground">Advanced</span></li>
+                            <li>Kveiktu á <span className="font-medium text-foreground">Developer Mode</span></li>
+                          </ol>
+                          <p className="text-muted-foreground pt-1">Þú getur nú afritað User ID á tvo vegu:</p>
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li>Smellt á prófílmyndina þína og valið <span className="font-medium text-foreground">Copy User ID</span></li>
+                            <li>EÐA hægri-smellt á nafnið þitt og valið <span className="font-medium text-foreground">Copy User ID</span></li>
+                          </ul>
+                          <p className="text-xs text-primary pt-2">Ath: Discord User ID eru eingöngu tölur.</p>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -354,9 +368,12 @@ export function ElkoRegistrationForm() {
                 <Input
                   id="discordUserId"
                   {...register("discordUserId")}
-                  placeholder="123456789012345678"
+                  placeholder="12345678901234567"
                   className="bg-secondary border-border"
                 />
+                <p className="text-xs text-muted-foreground">
+                  Þetta er aðeins notað til að tengja skráningu þína við Discord.
+                </p>
                 {errors.discordUserId && (
                   <p className="text-sm text-destructive">{errors.discordUserId.message}</p>
                 )}
