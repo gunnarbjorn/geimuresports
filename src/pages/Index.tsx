@@ -50,20 +50,21 @@ const packages = [{
   name: "Nýliðar",
   description: "Fyrir þá sem eru að byrja.",
   sessionsPerWeek: 1,
-  monthlyPrice: 9900,
+  monthlyPrice: 12900,
   features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hámark 10 í hóp", "Aðgangur að Discord"],
 }, {
   name: "Framhald",
   description: "Fyrir þá sem vilja þróast.",
   sessionsPerWeek: 2,
-  monthlyPrice: 14900,
+  monthlyPrice: 19900,
   features: ["2x æfingar í viku", "Ítarleg þjálfun", "Hámark 10 í hóp", "Mótþátttaka"],
   featured: true
 }, {
   name: "Foreldri + barn",
   description: "Spilaðu saman.",
   sessionsPerWeek: 1,
-  monthlyPrice: 12900,
+  monthlyPrice: 16900,
+  isFamily: true,
   features: ["1x æfing í viku", "Sérhópar fyrir fjölskyldur", "Hámark 10 í hóp", "Skemmtilegt og fræðandi"],
 }];
 
@@ -260,6 +261,11 @@ const Index = () => {
                       <p className="text-sm text-muted-foreground mt-1">
                         ≈ {formatPrice(calculatePerSession(pkg.monthlyPrice, pkg.sessionsPerWeek))} kr á æfingu
                       </p>
+                      {pkg.isFamily && (
+                        <p className="text-sm text-muted-foreground">
+                          ≈ {formatPrice(Math.round(calculatePerSession(pkg.monthlyPrice, pkg.sessionsPerWeek) / 2))} kr á mann
+                        </p>
+                      )}
                       <p className="text-xs text-primary mt-2">Greitt mánaðarlega. Engin binding.</p>
                     </div>
                   </div>
