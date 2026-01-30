@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,6 +33,7 @@ const trainingSchema = z.object({
 type TrainingFormData = z.infer<typeof trainingSchema>;
 
 export function TrainingForm() {
+  const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string>("");
@@ -45,6 +47,15 @@ export function TrainingForm() {
   } = useForm<TrainingFormData>({
     resolver: zodResolver(trainingSchema),
   });
+
+  // Pre-select group from URL parameter
+  useEffect(() => {
+    const groupParam = searchParams.get("group");
+    if (groupParam && trainingGroups.find(g => g.value === groupParam)) {
+      setSelectedGroup(groupParam);
+      setValue("group", groupParam);
+    }
+  }, [searchParams, setValue]);
 
   const isParentChild = selectedGroup === "foreldri-barn";
 
@@ -106,6 +117,7 @@ export function TrainingForm() {
       <div className="space-y-2">
         <Label htmlFor="group">Veldu æfingahóp *</Label>
         <Select 
+          value={selectedGroup}
           onValueChange={(value) => {
             setValue("group", value);
             setSelectedGroup(value);
