@@ -74,14 +74,14 @@ const calculatePerSession = (monthlyPrice: number, sessionsPerWeek: number) => {
   return Math.round(monthlyPrice / sessionsPerMonth);
 };
 const faqs = [{
-  question: "Hvernig virka online æfingarnar?",
-  answer: "Æfingarnar fara fram 100% online í gegnum Discord. Þjálfarinn tengist við hópinn og fer yfir mechanics, strategy og game sense í beinni útsendingu. Þátttakendur spila saman og fá endurgjöf í rauntíma."
+  question: "Hvernig virka æfingarnar í gegnum netið?",
+  answer: "Æfingarnar fara fram í gegnum Discord. Þjálfarinn tengist við hópinn og fer yfir mechanics, strategy og game sense í beinni útsendingu. Þátttakendur spila saman og fá endurgjöf í rauntíma."
 }, {
   question: "Hvaða aldurshópar eru hjá ykkur?",
   answer: "Við tökum við spilurum frá 8 ára og upp í 16 ára. Hópum er skipt eftir aldri og leikni til að tryggja að allir fái viðeigandi áskoranir."
 }, {
   question: "Þarf ég að eiga eigin PlayStation eða PC?",
-  answer: "Já, þátttakendur þurfa að hafa aðgang að eigin PlayStation eða PC með Fortnite uppsett. Þar sem æfingarnar eru online þarftu einnig stöðuga nettengingu og Discord."
+  answer: "Já, þátttakendur þurfa að hafa aðgang að eigin PlayStation eða PC með Fortnite uppsett. Þar sem æfingarnar fara fram í gegnum netið þarftu einnig stöðuga nettengingu og Discord."
 }, {
   question: "Er ég of léleg/ur til að taka þátt?",
   answer: "Alls ekki! Við tökum á móti öllum, óháð leikni. Markmið okkar er að hjálpa þér að þróast á þínum hraða í litlum hópum með hámark 10 þátttakendum."
@@ -90,7 +90,7 @@ const faqs = [{
   answer: "Greitt er mánaðarlega án skuldbindinga. Þú getur sagt upp hvenær sem er og engin binding er á áskriftinni."
 }, {
   question: "Hvað með foreldra – mega þeir vera með?",
-  answer: "Já! Við bjóðum upp á sérstakan 'Foreldri + barn' pakka þar sem foreldri og barn spila og læra saman í online æfingum."
+  answer: "Já! Við bjóðum upp á sérstakan 'Foreldri + barn' pakka þar sem foreldri og barn spila og læra saman í æfingum í gegnum netið."
 }];
 const Index = () => {
   return <Layout>
@@ -225,7 +225,7 @@ const Index = () => {
               Æfingapakkar
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-6">
-              100% online Fortnite þjálfun fyrir börn og unglinga um allt land.
+              Skipulagðar Fortnite-æfingar í gegnum netið fyrir börn og unglinga um allt land.
             </p>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground max-w-2xl mx-auto">
               <span className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border">

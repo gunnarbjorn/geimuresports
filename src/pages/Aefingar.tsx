@@ -62,8 +62,8 @@ const Aefingar = () => {
               Æfingar
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Skipulagðar æfingar fyrir alla aldurshópa og getustig. Lærðu af reyndum þjálfurum 
-              í jákvæðu umhverfi þar sem allir fá tækifæri til að þróast.
+              Skipulagðar Fortnite-æfingar í gegnum netið fyrir alla aldurshópa og getustig. 
+              Lærðu af reyndum þjálfurum í jákvæðu umhverfi þar sem allir fá tækifæri til að þróast.
             </p>
             <Button asChild size="lg" className="btn-primary-gradient">
               <a href="#skraning">
