@@ -261,11 +261,6 @@ const Index = () => {
                       <p className="text-sm text-muted-foreground mt-1">
                         ≈ {formatPrice(calculatePerSession(pkg.monthlyPrice, pkg.sessionsPerWeek))} kr á æfingu
                       </p>
-                      {pkg.isFamily && (
-                        <p className="text-sm text-muted-foreground">
-                          ≈ {formatPrice(Math.round(calculatePerSession(pkg.monthlyPrice, pkg.sessionsPerWeek) / 2))} kr á mann
-                        </p>
-                      )}
                       <p className="text-xs text-primary mt-2">Greitt mánaðarlega. Engin binding.</p>
                     </div>
                   </div>
