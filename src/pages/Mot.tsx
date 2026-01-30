@@ -66,7 +66,7 @@ const DiscordSupportActions = () => {
           {copied ? "Afritað!" : "Afrita hlekk"}
         </Button>
         <p className="text-xs text-muted-foreground">
-          Ef þú færð villu við að opna: afritaðu hlekkinn og opnaðu í nýjum vafra.
+          Þeir sem eru með kveikt á adblock geta fengið villu við að opna: afritaðu hlekkinn og opnaðu í nýjum vafra.
         </p>
       </div>
 
