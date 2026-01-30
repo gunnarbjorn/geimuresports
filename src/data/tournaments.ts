@@ -32,7 +32,7 @@ export const tournaments: Tournament[] = [
     ctaUrl: "https://linkar.rafithrottir.is/greida-elko-deildina",
     ctaText: "Skrá mig í mót",
     note: "Allir keppendur þurfa að vera með Discord aðgang og skráðir á Fortnite á Íslandi Discord.",
-    discordUrl: "https://discord.gg/57P9SAy4Fq",
+    discordUrl: "https://discord.com/invite/57P9SAy4Fq",
     tags: ["Duo", "Online"],
   },
   {
