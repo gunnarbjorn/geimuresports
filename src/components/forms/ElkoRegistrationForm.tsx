@@ -383,7 +383,7 @@ export function ElkoRegistrationForm() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <Label htmlFor="epicId">Epic ID *</Label>
                   <a 
-                    href="https://epicgames.com/account/personal" 
+                    href="https://www.epicgames.com/id/login?redirect_uri=https%3A%2F%2Fwww.epicgames.com%2Faccount%2Fpersonal"
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-xs text-primary hover:underline"
