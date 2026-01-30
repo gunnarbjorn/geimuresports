@@ -13,10 +13,10 @@ import {
 } from "lucide-react";
 
 const schedule = [
-  { day: "Þriðjudagar", time: "16:00 - 18:00", group: "Nýliðar" },
-  { day: "Miðvikudagar", time: "17:00 - 19:00", group: "Framhald" },
-  { day: "Fimmtudagar", time: "16:00 - 18:00", group: "Nýliðar" },
-  { day: "Laugardagar", time: "10:00 - 13:00", group: "Keppnis-hópur" },
+  { day: "Þriðjudagar", time: "17:00 - 18:30", group: "Nýliðar" },
+  { day: "Miðvikudagar", time: "17:00 - 18:30", group: "Framhald" },
+  { day: "Fimmtudagar", time: "17:00 - 18:30", group: "Framhald" },
+  { day: "Laugardagar", time: "10:00 - 11:30", group: "Foreldri + barn" },
 ];
 
 const sessionSteps = [

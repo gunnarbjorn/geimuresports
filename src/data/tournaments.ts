@@ -52,5 +52,5 @@ export const tournaments: Tournament[] = [
 export const trainingGroups = [
   { value: "nylidar", label: "Nýliðar" },
   { value: "framhald", label: "Framhald" },
-  { value: "keppni", label: "Keppnis-hópur" },
+  { value: "foreldri-barn", label: "Foreldri + barn" },
 ];
