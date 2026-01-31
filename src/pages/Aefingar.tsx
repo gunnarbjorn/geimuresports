@@ -83,11 +83,25 @@ const Aefingar = () => {
               Skipulagðar Fortnite-æfingar í gegnum netið fyrir alla aldurshópa og getustig. 
               Lærðu af reyndum þjálfurum í jákvæðu umhverfi þar sem allir fá tækifæri til að þróast.
             </p>
-            <Button asChild size="lg" className="btn-primary-gradient">
-              <a href="#skraning">
-                Skrá mig í æfingar
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+            <Button 
+              size="lg" 
+              className="btn-primary-gradient"
+              onClick={() => {
+                const element = document.getElementById('skraning');
+                if (element) {
+                  const navbarHeight = 80;
+                  const additionalOffset = 24;
+                  const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                  const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+                  window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                  });
+                }
+              }}
+            >
+              Skrá mig í æfingar
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
         </div>
