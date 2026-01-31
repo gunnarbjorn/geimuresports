@@ -1,4 +1,5 @@
-import { useState, type MouseEvent } from "react";
+import { useState, useEffect, type MouseEvent } from "react";
+import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -219,6 +220,15 @@ const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
 };
 
 const Mot = () => {
+  const location = useLocation();
+
+  // Scroll to top when navigating to this page (unless there's a hash anchor)
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [location]);
+
   // Filter active and coming soon tournaments
   const activeTournaments = tournaments.filter(t => !t.isComingSoon);
   const comingSoonTournaments = tournaments.filter(t => t.isComingSoon);
