@@ -222,9 +222,17 @@ const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
 const Mot = () => {
   const location = useLocation();
 
-  // Scroll to top when navigating to this page (unless there's a hash anchor)
+  // Scroll to hash anchor or top when navigating to this page
   useEffect(() => {
-    if (!location.hash) {
+    if (location.hash) {
+      // Wait for the page to render, then scroll to the anchor
+      setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [location]);
