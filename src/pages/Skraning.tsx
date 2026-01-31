@@ -25,7 +25,7 @@ const Skraning = () => {
     // First open the accordion section
     setOpenSection(accordionValue);
     
-    // Wait for accordion animation to complete, then scroll
+    // Wait for accordion animation to fully complete (close + open), then scroll
     setTimeout(() => {
       const element = document.getElementById(sectionId);
       if (element) {
@@ -39,7 +39,7 @@ const Skraning = () => {
           behavior: 'smooth'
         });
       }
-    }, 100);
+    }, 350); // Longer delay to allow accordion close+open animation to complete
   }, []);
 
   return (
