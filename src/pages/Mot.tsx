@@ -256,33 +256,17 @@ const Mot = () => {
 
   return (
     <Layout>
-      {/* Hero */}
-      <section className="relative hero-section-lg overflow-hidden">
-        <div className="absolute inset-0 hero-glow opacity-50" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
+      {/* Tournaments Grid */}
+      <section className="section-spacing-lg bg-card/30 pt-28 md:pt-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center section-heading-spacing">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
               <Gamepad2 className="h-5 w-5" />
               <span className="font-medium">Fortnite</span>
             </div>
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Fortnite mót
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Taktu þátt í skipulögðum Fortnite mótum og mæt þig við aðra spilara. 
-              Solo, Duo og Squad flokkar í boði.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Tournaments Grid */}
-      <section className="section-spacing-lg bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center section-heading-spacing">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
               Komandi mót
-            </h2>
+            </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Veldu mót og skráðu þig. Við bætum reglulega við nýjum mótum.
             </p>
