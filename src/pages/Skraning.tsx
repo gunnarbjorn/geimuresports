@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrainingForm } from "@/components/forms/TrainingForm";
@@ -12,6 +14,13 @@ import { Calendar, Trophy, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Skraning = () => {
+  const location = useLocation();
+
+  // Scroll to top when navigating to this page
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [location]);
+
   return (
     <Layout>
       {/* Hero */}
