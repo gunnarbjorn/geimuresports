@@ -39,7 +39,7 @@ const upcomingEvents = [{
   title: "Elko-deildin Vor 2026 – Duos",
   date: "11. feb – 4. mars",
   type: "Mót",
-  link: "/mot"
+  link: "/mot#skraning"
 }, {
   title: "Æfingakvöld – nýliðar velkomnir",
   date: "Hvern þriðjudag",
