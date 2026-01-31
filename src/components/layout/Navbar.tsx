@@ -60,12 +60,12 @@ export function Navbar() {
         {/* Mobile Navigation */}
         {isOpen && <div className="lg:hidden py-4 border-t border-border">
             <div className="flex flex-col gap-4">
-              {navLinks.map(link => <Link key={link.href} to={link.href} onClick={() => setIsOpen(false)} className={`text-base font-medium transition-colors hover:text-primary px-2 py-2 ${location.pathname === link.href ? "text-primary" : "text-muted-foreground"}`}>
+              {navLinks.map(link => <Link key={link.href} to={link.href} onClick={() => { setIsOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className={`text-base font-medium transition-colors hover:text-primary px-2 py-2 ${location.pathname === link.href ? "text-primary" : "text-muted-foreground"}`}>
                   {link.label}
                 </Link>)}
               <div className="pt-4 px-2">
                 <Button asChild className="w-full btn-primary-gradient">
-                  <Link to="/skraning" onClick={() => setIsOpen(false)}>
+                  <Link to="/skraning" onClick={() => { setIsOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
                     Skrá mig
                   </Link>
                 </Button>
