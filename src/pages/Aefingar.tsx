@@ -1,9 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrainingForm } from "@/components/forms/TrainingForm";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { 
   Clock, 
   Users, 
@@ -57,17 +63,38 @@ const Aefingar = () => {
   // Scroll to hash anchor or top when navigating to this page
   useEffect(() => {
     if (location.hash) {
-      // Wait for the page to render, then scroll to the anchor
+      // Wait for the page to render, then scroll to the anchor with offset
       setTimeout(() => {
         const element = document.querySelector(location.hash);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          const navbarHeight = 80;
+          const additionalOffset = 24;
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
         }
       }, 100);
     } else {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [location]);
+
+  const scrollToSection = useCallback(() => {
+    const element = document.getElementById('skraning');
+    if (element) {
+      const navbarHeight = 80;
+      const additionalOffset = 24;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  }, []);
 
   return (
     <Layout>
@@ -86,19 +113,7 @@ const Aefingar = () => {
             <Button 
               size="lg" 
               className="btn-primary-gradient"
-              onClick={() => {
-                const element = document.getElementById('skraning');
-                if (element) {
-                  const navbarHeight = 80;
-                  const additionalOffset = 24;
-                  const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-                  const offsetPosition = elementPosition - navbarHeight - additionalOffset;
-                  window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                  });
-                }
-              }}
+              onClick={scrollToSection}
             >
               Skrá mig í æfingar
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -180,24 +195,32 @@ const Aefingar = () => {
         </div>
       </section>
 
-      {/* Signup Form */}
-      <section id="skraning" className="section-spacing-lg bg-card/30">
+      {/* Signup Form - Accordion style like /skraning */}
+      <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-8 lg:mb-12">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-                Skráning í æfingar
-              </h2>
-              <p className="text-muted-foreground text-lg">
-                Fylltu út eyðublaðið og við höfum samband við þig.
-              </p>
-            </div>
-            
-            <Card className="bg-card border-border">
-              <CardContent className="p-6 md:p-8">
-                <TrainingForm />
-              </CardContent>
-            </Card>
+            <Accordion type="single" collapsible defaultValue="aefingar" className="space-y-6">
+              <AccordionItem 
+                id="skraning"
+                value="aefingar" 
+                className="bg-card border border-border rounded-xl overflow-hidden scroll-mt-28 md:scroll-mt-24"
+              >
+                <AccordionTrigger className="px-6 py-4 font-display text-xl font-bold hover:no-underline hover:text-primary">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-primary" />
+                    </div>
+                    Skráning í æfingar
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6">
+                  <p className="text-muted-foreground mb-6">
+                    Fylltu út eyðublaðið hér að neðan til að skrá þig í æfingar.
+                  </p>
+                  <TrainingForm />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </div>
       </section>
