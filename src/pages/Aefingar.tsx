@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,15 @@ const sessionSteps = [
 ];
 
 const Aefingar = () => {
+  const location = useLocation();
+
+  // Scroll to top when navigating to this page (unless there's a hash anchor)
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [location]);
+
   return (
     <Layout>
       {/* Hero */}
