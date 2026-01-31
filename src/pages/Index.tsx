@@ -3,19 +3,19 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Target, Users, Heart, Trophy, Gamepad2, ArrowRight } from "lucide-react";
+import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight } from "lucide-react";
 import geimurLogo from "@/assets/geimur-logo.png";
 const stats = [{
-  title: "Æfingar með tilgangi",
-  description: "Skipulagðar æfingar sem byggja upp færni og sjálfstraust.",
-  icon: Gamepad2
+  label: "Æfingar í viku",
+  value: "3x",
+  icon: Calendar
 }, {
-  title: "Keppnir & markmið",
-  description: "Skýr markmið og keppnir sem hvetja til framfara.",
+  label: "Mót á tímabilinu",
+  value: "6+",
   icon: Trophy
 }, {
-  title: "Hluti af liðsheild",
-  description: "Samfélag þar sem liðsandi og samvinna eru í forgrunni.",
+  label: "Félagsandi + hreyfing",
+  value: "✓",
   icon: Heart
 }];
 const benefits = [{
@@ -138,12 +138,12 @@ const Index = () => {
             
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-{stats.map((stat, index) => <Card key={index} className="bg-card/50 border-border card-hover backdrop-blur-sm">
+              {stats.map((stat, index) => <Card key={index} className="bg-card/50 border-border card-hover backdrop-blur-sm">
                   <CardContent className="flex items-center justify-start sm:justify-center gap-4 px-5 py-5 sm:p-6">
                     <stat.icon className="h-8 w-8 text-primary flex-shrink-0" />
                     <div className="text-left">
-                      <p className="font-display text-base font-bold text-foreground">{stat.title}</p>
-                      <p className="text-xs text-muted-foreground">{stat.description}</p>
+                      <p className="font-display text-2xl font-bold text-foreground">{stat.value}</p>
+                      <p className="text-sm text-muted-foreground">{stat.label}</p>
                     </div>
                   </CardContent>
                 </Card>)}
