@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Facebook, Mail } from "lucide-react";
 import geimurLogo from "@/assets/geimur-logo.png";
 
@@ -13,6 +13,10 @@ const footerLinks = {
   legal: [
     { href: "/skraning", label: "Skráning" },
   ],
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 export function Footer() {
@@ -62,6 +66,7 @@ export function Footer() {
                 <li key={link.href}>
                   <Link
                     to={link.href}
+                    onClick={scrollToTop}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.label}

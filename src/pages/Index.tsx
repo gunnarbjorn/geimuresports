@@ -336,7 +336,7 @@ const Index = () => {
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-primary/50">
-                  <Link to="/hafa-samband">Hafa samband</Link>
+                  <Link to="/hafa-samband" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Hafa samband</Link>
                 </Button>
               </div>
             </CardContent>
