@@ -181,7 +181,17 @@ const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
           <Button 
             className="w-full btn-primary-gradient"
             onClick={() => {
-              document.getElementById('skraning')?.scrollIntoView({ behavior: 'smooth' });
+              const element = document.getElementById('skraning');
+              if (element) {
+                const navbarHeight = 80;
+                const additionalOffset = 24;
+                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+                window.scrollTo({
+                  top: offsetPosition,
+                  behavior: 'smooth'
+                });
+              }
             }}
           >
             {tournament.ctaText || "Skrá mig í mót"}
