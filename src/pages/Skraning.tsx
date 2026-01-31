@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,15 +11,36 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Calendar, Trophy, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Skraning = () => {
   const location = useLocation();
+  const [openSection, setOpenSection] = useState<string>("aefingar");
 
   // Scroll to top when navigating to this page
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [location]);
+
+  const scrollToSection = useCallback((sectionId: string, accordionValue: string) => {
+    // First open the accordion section
+    setOpenSection(accordionValue);
+    
+    // Wait for accordion animation to complete, then scroll
+    setTimeout(() => {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const navbarHeight = 80; // Account for fixed navbar
+        const additionalOffset = 24; // Extra spacing for visual clarity
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
+  }, []);
 
   return (
     <Layout>
@@ -42,7 +63,10 @@ const Skraning = () => {
       <section className="py-8 lg:py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <Card className="bg-card border-border card-hover group">
+            <Card 
+              className="bg-card border-border card-hover group cursor-pointer"
+              onClick={() => scrollToSection('aefingar-form', 'aefingar')}
+            >
               <CardHeader>
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   <Calendar className="h-6 w-6 text-primary" />
@@ -54,21 +78,17 @@ const Skraning = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link 
-                  to="#aefingar-form"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('aefingar-form')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="inline-flex items-center text-primary hover:text-primary/80 font-medium"
-                >
+                <span className="inline-flex items-center text-primary hover:text-primary/80 font-medium">
                   Skrá mig í æfingar
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </span>
               </CardContent>
             </Card>
 
-            <Card className="bg-card border-border card-hover group">
+            <Card 
+              className="bg-card border-border card-hover group cursor-pointer"
+              onClick={() => scrollToSection('mot-form', 'mot')}
+            >
               <CardHeader>
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   <Trophy className="h-6 w-6 text-primary" />
@@ -80,17 +100,10 @@ const Skraning = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link 
-                  to="#mot-form"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    document.getElementById('mot-form')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="inline-flex items-center text-primary hover:text-primary/80 font-medium"
-                >
+                <span className="inline-flex items-center text-primary hover:text-primary/80 font-medium">
                   Skrá mig í mót
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                </span>
               </CardContent>
             </Card>
           </div>
@@ -101,12 +114,18 @@ const Skraning = () => {
       <section className="section-spacing">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <Accordion type="single" collapsible defaultValue="aefingar" className="space-y-6">
+            <Accordion 
+              type="single" 
+              collapsible 
+              value={openSection} 
+              onValueChange={setOpenSection}
+              className="space-y-6"
+            >
               {/* Training Form */}
               <AccordionItem 
                 id="aefingar-form"
                 value="aefingar" 
-                className="bg-card border border-border rounded-xl overflow-hidden"
+                className="bg-card border border-border rounded-xl overflow-hidden scroll-mt-28 md:scroll-mt-24"
               >
                 <AccordionTrigger className="px-6 py-4 font-display text-xl font-bold hover:no-underline hover:text-primary">
                   <div className="flex items-center gap-4">
@@ -128,7 +147,7 @@ const Skraning = () => {
               <AccordionItem 
                 id="mot-form"
                 value="mot" 
-                className="bg-card border border-border rounded-xl overflow-hidden"
+                className="bg-card border border-border rounded-xl overflow-hidden scroll-mt-28 md:scroll-mt-24"
               >
                 <AccordionTrigger className="px-6 py-4 font-display text-xl font-bold hover:no-underline hover:text-primary">
                   <div className="flex items-center gap-4">
