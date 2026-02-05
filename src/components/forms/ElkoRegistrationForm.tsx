@@ -224,7 +224,7 @@ export function ElkoRegistrationForm() {
             </p>
             <Button 
               onClick={() => setCurrentStep(2)} 
-              variant="outline"
+              className="btn-primary-gradient"
               size="lg"
             >
               Halda áfram í skráningu
