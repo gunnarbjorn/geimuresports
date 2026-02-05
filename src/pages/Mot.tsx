@@ -61,8 +61,9 @@ const TOURNAMENT_CONFIG = {
 
 interface RegisteredTeam {
   id: string;
-  playerName: string;
-  teammateName: string;
+  teamName: string;
+  player1Name: string;
+  player2Name: string;
 }
 
 const DiscordSupportActions = () => {
@@ -139,11 +140,19 @@ const Mot = () => {
 
         if (data) {
           const teams: RegisteredTeam[] = data.map((reg) => {
-            const regData = reg.data as { fullName?: string; teammateName?: string };
+            const regData = reg.data as { 
+              teamName?: string; 
+              player1Name?: string; 
+              player2Name?: string;
+              // Support legacy format
+              fullName?: string; 
+              teammateName?: string;
+            };
             return {
               id: reg.id,
-              playerName: regData.fullName || 'Óþekkt',
-              teammateName: regData.teammateName || 'Óþekkt',
+              teamName: regData.teamName || 'Óþekkt lið',
+              player1Name: regData.player1Name || regData.fullName || 'Óþekkt',
+              player2Name: regData.player2Name || regData.teammateName || 'Óþekkt',
             };
           });
           setRegisteredTeams(teams);
@@ -345,7 +354,10 @@ const Mot = () => {
                               </span>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">
-                                  {team.playerName} & {team.teammateName}
+                                  {team.teamName}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {team.player1Name} & {team.player2Name}
                                 </p>
                               </div>
                             </div>

@@ -35,16 +35,13 @@ const tournamentSchema = z.object({
 });
 
 const elkoTournamentSchema = z.object({
+  teamName: z.string().trim().min(2).max(50),
+  player1Name: z.string().trim().min(2).max(50),
+  player2Name: z.string().trim().min(2).max(50),
   email: z.string().trim().email("Ógilt netfang").max(255),
-  fullName: z.string().trim().min(2).max(100),
-  phone: z.string().trim().min(7).max(20),
-  kennitala: z.string().trim().min(10).max(15),
-  birthDate: z.string().trim().max(20).optional(),
-  discordUserId: z.string().trim().min(17).max(20),
-  epicId: z.string().trim().min(3).max(100),
-  fortniteName: z.string().trim().min(3).max(50),
-  teammateName: z.string().trim().min(3).max(50),
   orderId: z.string().trim().min(5).max(50),
+  tournamentDate: z.string().trim().min(1).max(50),
+  tournamentName: z.string().trim().min(1).max(100),
 });
 
 const contactSchema = z.object({
@@ -105,25 +102,22 @@ function formatTournamentEmail(data: TournamentData): string {
 function formatElkoTournamentEmail(data: ElkoTournamentData): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1 style="color: #D83A2E; border-bottom: 2px solid #D83A2E; padding-bottom: 10px;">
-        🎮 Ný skráning í Elko-deildina Vor 2026
+      <h1 style="color: #22c55e; border-bottom: 2px solid #22c55e; padding-bottom: 10px;">
+        🎮 Ný liðsskráning – ${escapeHtml(data.tournamentName)}
       </h1>
       
-      <h2 style="color: #333; margin-top: 20px;">Persónuupplýsingar</h2>
+      <h2 style="color: #333; margin-top: 20px;">Liðsupplýsingar</h2>
       <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Nafn:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.fullName)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Nafn liðs:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.teamName)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Spilari 1:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.player1Name)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Spilari 2:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.player2Name)}</td></tr>
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Netfang:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.email)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Símanúmer:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.phone)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Kennitala:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.kennitala)}</td></tr>${data.birthDate ? `
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Fæðingardagur:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.birthDate)}</td></tr>` : ''}
       </table>
       
-      <h2 style="color: #333; margin-top: 20px;">Leikjaupplýsingar</h2>
+      <h2 style="color: #333; margin-top: 20px;">Mót</h2>
       <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Discord User ID:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.discordUserId)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Epic ID:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.epicId)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Fortnite nafn:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.fortniteName)}</td></tr>
-        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Liðsfélagi:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.teammateName)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Mót:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.tournamentName)}</td></tr>
+        <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Dagsetning:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.tournamentDate)}</td></tr>
       </table>
       
       <h2 style="color: #333; margin-top: 20px;">Greiðsla</h2>
@@ -177,33 +171,23 @@ function formatElkoTournamentConfirmation(data: ElkoTournamentData): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0a0a0a; color: #fff; padding: 30px; border-radius: 12px;">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h1 style="color: #D83A2E; margin: 0;">🎮 Skráning móttekin!</h1>
-        <p style="color: #888; margin-top: 10px;">Elko-deildin Vor 2026 – Duos</p>
+        <h1 style="color: #22c55e; margin: 0;">🎮 Liðið þitt er skráð!</h1>
+        <p style="color: #888; margin-top: 10px;">${escapeHtml(data.tournamentName)} · ${escapeHtml(data.tournamentDate)}</p>
       </div>
-      
-      <p style="color: #ccc;">Hæ <strong style="color: #fff;">${escapeHtml(data.fullName)}</strong>,</p>
-      <p style="color: #ccc;">Takk fyrir að skrá þig í Elko-deildina! Hér eru upplýsingarnar þínar:</p>
       
       <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #D83A2E;">Fortnite nafn:</strong> ${escapeHtml(data.fortniteName)}</p>
-        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #D83A2E;">Liðsfélagi:</strong> ${escapeHtml(data.teammateName)}</p>
-        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #D83A2E;">Order ID:</strong> ${escapeHtml(data.orderId)}</p>
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Nafn liðs:</strong> ${escapeHtml(data.teamName)}</p>
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Spilari 1:</strong> ${escapeHtml(data.player1Name)}</p>
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Spilari 2:</strong> ${escapeHtml(data.player2Name)}</p>
+        <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Order ID:</strong> ${escapeHtml(data.orderId)}</p>
       </div>
       
-      <h2 style="color: #D83A2E; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Næstu skref</h2>
+      <h2 style="color: #22c55e; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Næstu skref</h2>
       <ol style="color: #ccc; line-height: 1.8;">
-        <li>Gakktu úr skugga um að þú sért á <a href="https://discord.gg/57P9SAy4Fq" style="color: #D83A2E;">Fortnite á Íslandi Discord</a></li>
-        <li>Lestu reglurnar vel fyrir mótið</li>
-        <li>Undirbúðu þig fyrir fyrsta mótakvöld <strong style="color: #fff;">11. febrúar 2026</strong></li>
+        <li>Liðið þitt birtist nú í listanum yfir skráð lið á vefsíðunni</li>
+        <li>Mættu á mótið ${escapeHtml(data.tournamentDate)} í Arena</li>
+        <li>Vertu með gott viðhorf og skemmtu þér!</li>
       </ol>
-      
-      <h2 style="color: #D83A2E; border-bottom: 1px solid #333; padding-bottom: 10px;">📅 Mótadagsetningar</h2>
-      <ul style="color: #ccc; line-height: 1.8; list-style: none; padding: 0;">
-        <li>🎮 11. febrúar 2026</li>
-        <li>🎮 18. febrúar 2026</li>
-        <li>🎮 26. febrúar 2026</li>
-        <li>🏆 4. mars 2026 (úrslit)</li>
-      </ul>
       
       <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;">
         <p style="color: #888; margin: 0; font-size: 14px;">
@@ -213,7 +197,7 @@ function formatElkoTournamentConfirmation(data: ElkoTournamentData): string {
       
       <p style="color: #888; margin-top: 30px; text-align: center;">
         Gangi þér vel!<br>
-        <strong style="color: #D83A2E;">Geimur Esports</strong>
+        <strong style="color: #22c55e;">Geimur Esports</strong>
       </p>
     </div>
   `;
@@ -237,7 +221,7 @@ function getSubject(type: string, data: TrainingData | TournamentData | ElkoTour
     case "tournament":
       return `Ný mótsskráning: ${(data as TournamentData).fullName} - ${(data as TournamentData).tournament}`;
     case "elko-tournament":
-      return `🎮 Elko-deildin: ${(data as ElkoTournamentData).fullName} + ${(data as ElkoTournamentData).teammateName}`;
+      return `🎮 ${(data as ElkoTournamentData).tournamentName}: ${(data as ElkoTournamentData).teamName}`;
     case "contact":
       return `Fyrirspurn: ${(data as ContactData).subject}`;
     default:
@@ -252,7 +236,7 @@ function getConfirmationSubject(type: string, data: TrainingData | TournamentDat
     case "tournament":
       return `Staðfesting: ${(data as TournamentData).tournament} - Geimur Esports`;
     case "elko-tournament":
-      return `🎮 Staðfesting: Elko-deildin Vor 2026 - Geimur Esports`;
+      return `🎮 Staðfesting: ${(data as ElkoTournamentData).tournamentName} - Geimur Esports`;
     case "contact":
       return `Staðfesting: Fyrirspurn móttekin - Geimur Esports`;
     default:

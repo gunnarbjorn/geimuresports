@@ -13,27 +13,20 @@ import {
   ClipboardList,
   PartyPopper,
   ExternalLink,
-  HelpCircle
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
+// Tournament date - hardcoded for this specific tournament
+const TOURNAMENT_DATE = "28. febrúar 2026";
+const TOURNAMENT_NAME = "Fortnite Duos LAN";
 
 const elkoFormSchema = z.object({
+  teamName: z.string().trim().min(2, "Nafn liðs verður að vera að minnsta kosti 2 stafir").max(50),
+  player1Name: z.string().trim().min(2, "Fortnite nafn verður að vera að minnsta kosti 2 stafir").max(50),
+  player2Name: z.string().trim().min(2, "Fortnite nafn verður að vera að minnsta kosti 2 stafir").max(50),
   email: z.string().trim().email("Ógilt netfang").max(255),
-  fullName: z.string().trim().min(2, "Nafn verður að vera að minnsta kosti 2 stafir").max(100),
-  phone: z.string().trim().min(7, "Símanúmer verður að vera að minnsta kosti 7 tölustafir").max(20),
-  kennitala: z.string().trim().regex(/^\d{6}-?\d{4}$/, "Kennitala verður að vera á réttu formi (t.d. 010199-2389)"),
-  discordUserId: z.string().trim().min(17, "Discord User ID þarf að vera tölur (minnst 17 stafir).").max(20).regex(/^\d+$/, "Discord User ID þarf að vera tölur (minnst 17 stafir)."),
-  epicId: z.string().trim().min(3, "Epic ID verður að vera að minnsta kosti 3 stafir").max(100),
-  fortniteName: z.string().trim().min(3, "Fortnite nafn verður að vera að minnsta kosti 3 stafir").max(50),
-  teammateName: z.string().trim().min(3, "Nafn liðsfélaga verður að vera að minnsta kosti 3 stafir").max(50),
   orderId: z.string().trim().min(5, "Order ID verður að vera að minnsta kosti 5 stafir").max(50),
 });
 
@@ -108,15 +101,11 @@ export function ElkoRegistrationForm() {
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm<ElkoFormData>({
     resolver: zodResolver(elkoFormSchema),
   });
-
-  
 
   const onSubmit = async (data: ElkoFormData) => {
     setIsSubmitting(true);
@@ -125,16 +114,13 @@ export function ElkoRegistrationForm() {
         body: {
           type: "elko-tournament",
           data: {
+            teamName: data.teamName,
+            player1Name: data.player1Name,
+            player2Name: data.player2Name,
             email: data.email,
-            fullName: data.fullName,
-            phone: data.phone,
-            kennitala: data.kennitala,
-            
-            discordUserId: data.discordUserId,
-            epicId: data.epicId,
-            fortniteName: data.fortniteName,
-            teammateName: data.teammateName,
             orderId: data.orderId,
+            tournamentDate: TOURNAMENT_DATE,
+            tournamentName: TOURNAMENT_NAME,
           },
         },
       });
@@ -164,32 +150,18 @@ export function ElkoRegistrationForm() {
         <StepIndicator currentStep={3} totalSteps={3} />
         
         <div className="text-center py-8 md:py-12">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle className="w-10 h-10 text-primary" />
+          <div className="w-20 h-20 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-10 h-10 text-[hsl(var(--arena-green))]" />
           </div>
           <h3 className="font-display text-2xl md:text-3xl font-bold mb-4">
-            Skráning móttekin!
+            Liðið þitt er skráð!
           </h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Þú færð email með nánari upplýsingum um þátttöku og næstu skref.
+          <p className="text-muted-foreground mb-2">
+            {TOURNAMENT_NAME} · {TOURNAMENT_DATE}
           </p>
-          <div className="bg-card/50 border border-border rounded-xl p-6 max-w-md mx-auto">
-            <h4 className="font-semibold mb-3">Næstu skref:</h4>
-            <ul className="text-left text-sm text-muted-foreground space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">1.</span>
-                Athugaðu email inboxið þitt fyrir staðfestingu
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">2.</span>
-                Gakktu úr skugga um að þú sért á Discord serverinum
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary font-bold">3.</span>
-                Lestu reglur og undirbúðu þig fyrir mótið
-              </li>
-            </ul>
-          </div>
+          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            Þú færð email með nánari upplýsingum. Liðið þitt birtist nú í listanum yfir skráð lið.
+          </p>
           <Button 
             onClick={() => {
               setIsSubmitted(false);
@@ -198,7 +170,7 @@ export function ElkoRegistrationForm() {
             variant="outline"
             className="mt-6"
           >
-            Skrá annan keppanda
+            Skrá annað lið
           </Button>
         </div>
       </div>
@@ -212,10 +184,10 @@ export function ElkoRegistrationForm() {
       {/* Step 1: Payment */}
       {currentStep === 1 && (
         <div className="space-y-6">
-          <div className="bg-primary/5 border border-primary/20 rounded-xl p-6">
+          <div className="bg-[hsl(var(--arena-green)/0.05)] border border-[hsl(var(--arena-green)/0.2)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-[hsl(var(--arena-green))]" />
               </div>
               <div>
                 <h3 className="font-display text-lg font-bold">Greiðsla – Skref 1 af 3</h3>
@@ -223,13 +195,12 @@ export function ElkoRegistrationForm() {
             </div>
             
             <p className="text-muted-foreground mb-4">
-              Til þess að taka þátt þarftu fyrst að greiða þátttökugjaldið.
-              Eftir greiðslu færðu <strong className="text-foreground">Order ID</strong>, sem þú þarft til að ljúka skráningu.
+              Greiddu þátttökugjaldið fyrst. Eftir greiðslu færðu <strong className="text-foreground">Order ID</strong> til að ljúka skráningu.
             </p>
             
             <div className="bg-card/50 rounded-lg p-4 mb-6">
-              <p className="text-sm font-medium text-primary">
-                💰 Þátttökugjald: 2.000 kr á einstakling
+              <p className="text-sm font-medium text-[hsl(var(--arena-green))]">
+                💰 Þátttökugjald: 4.440 kr á keppanda (8.880 kr á lið)
               </p>
             </div>
             
@@ -238,7 +209,7 @@ export function ElkoRegistrationForm() {
                 href="https://bit.ly/Elko-deildin-Greidsla" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="btn-primary-gradient flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-11 px-8"
+                className="btn-arena-gradient flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 h-11 px-8"
               >
                 <CreditCard className="h-5 w-5" />
                 Greiða þátttökugjald
@@ -267,200 +238,92 @@ export function ElkoRegistrationForm() {
       {currentStep === 2 && (
         <div className="space-y-6">
           <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--arena-green)/0.1)] text-[hsl(var(--arena-green))] text-sm font-medium mb-3">
+              <Users className="h-4 w-4" />
+              Liðsskráning
+            </div>
             <h3 className="font-display text-xl md:text-2xl font-bold mb-2">
-              Skráning í Elko-deildina Vor 2026 – Duos
+              {TOURNAMENT_NAME}
             </h3>
             <p className="text-muted-foreground">
-              Fylltu út alla reiti til að ljúka skráningu
+              {TOURNAMENT_DATE} · Skráning fyrir 2 manna lið
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email & Full Name */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Team Name */}
+            <div className="space-y-2">
+              <Label htmlFor="teamName">Nafn á liði *</Label>
+              <Input
+                id="teamName"
+                {...register("teamName")}
+                placeholder="t.d. Team Geimur"
+                className="bg-secondary border-border"
+              />
+              {errors.teamName && (
+                <p className="text-sm text-destructive">{errors.teamName.message}</p>
+              )}
+            </div>
+
+            {/* Player Names */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Netfang *</Label>
+                <Label htmlFor="player1Name">Spilari 1 – Fortnite nafn *</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  placeholder="jon@example.is"
+                  id="player1Name"
+                  {...register("player1Name")}
+                  placeholder="Fortnite nafn"
                   className="bg-secondary border-border"
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                {errors.player1Name && (
+                  <p className="text-sm text-destructive">{errors.player1Name.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fullName">Fullt nafn *</Label>
+                <Label htmlFor="player2Name">Spilari 2 – Fortnite nafn *</Label>
                 <Input
-                  id="fullName"
-                  {...register("fullName")}
-                  placeholder="Jón Jónsson"
+                  id="player2Name"
+                  {...register("player2Name")}
+                  placeholder="Fortnite nafn"
                   className="bg-secondary border-border"
                 />
-                {errors.fullName && (
-                  <p className="text-sm text-destructive">{errors.fullName.message}</p>
+                {errors.player2Name && (
+                  <p className="text-sm text-destructive">{errors.player2Name.message}</p>
                 )}
               </div>
             </div>
 
-            {/* Phone & Kennitala */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Símanúmer *</Label>
-                <Input
-                  id="phone"
-                  {...register("phone")}
-                  placeholder="555-1234"
-                  className="bg-secondary border-border"
-                />
-                {errors.phone && (
-                  <p className="text-sm text-destructive">{errors.phone.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="kennitala">Kennitala *</Label>
-                <Input
-                  id="kennitala"
-                  {...register("kennitala")}
-                  placeholder="010199-2389"
-                  className="bg-secondary border-border"
-                />
-                {errors.kennitala && (
-                  <p className="text-sm text-destructive">{errors.kennitala.message}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Discord ID & Epic ID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="discordUserId">Discord User ID *</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-sm p-4" side="top">
-                        <div className="space-y-2 text-sm">
-                          <p className="font-semibold">Hvernig finn ég Discord User ID?</p>
-                          <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-                            <li>Opnaðu Discord</li>
-                            <li>Smelltu á ⚙️ Stillingar</li>
-                            <li>Veldu <span className="font-medium text-foreground">Advanced</span></li>
-                            <li>Kveiktu á <span className="font-medium text-foreground">Developer Mode</span></li>
-                          </ol>
-                          <p className="text-muted-foreground pt-1">Þú getur nú afritað User ID á tvo vegu:</p>
-                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                            <li>Smellt á prófílmyndina þína og valið <span className="font-medium text-foreground">Copy User ID</span></li>
-                            <li>EÐA hægri-smellt á nafnið þitt og valið <span className="font-medium text-foreground">Copy User ID</span></li>
-                          </ul>
-                          <p className="text-xs text-primary pt-2">Ath: Discord User ID eru eingöngu tölur.</p>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <Input
-                  id="discordUserId"
-                  {...register("discordUserId")}
-                  placeholder="12345678901234567"
-                  className="bg-secondary border-border"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Þetta er aðeins notað til að tengja skráningu þína við Discord.
-                </p>
-                {errors.discordUserId && (
-                  <p className="text-sm text-destructive">{errors.discordUserId.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Label htmlFor="epicId">Epic ID *</Label>
-                  <a 
-                    href="https://www.epicgames.com/id/login?redirect_uri=https%3A%2F%2Fwww.epicgames.com%2Faccount%2Fpersonal"
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Finna Epic ID
-                  </a>
-                  <span className="text-xs text-muted-foreground">·</span>
-                  <a 
-                    href="https://www.epicgames.com/help/en-US/account-c-202300000001645/account-security-c-202300000001755/what-is-an-epic-games-account-id-and-where-can-i-find-it-a202300000011535" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Hjálp
-                  </a>
-                </div>
-                <Input
-                  id="epicId"
-                  {...register("epicId")}
-                  placeholder="Epic Games ID"
-                  className="bg-secondary border-border"
-                />
-                {errors.epicId && (
-                  <p className="text-sm text-destructive">{errors.epicId.message}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Fortnite Name & Teammate */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="fortniteName">Hvað heitir þú í Fortnite? *</Label>
-                <Input
-                  id="fortniteName"
-                  {...register("fortniteName")}
-                  placeholder="Fortnite nafnið þitt"
-                  className="bg-secondary border-border"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Ekki er leyfilegt að breyta nafni á meðan mót stendur
-                </p>
-                {errors.fortniteName && (
-                  <p className="text-sm text-destructive">{errors.fortniteName.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="teammateName">Hvað heitir liðsfélagi þinn í Fortnite? *</Label>
-                <Input
-                  id="teammateName"
-                  {...register("teammateName")}
-                  placeholder="Fortnite nafn liðsfélaga"
-                  className="bg-secondary border-border"
-                />
-                {errors.teammateName && (
-                  <p className="text-sm text-destructive">{errors.teammateName.message}</p>
-                )}
-              </div>
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email">Netfang tengiliðs *</Label>
+              <Input
+                id="email"
+                type="email"
+                {...register("email")}
+                placeholder="email@example.is"
+                className="bg-secondary border-border"
+              />
+              <p className="text-xs text-muted-foreground">
+                Staðfesting og upplýsingar verða sendar á þetta netfang
+              </p>
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Order ID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="orderId">Order ID (frá greiðslu) *</Label>
-                <Input
-                  id="orderId"
-                  {...register("orderId")}
-                  placeholder='t.d. "Order #30906571"'
-                  className="bg-secondary border-border"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Þú færð Order ID eftir greiðslu
-                </p>
-                {errors.orderId && (
-                  <p className="text-sm text-destructive">{errors.orderId.message}</p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="orderId">Order ID (frá greiðslu) *</Label>
+              <Input
+                id="orderId"
+                {...register("orderId")}
+                placeholder='t.d. "Order #30906571"'
+                className="bg-secondary border-border"
+              />
+              {errors.orderId && (
+                <p className="text-sm text-destructive">{errors.orderId.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -474,7 +337,7 @@ export function ElkoRegistrationForm() {
               </Button>
               <Button
                 type="submit"
-                className="btn-primary-gradient sm:flex-[2]"
+                className="btn-arena-gradient sm:flex-[2]"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -484,7 +347,7 @@ export function ElkoRegistrationForm() {
                   </>
                 ) : (
                   <>
-                    Staðfesta skráningu
+                    Skrá liðið
                     <CheckCircle className="ml-2 h-4 w-4" />
                   </>
                 )}
