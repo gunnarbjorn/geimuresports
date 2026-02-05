@@ -129,7 +129,7 @@ const AdminPage = () => {
   const handleDelete = async (id: string) => {
     setDeletingId(id);
     try {
-      const { error } = await supabase.functions.invoke("send-notification", {
+      const { data, error } = await supabase.functions.invoke("send-notification", {
         body: {
           type: "admin-delete-registration",
           data: { registrationId: id },
@@ -137,10 +137,14 @@ const AdminPage = () => {
       });
 
       if (error) {
-        // If edge function doesn't support this yet, show message
-        toast.error("Eyðing ekki studd ennþá", {
-          description: "Þarf að bæta við eyðingu í edge function",
-        });
+        console.error("Edge function error:", error);
+        toast.error("Villa við eyðingu skráningar");
+        return;
+      }
+
+      if (data?.error) {
+        console.error("Delete error:", data.error);
+        toast.error("Villa við eyðingu", { description: data.error });
         return;
       }
 
