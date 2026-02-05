@@ -103,10 +103,10 @@ const Aefingar = () => {
         <div className="absolute inset-0 hero-glow opacity-50" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+            <h1 className="font-display text-4xl font-bold mb-6">
               Æfingar
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-8">
               Skipulagðar Fortnite-æfingar í gegnum netið fyrir alla aldurshópa og getustig. 
               Lærðu af reyndum þjálfurum í jákvæðu umhverfi þar sem allir fá tækifæri til að þróast.
             </p>
@@ -126,7 +126,7 @@ const Aefingar = () => {
       <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
           <div className="text-center section-heading-spacing">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="font-display text-3xl font-bold mb-4">
               Vikuleg stundaskrá
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -157,7 +157,7 @@ const Aefingar = () => {
       <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
           <div className="text-center section-heading-spacing">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="font-display text-3xl font-bold mb-4">
               Hvernig æfing fer fram
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -231,7 +231,7 @@ const Aefingar = () => {
           <Card className="bg-gradient-to-r from-card to-secondary border-primary/20 max-w-4xl mx-auto overflow-hidden relative">
             <div className="absolute inset-0 hero-glow opacity-50" />
             <CardContent className="p-8 md:p-12 text-center relative z-10">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+              <h2 className="font-display text-3xl font-bold mb-4">
                 Hefur þú spurningar?
               </h2>
               <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
