@@ -1,10 +1,11 @@
 import { useState, useEffect, type MouseEvent } from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Accordion,
   AccordionContent,
@@ -30,9 +31,30 @@ import {
   Eye,
   Heart,
   Pizza,
+  Swords,
+  UserCheck,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
+
+// Tournament config - update these values
+const TOURNAMENT_CONFIG = {
+  name: "Fortnite Duos LAN",
+  game: "Fortnite",
+  format: "Duo",
+  formatLabel: "2 manna lið",
+  location: "Arena",
+  date: "Lau 28. feb",
+  time: "11:00 – 14:00",
+  duration: "3 klst",
+  ageLimit: "Allur aldur",
+  entryFeePerPlayer: 4440,
+  entryFeePerTeam: 8880,
+  pizzaUpsell: 1000,
+  maxTeams: 50,
+  registeredTeams: 12, // Update this from database later
+  maxPlayers: 100,
+};
 
 const DiscordSupportActions = () => {
   const [copied, setCopied] = useState(false);
@@ -81,6 +103,8 @@ const DiscordSupportActions = () => {
 
 const Mot = () => {
   const location = useLocation();
+  const remainingSpots = TOURNAMENT_CONFIG.maxTeams - TOURNAMENT_CONFIG.registeredTeams;
+  const progressPercentage = (TOURNAMENT_CONFIG.registeredTeams / TOURNAMENT_CONFIG.maxTeams) * 100;
 
   useEffect(() => {
     if (location.hash) {
@@ -116,58 +140,185 @@ const Mot = () => {
     }
   };
 
+  const scrollToSchedule = () => {
+    const element = document.getElementById('dagskra');
+    if (element) {
+      const navbarHeight = 80;
+      const additionalOffset = 24;
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <Layout>
-      {/* 1. HERO SECTION – Minimal, Mobile-First */}
-      <section className="pt-24 pb-8 md:pt-32 md:pb-12">
+      {/* 1. HERO – Minimal, Mobile-First */}
+      <section className="pt-24 pb-6 md:pt-28 md:pb-8">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto text-center">
-            {/* Arena badge at top */}
-            <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card mb-4">
-              <MapPin className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--arena-green))]" />
-              Arena
-            </Badge>
-            
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Fortnite Duos mót í Arena
-            </h1>
-            
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card">
-                <Calendar className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                Lau 28. feb
-              </Badge>
-              <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card">
-                <Clock className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                11:00–14:00
-              </Badge>
-              <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card">
-                <Users className="h-3.5 w-3.5 mr-1.5 text-primary" />
-                50 lið / 100 keppendur
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
+            {/* Location badge */}
+            <div className="flex justify-center mb-4">
+              <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card border-[hsl(var(--arena-green)/0.5)]">
+                <MapPin className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--arena-green))]" />
+                {TOURNAMENT_CONFIG.location}
               </Badge>
             </div>
             
-            <Button 
-              size="lg" 
-              className="btn-arena-gradient text-base w-full sm:w-auto"
-              onClick={scrollToRegistration}
-            >
-              Skrá lið á mót
-              <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
+            {/* Title */}
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-center mb-3">
+              {TOURNAMENT_CONFIG.name}
+            </h1>
+            
+            {/* Subtitle with game + format */}
+            <p className="text-center text-muted-foreground mb-6">
+              {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format} ({TOURNAMENT_CONFIG.formatLabel})
+            </p>
+            
+            {/* Date & Time badges */}
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              <Badge variant="secondary" className="text-sm px-4 py-2">
+                <Calendar className="h-4 w-4 mr-2 text-primary" />
+                {TOURNAMENT_CONFIG.date}
+              </Badge>
+              <Badge variant="secondary" className="text-sm px-4 py-2">
+                <Clock className="h-4 w-4 mr-2 text-primary" />
+                {TOURNAMENT_CONFIG.time}
+              </Badge>
+            </div>
+            
+            {/* Primary CTA + Secondary action */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                size="lg" 
+                className="btn-arena-gradient text-base"
+                onClick={scrollToRegistration}
+              >
+                Skrá lið á mót
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                onClick={scrollToSchedule}
+              >
+                Sjá dagskrá
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. PRICE SECTION – Single Card */}
-      <section className="py-6 md:py-10">
+      {/* 2. INFO CARDS – Key Details */}
+      <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
-            <Card className="glass-card border-[hsl(var(--arena-green)/0.3)]">
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {/* Game */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 text-center">
+                  <Gamepad2 className="h-5 w-5 mx-auto mb-2 text-primary" />
+                  <p className="text-xs text-muted-foreground mb-1">Leikur</p>
+                  <p className="font-semibold text-sm">{TOURNAMENT_CONFIG.game}</p>
+                </CardContent>
+              </Card>
+
+              {/* Format */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 text-center">
+                  <Users className="h-5 w-5 mx-auto mb-2 text-primary" />
+                  <p className="text-xs text-muted-foreground mb-1">Format</p>
+                  <p className="font-semibold text-sm">{TOURNAMENT_CONFIG.format}</p>
+                  <p className="text-xs text-muted-foreground">{TOURNAMENT_CONFIG.formatLabel}</p>
+                </CardContent>
+              </Card>
+
+              {/* Age Limit */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 text-center">
+                  <UserCheck className="h-5 w-5 mx-auto mb-2 text-primary" />
+                  <p className="text-xs text-muted-foreground mb-1">Aldur</p>
+                  <p className="font-semibold text-sm">{TOURNAMENT_CONFIG.ageLimit}</p>
+                </CardContent>
+              </Card>
+
+              {/* Duration */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 text-center">
+                  <Timer className="h-5 w-5 mx-auto mb-2 text-primary" />
+                  <p className="text-xs text-muted-foreground mb-1">Lengd</p>
+                  <p className="font-semibold text-sm">{TOURNAMENT_CONFIG.duration}</p>
+                </CardContent>
+              </Card>
+
+              {/* Entry Fee */}
+              <Card className="bg-card border-[hsl(var(--arena-green)/0.3)]">
+                <CardContent className="p-4 text-center">
+                  <Ticket className="h-5 w-5 mx-auto mb-2 text-[hsl(var(--arena-green))]" />
+                  <p className="text-xs text-muted-foreground mb-1">Verð / lið</p>
+                  <p className="font-bold text-sm text-[hsl(var(--arena-green))]">
+                    {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString('is-IS')} kr
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Mode */}
+              <Card className="bg-card border-border">
+                <CardContent className="p-4 text-center">
+                  <Swords className="h-5 w-5 mx-auto mb-2 text-primary" />
+                  <p className="text-xs text-muted-foreground mb-1">Leikhamur</p>
+                  <p className="font-semibold text-sm">Build</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. REGISTRATION STATUS – Capacity Card */}
+      <section className="py-4 md:py-6">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
+            <Card className="bg-card border-[hsl(var(--arena-green)/0.3)] glow-green-sm">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                    <span className="font-semibold">Skráning opin</span>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {remainingSpots} laus pláss
+                  </span>
+                </div>
+                
+                <Progress value={progressPercentage} className="h-3 mb-3" />
+                
+                <div className="flex justify-between text-sm">
+                  <span className="text-[hsl(var(--arena-green))] font-bold">
+                    {TOURNAMENT_CONFIG.registeredTeams} / {TOURNAMENT_CONFIG.maxTeams} lið skráð
+                  </span>
+                  <span className="text-muted-foreground">
+                    {TOURNAMENT_CONFIG.maxPlayers} keppendur hámark
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. PRICING CARD */}
+      <section className="py-4 md:py-6">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
+            <Card className="bg-card border-border">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                    <Ticket className="h-4 w-4 md:h-5 md:w-5 text-[hsl(var(--arena-green))]" />
+                  <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                    <Ticket className="h-4 w-4 text-[hsl(var(--arena-green))]" />
                   </div>
                   <CardTitle className="text-lg">Verð</CardTitle>
                 </div>
@@ -180,8 +331,12 @@ const Mot = () => {
                     <p className="text-sm text-muted-foreground">á keppanda</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold text-[hsl(var(--arena-green))]">4.440 kr</p>
-                    <p className="text-xs text-muted-foreground">8.880 kr/lið</p>
+                    <p className="text-xl font-bold text-[hsl(var(--arena-green))]">
+                      {TOURNAMENT_CONFIG.entryFeePerPlayer.toLocaleString('is-IS')} kr
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString('is-IS')} kr/lið
+                    </p>
                   </div>
                 </div>
                 
@@ -195,8 +350,12 @@ const Mot = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold">+1.000 kr</p>
-                    <p className="text-xs text-muted-foreground">+2.000 kr/lið</p>
+                    <p className="text-lg font-bold">
+                      +{TOURNAMENT_CONFIG.pizzaUpsell.toLocaleString('is-IS')} kr
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      +{(TOURNAMENT_CONFIG.pizzaUpsell * 2).toLocaleString('is-IS')} kr/lið
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -205,18 +364,18 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 3. SCHEDULE – Accordion */}
-      <Accordion type="single" collapsible>
-        <section className="py-6 md:py-10">
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
+      {/* 5. SCHEDULE – Collapsible */}
+      <section id="dagskra" className="py-4 md:py-6 scroll-mt-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
+            <Accordion type="single" collapsible defaultValue="dagskra">
               <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Clock className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="font-display font-semibold text-left">Sjá dagskrá mótsins</span>
+                    <span className="font-display font-semibold text-left">Dagskrá mótsins</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5">
@@ -233,7 +392,7 @@ const Mot = () => {
                       <div key={index} className="flex items-center gap-3 py-2">
                         <Badge 
                           variant="outline" 
-                          className={`text-xs font-mono ${
+                          className={`text-xs font-mono min-w-[60px] justify-center ${
                             item.color === 'accent' ? 'bg-accent/10 text-accent border-accent/30' :
                             item.color === 'primary' ? 'bg-primary/10 text-primary border-primary/30' :
                             'bg-[hsl(var(--arena-green)/0.1)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]'
@@ -247,25 +406,29 @@ const Mot = () => {
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            </div>
+            </Accordion>
           </div>
-        </section>
-      </Accordion>
+        </div>
+      </section>
 
-
-      {/* 5. Registration Form Section */}
-      <section id="skraning" className="py-10 md:py-16 bg-card/30">
+      {/* 6. REGISTRATION FORM */}
+      <section id="skraning" className="py-8 md:py-10 bg-card/30 scroll-mt-24">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
               <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                    <Trophy className="h-4 w-4 md:h-5 md:w-5 text-[hsl(var(--arena-green))]" />
+                  <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                    <Trophy className="h-4 w-4 text-[hsl(var(--arena-green))]" />
                   </div>
-                  <CardTitle className="font-display text-lg md:text-xl">
-                    Skráning í mót
-                  </CardTitle>
+                  <div>
+                    <CardTitle className="font-display text-lg">
+                      Skrá lið á mót
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Skráning er fyrir lið (2 keppendur)
+                    </p>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="p-5 md:p-6">
@@ -276,16 +439,17 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 6. WHO IS THIS FOR – Accordion */}
-      <section className="py-6 md:py-10">
+      {/* 7. CONTEXT ACCORDIONS – For Competitors & Parents */}
+      <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
+          <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             <Accordion type="single" collapsible className="space-y-3">
+              {/* For Competitors */}
               <AccordionItem value="keppendur" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
-                      <Gamepad2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-[hsl(var(--arena-green))]" />
+                    <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
+                      <Gamepad2 className="h-4 w-4 text-[hsl(var(--arena-green))]" />
                     </div>
                     <span className="font-display font-semibold text-left">Fyrir keppendur</span>
                   </div>
@@ -294,25 +458,30 @@ const Mot = () => {
                   <ul className="space-y-2.5 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <span className="text-[hsl(var(--arena-green))]">•</span>
-                      5 leikir
+                      5 leikir í custom lobby
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-[hsl(var(--arena-green))]">•</span>
-                      Custom games (Build mode)
+                      Build mode
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-[hsl(var(--arena-green))]">•</span>
                       Sama lobby allan tímann
                     </li>
+                    <li className="flex items-center gap-2">
+                      <span className="text-[hsl(var(--arena-green))]">•</span>
+                      LAN upplifun á staðnum
+                    </li>
                   </ul>
                 </AccordionContent>
               </AccordionItem>
 
+              {/* For Parents */}
               <AccordionItem value="foreldrar" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Heart className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Heart className="h-4 w-4 text-primary" />
                     </div>
                     <span className="font-display font-semibold text-left">Fyrir foreldra</span>
                   </div>
@@ -331,20 +500,16 @@ const Mot = () => {
                       <Eye className="h-4 w-4 text-[hsl(var(--arena-green))] shrink-0" />
                       Foreldrar velkomnir sem áhorfendur
                     </li>
+                    <li className="flex items-center gap-2">
+                      <Pizza className="h-4 w-4 text-accent shrink-0" />
+                      Pizza í boði (valfrjálst)
+                    </li>
                   </ul>
                 </AccordionContent>
               </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </section>
 
-      {/* 7. Rules & Trust */}
-      <section className="py-8 md:py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="rules" className="bg-card border border-border rounded-xl overflow-hidden">
+              {/* Rules */}
+              <AccordionItem value="reglur" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
                     <ShieldCheck className="h-5 w-5 text-primary shrink-0" />

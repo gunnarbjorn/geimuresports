@@ -1,20 +1,46 @@
 import { useEffect, useState, useCallback } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrainingForm } from "@/components/forms/TrainingForm";
-import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Calendar, Trophy, ArrowRight } from "lucide-react";
+import { 
+  Calendar, 
+  Trophy, 
+  ArrowRight, 
+  MapPin, 
+  Clock, 
+  Users,
+  Gamepad2,
+  ChevronRight,
+} from "lucide-react";
+
+// Active tournament config
+const ACTIVE_TOURNAMENT = {
+  name: "Fortnite Duos LAN",
+  location: "Arena",
+  date: "Lau 28. feb",
+  time: "11:00",
+  format: "Duo",
+  registeredTeams: 12,
+  maxTeams: 50,
+  entryFeePerTeam: 8880,
+};
 
 const Skraning = () => {
   const location = useLocation();
   const [openSection, setOpenSection] = useState<string>("aefingar");
+  
+  const remainingSpots = ACTIVE_TOURNAMENT.maxTeams - ACTIVE_TOURNAMENT.registeredTeams;
+  const progressPercentage = (ACTIVE_TOURNAMENT.registeredTeams / ACTIVE_TOURNAMENT.maxTeams) * 100;
 
   // Scroll to top when navigating to this page
   useEffect(() => {
@@ -29,8 +55,8 @@ const Skraning = () => {
     setTimeout(() => {
       const element = document.getElementById(sectionId);
       if (element) {
-        const navbarHeight = 80; // Account for fixed navbar
-        const additionalOffset = 24; // Extra spacing for visual clarity
+        const navbarHeight = 80;
+        const additionalOffset = 24;
         const elementPosition = element.getBoundingClientRect().top + window.scrollY;
         const offsetPosition = elementPosition - navbarHeight - additionalOffset;
         
@@ -39,132 +65,154 @@ const Skraning = () => {
           behavior: 'smooth'
         });
       }
-    }, 350); // Longer delay to allow accordion close+open animation to complete
+    }, 350);
   }, []);
 
   return (
     <Layout>
       {/* Hero */}
-      <section className="relative hero-section overflow-hidden">
-        <div className="absolute inset-0 hero-glow opacity-50" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+      <section className="pt-24 pb-6 md:pt-28 md:pb-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">
               Skráning
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8">
-              Skráðu þig í æfingar eða mót. Veldu það sem hentar þér best hér að neðan.
+            <p className="text-muted-foreground">
+              Skráðu þig í æfingar eða mót. Veldu það sem hentar þér best.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Quick Links */}
-      <section className="py-8 lg:py-12">
+      {/* Quick Links as Cards */}
+      <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {/* Training Card */}
             <Card 
               className="bg-card border-border card-hover group cursor-pointer"
               onClick={() => scrollToSection('aefingar-form', 'aefingar')}
             >
-              <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <Calendar className="h-6 w-6 text-primary" />
+              <CardContent className="p-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Calendar className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display font-bold text-lg mb-1">Æfingar</h3>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Skipulagðar æfingar fyrir alla aldurshópa
+                    </p>
+                    <span className="inline-flex items-center text-sm text-primary font-medium">
+                      Skrá mig
+                      <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
                 </div>
-                <CardTitle className="font-display text-2xl">Skráning í æfingar</CardTitle>
-                <CardDescription>
-                  Skipulagðar æfingar fyrir alla aldurshópa. Lærðu af reyndum þjálfurum 
-                  og þróaðu leikni þína.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <span className="inline-flex items-center text-primary hover:text-primary/80 font-medium">
-                  Skrá mig í æfingar
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
               </CardContent>
             </Card>
 
-            <Card 
-              className="bg-card border-border card-hover group cursor-pointer"
-              onClick={() => scrollToSection('mot-form', 'mot')}
-            >
-              <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <Trophy className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle className="font-display text-2xl">Skráning í mót</CardTitle>
-                <CardDescription>
-                  Taktu þátt í Fortnite mótum og keppu við aðra spilara. 
-                  Solo, Duo og Squad flokkar.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <span className="inline-flex items-center text-primary hover:text-primary/80 font-medium">
-                  Skrá mig í mót
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </CardContent>
-            </Card>
+            {/* Tournament Card - Highlight Active Tournament */}
+            <Link to="/mot" className="block">
+              <Card className="bg-card border-[hsl(var(--arena-green)/0.3)] card-hover-arena group cursor-pointer h-full glow-green-sm">
+                <CardContent className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
+                      <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-display font-bold text-lg">{ACTIVE_TOURNAMENT.name}</h3>
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <Badge variant="outline" className="text-xs px-2 py-0.5 bg-card">
+                          <MapPin className="h-3 w-3 mr-1" />
+                          {ACTIVE_TOURNAMENT.location}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs px-2 py-0.5 bg-card">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {ACTIVE_TOURNAMENT.date}
+                        </Badge>
+                      </div>
+                      
+                      {/* Mini progress */}
+                      <div className="mb-3">
+                        <Progress value={progressPercentage} className="h-1.5 mb-1" />
+                        <p className="text-xs text-[hsl(var(--arena-green))]">
+                          {ACTIVE_TOURNAMENT.registeredTeams}/{ACTIVE_TOURNAMENT.maxTeams} lið · {remainingSpots} laus
+                        </p>
+                      </div>
+                      
+                      <span className="inline-flex items-center text-sm text-[hsl(var(--arena-green))] font-medium">
+                        Skoða & skrá
+                        <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Forms Section */}
-      <section className="section-spacing">
+      {/* Forms Section - Training Only (Tournament has dedicated page) */}
+      <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-2xl mx-auto">
             <Accordion 
               type="single" 
               collapsible 
               value={openSection} 
               onValueChange={setOpenSection}
-              className="space-y-6"
+              className="space-y-4"
             >
               {/* Training Form */}
               <AccordionItem 
                 id="aefingar-form"
                 value="aefingar" 
-                className="bg-card border border-border rounded-xl overflow-hidden scroll-mt-28 md:scroll-mt-24"
+                className="bg-card border border-border rounded-xl overflow-hidden scroll-mt-28"
               >
-                <AccordionTrigger className="px-6 py-4 font-display text-xl font-bold hover:no-underline hover:text-primary">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Calendar className="h-5 w-5 text-primary" />
+                <AccordionTrigger className="px-5 py-4 font-display text-lg font-bold hover:no-underline hover:bg-muted/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Calendar className="h-4 w-4 text-primary" />
                     </div>
                     Skráning í æfingar
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6">
-                  <p className="text-muted-foreground mb-6">
-                    Fylltu út eyðublaðið hér að neðan til að skrá þig í æfingar.
+                <AccordionContent className="px-5 pb-5">
+                  <p className="text-sm text-muted-foreground mb-5">
+                    Fylltu út eyðublaðið til að skrá þig í æfingar.
                   </p>
                   <TrainingForm />
                 </AccordionContent>
               </AccordionItem>
-
-              {/* Tournament Form */}
-              <AccordionItem 
-                id="mot-form"
-                value="mot" 
-                className="bg-card border border-border rounded-xl overflow-hidden scroll-mt-28 md:scroll-mt-24"
-              >
-                <AccordionTrigger className="px-6 py-4 font-display text-xl font-bold hover:no-underline hover:text-primary">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Trophy className="h-5 w-5 text-primary" />
-                    </div>
-                    Skráning í mót
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6">
-                  <div className="mb-4">
-                    <p className="text-sm text-muted-foreground">Fortnite Duos LAN mót – 28. febrúar í Arena</p>
-                  </div>
-                  <ElkoRegistrationForm />
-                </AccordionContent>
-              </AccordionItem>
             </Accordion>
+            
+            {/* Tournament CTA Card */}
+            <Card className="mt-6 bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-[hsl(var(--arena-green)/0.3)]">
+              <CardContent className="p-5">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Gamepad2 className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                    <div>
+                      <p className="font-semibold">Viltu keppa í móti?</p>
+                      <p className="text-sm text-muted-foreground">
+                        {ACTIVE_TOURNAMENT.name} – {ACTIVE_TOURNAMENT.date}
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild className="btn-arena-gradient sm:w-auto">
+                    <Link to="/mot">
+                      Skoða mót
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
