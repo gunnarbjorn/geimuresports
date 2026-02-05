@@ -254,7 +254,7 @@ function validateAndSanitizeData(type: string, data: Record<string, unknown>): T
   }
 }
 
-const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_MAX = 3;
 const RATE_LIMIT_WINDOW_MINUTES = 60;
 
 const handler = async (req: Request): Promise<Response> => {
@@ -342,7 +342,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { error: dbError } = await supabase
       .from("registrations")
-      .insert({ type, data: dataWithIp });
+      .insert({ type, data: dataWithIp, verified: true });
 
     if (dbError) {
       console.error("Database insert error:", dbError);

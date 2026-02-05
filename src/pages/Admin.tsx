@@ -34,8 +34,6 @@ import {
   Mail,
   Hash,
   Calendar,
-  CheckCircle,
-  XCircle,
   Loader2,
   ShieldAlert,
 } from "lucide-react";
@@ -57,7 +55,6 @@ interface Registration {
   created_at: string;
   type: string;
   data: RegistrationData;
-  verified: boolean;
 }
 
 const AdminPage = () => {
@@ -66,9 +63,7 @@ const AdminPage = () => {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  // Redirect to auth if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
@@ -78,7 +73,6 @@ const AdminPage = () => {
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      // RLS policy ensures only admins can SELECT from registrations
       const { data, error } = await supabase
         .from("registrations")
         .select("*")
@@ -96,7 +90,6 @@ const AdminPage = () => {
         created_at: item.created_at,
         type: item.type,
         data: item.data as RegistrationData,
-        verified: item.verified ?? false,
       }));
       setRegistrations(typedData);
     } catch (err) {
@@ -110,7 +103,6 @@ const AdminPage = () => {
   const handleDelete = async (id: string) => {
     setDeletingId(id);
     try {
-      // Direct delete via Supabase client — RLS policy authorizes admin
       const { error } = await supabase
         .from("registrations")
         .delete()
@@ -132,44 +124,12 @@ const AdminPage = () => {
     }
   };
 
-  const handleToggleVerified = async (id: string, currentStatus: boolean) => {
-    setTogglingId(id);
-    try {
-      // Direct update via Supabase client — RLS policy authorizes admin
-      const { error } = await supabase
-        .from("registrations")
-        .update({ verified: !currentStatus } as any)
-        .eq("id", id);
-
-      if (error) {
-        console.error("Update error:", error);
-        toast.error("Villa við uppfærslu");
-        return;
-      }
-
-      toast.success(
-        currentStatus ? "Staðfesting afturkölluð" : "Skráning staðfest!"
-      );
-      setRegistrations((prev) =>
-        prev.map((r) =>
-          r.id === id ? { ...r, verified: !currentStatus } : r
-        )
-      );
-    } catch (err) {
-      console.error("Error:", err);
-      toast.error("Villa kom upp");
-    } finally {
-      setTogglingId(null);
-    }
-  };
-
   useEffect(() => {
     if (isAdmin) {
       fetchRegistrations();
     }
   }, [isAdmin]);
 
-  // Loading state
   if (authLoading) {
     return (
       <Layout>
@@ -180,7 +140,6 @@ const AdminPage = () => {
     );
   }
 
-  // Authenticated but not admin
   if (user && !isAdmin) {
     return (
       <Layout>
@@ -208,10 +167,7 @@ const AdminPage = () => {
     );
   }
 
-  // Not logged in (redirect effect should handle this)
   if (!user) return null;
-
-  const verifiedCount = registrations.filter((r) => r.verified).length;
 
   return (
     <Layout>
@@ -246,7 +202,7 @@ const AdminPage = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 gap-4 mb-8">
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-3">
@@ -257,35 +213,7 @@ const AdminPage = () => {
                       <p className="text-2xl font-bold">
                         {registrations.length}
                       </p>
-                      <p className="text-xs text-muted-foreground">Heildar</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
-                      <CheckCircle className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{verifiedCount}</p>
-                      <p className="text-xs text-muted-foreground">Staðfest</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-                      <XCircle className="h-5 w-5 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {registrations.length - verifiedCount}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Óstaðfest</p>
+                      <p className="text-xs text-muted-foreground">Skráð lið</p>
                     </div>
                   </div>
                 </CardContent>
@@ -298,7 +226,7 @@ const AdminPage = () => {
                     </div>
                     <div>
                       <p className="text-2xl font-bold">
-                        {50 - verifiedCount}
+                        {50 - registrations.length}
                       </p>
                       <p className="text-xs text-muted-foreground">Laus pláss</p>
                     </div>
@@ -331,7 +259,6 @@ const AdminPage = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">#</TableHead>
-                          <TableHead className="w-16">Staða</TableHead>
                           <TableHead>Lið</TableHead>
                           <TableHead>Spilari 1</TableHead>
                           <TableHead>Spilari 2</TableHead>
@@ -343,40 +270,9 @@ const AdminPage = () => {
                       </TableHeader>
                       <TableBody>
                         {registrations.map((reg, index) => (
-                          <TableRow
-                            key={reg.id}
-                            className={!reg.verified ? "opacity-60" : ""}
-                          >
+                          <TableRow key={reg.id}>
                             <TableCell className="font-mono text-muted-foreground">
                               {index + 1}
-                            </TableCell>
-                            <TableCell>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className={
-                                  reg.verified
-                                    ? "text-[hsl(var(--arena-green))] hover:text-[hsl(var(--arena-green))]"
-                                    : "text-muted-foreground"
-                                }
-                                disabled={togglingId === reg.id}
-                                onClick={() =>
-                                  handleToggleVerified(reg.id, reg.verified)
-                                }
-                                title={
-                                  reg.verified
-                                    ? "Afturkalla staðfestingu"
-                                    : "Staðfesta skráningu"
-                                }
-                              >
-                                {togglingId === reg.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : reg.verified ? (
-                                  <CheckCircle className="h-4 w-4" />
-                                ) : (
-                                  <XCircle className="h-4 w-4" />
-                                )}
-                              </Button>
                             </TableCell>
                             <TableCell className="font-medium">
                               {reg.data.teamName || "Óþekkt lið"}
