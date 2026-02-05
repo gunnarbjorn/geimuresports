@@ -7,6 +7,24 @@ import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, Swords, C
 import heroDesktop from "@/assets/hero-desktop.png";
 import heroMobile from "@/assets/hero-mobile.jpeg";
 
+const trustItems = [{
+  label: "Æfingar í viku",
+  value: "3x",
+  icon: Calendar
+}, {
+  label: "Mót á tímabili",
+  value: "6+",
+  icon: Trophy
+}, {
+  label: "Skipulagt af Geimur",
+  value: "✓",
+  icon: ShieldCheck
+}, {
+  label: "Discord eftirlit",
+  value: "✓",
+  icon: Users
+}];
+
 const benefits = [{
   title: "Markviss þjálfun",
   description: "Mechanics, game sense og strategy frá reyndum þjálfurum.",
@@ -142,6 +160,23 @@ const Index = () => {
               </Link>
             </Button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    {/* Trust Section - Right after hero */}
+    <section className="py-8 md:py-12 border-b border-border/50">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          {trustItems.map((item, index) => (
+            <div key={index} className="flex items-center gap-3 p-4 rounded-xl bg-card/50 border border-border/50">
+              <item.icon className="h-6 w-6 text-primary flex-shrink-0" />
+              <div>
+                <p className="font-bold text-foreground">{item.value}</p>
+                <p className="text-xs text-muted-foreground">{item.label}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
