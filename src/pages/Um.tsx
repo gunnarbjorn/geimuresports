@@ -18,21 +18,13 @@ const values = [{
   icon: Heart
 }];
 const team = [{
-  name: "Sigurður Karlsson",
-  role: "Aðalþjálfari",
-  description: "10+ ára reynsla í keppnisleikjum. Sérhæfir sig í strategy og game sense."
+  name: "Gunnar Björn",
+  role: "Mótstjóri & yfirumsjón",
+  description: "Sér um skipulag móta, streymi og heildarupplifun keppenda. Leggur áherslu á faglegt, öruggt og skemmtilegt umhverfi fyrir alla aldurshópa."
 }, {
-  name: "Anna Björnsdóttir",
+  name: "Bjarki Þór",
   role: "Fortnite þjálfari",
-  description: "Fyrrum keppnisleikari. Sérfræðingur í building og mechanics."
-}, {
-  name: "Ólafur Magnússon",
-  role: "Unglingaþjálfari",
-  description: "Menntun í íþróttaþjálfun. Einbeitir sér að jákvæðu andrúmslofti."
-}, {
-  name: "Kristín Eiríksdóttir",
-  role: "Foreldraráðgjafi",
-  description: "Aðstoðar foreldra við að skilja og styðja við gaming-ferðalag barna sinna."
+  description: "Sérhæfir sig í Fortnite þjálfun, liðssamvinnu og keppnisundirbúningi. Hefur reynslu af að vinna með unglingum og leggja áherslu á jákvæða keppnisstemningu."
 }];
 const Um = () => {
   return <Layout>
@@ -135,11 +127,11 @@ const Um = () => {
               Teymið
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Leiðtogarnir okkar og þjálfarar.
+              Fólkið á bak við mótin og æfingarnar.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {team.map((member, index) => <Card key={index} className="glass-card border-border card-hover">
                 <CardHeader className="text-center">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center mx-auto mb-4">
