@@ -502,13 +502,11 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 6. CONTEXT ACCORDIONS – For Competitors & Parents */}
+      {/* 6. CONTEXT ACCORDIONS – Rules & Info */}
       <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             <Accordion type="single" collapsible className="space-y-3">
-
-              {/* Rules */}
               <AccordionItem value="reglur" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
@@ -517,27 +515,163 @@ const Mot = () => {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-5 pb-5">
-                  <div className="space-y-4">
-                    <ul className="text-sm text-muted-foreground space-y-2">
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary">•</span>
-                        Allur aldur er leyfður
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary">•</span>
-                        Foreldrar velkomnir sem áhorfendur
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary">•</span>
-                        Brot á reglum getur leitt til banns
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-primary">•</span>
-                        Starfsfólk á staðnum allan tímann
-                      </li>
-                    </ul>
-                    
-                    <DiscordSupportActions />
+                  <div className="space-y-6">
+
+                    {/* 1. Check-in & mæting */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Check-in & mæting
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Mæting: 20–30 mínútum fyrir fyrsta leik
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Check-in fer fram við innritunarborð í Arena
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Order ID eða liðsheiti notað við innskráningu
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* 2. Búnaður & aðgangar */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <Gamepad2 className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Búnaður & aðgangar
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Tölvur og skjáir á staðnum
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Epic Games account þarf að vera virkt
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Óheimilt er að nota svindl eða óviðeigandi hugbúnað
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* 3. Leikjafyrirkomulag */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <Timer className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Leikjafyrirkomulag
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Leikir fara fram á 30 mínútna fresti
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          30 mínútna pása í miðju móti
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Sama lobby allan tímann
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* 4. Dómarar & ákvarðanir */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Dómarar & ákvarðanir
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Dómarar taka allar lokaákvarðanir
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Brottvísun ef reglum er ekki fylgt
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Áhersla á sanngirni og jákvæðan leikandaanda
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* 5. Myndir, video & áhorf */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Myndir, video & áhorf
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Myndir og video teknar á staðnum
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Keppnir sýndar á skjám í Arena
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Vinir og foreldrar velkomnir sem áhorfendur
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Engin birting viðkvæmra upplýsinga án samþykkis
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* 6. Fyrir foreldra */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <Heart className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Fyrir foreldra
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Öruggt og skipulagt umhverfi
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Starfsfólk til staðar allan tímann
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Skýr dagskrá og reglur
+                        </li>
+                      </ul>
+                    </div>
+
+                    {/* 7. Aðstoð & spurningar */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                        <MessageCircle className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Aðstoð & spurningar
+                      </h4>
+                      <ul className="text-sm text-muted-foreground space-y-1.5 pl-6 mb-3">
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Discord er aðal samskiptaleið mótsins
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-[hsl(var(--arena-green))]">•</span>
+                          Notað fyrir tilkynningar og aðstoð
+                        </li>
+                      </ul>
+                      <DiscordSupportActions />
+                    </div>
+
                   </div>
                 </AccordionContent>
               </AccordionItem>
