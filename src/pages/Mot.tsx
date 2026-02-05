@@ -542,12 +542,6 @@ const Mot = () => {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-            
-            <div className="mt-6 text-center">
-              <p className="text-xs text-muted-foreground">
-                Í samstarfi við Rafíþróttasamband Íslands
-              </p>
-            </div>
           </div>
         </div>
       </section>
