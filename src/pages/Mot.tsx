@@ -12,6 +12,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Calendar, 
   MapPin, 
@@ -19,6 +25,7 @@ import {
   Trophy,
   Gamepad2,
   ChevronDown,
+  ChevronUp,
   ShieldCheck,
   MessageCircle,
   Copy,
@@ -26,13 +33,10 @@ import {
   Ticket,
   Timer,
   Pause,
-  Award,
   PartyPopper,
   Eye,
   Heart,
   Pizza,
-  Swords,
-  UserCheck,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
@@ -52,9 +56,14 @@ const TOURNAMENT_CONFIG = {
   entryFeePerTeam: 8880,
   pizzaUpsell: 1000,
   maxTeams: 50,
-  registeredTeams: 12, // Update this from database later
   maxPlayers: 100,
 };
+
+interface RegisteredTeam {
+  id: string;
+  playerName: string;
+  teammateName: string;
+}
 
 const DiscordSupportActions = () => {
   const [copied, setCopied] = useState(false);
@@ -103,8 +112,50 @@ const DiscordSupportActions = () => {
 
 const Mot = () => {
   const location = useLocation();
-  const remainingSpots = TOURNAMENT_CONFIG.maxTeams - TOURNAMENT_CONFIG.registeredTeams;
-  const progressPercentage = (TOURNAMENT_CONFIG.registeredTeams / TOURNAMENT_CONFIG.maxTeams) * 100;
+  const [registeredTeams, setRegisteredTeams] = useState<RegisteredTeam[]>([]);
+  const [isTeamsListOpen, setIsTeamsListOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const registeredTeamsCount = registeredTeams.length;
+  const remainingSpots = TOURNAMENT_CONFIG.maxTeams - registeredTeamsCount;
+  const progressPercentage = (registeredTeamsCount / TOURNAMENT_CONFIG.maxTeams) * 100;
+
+  // Fetch registered teams from database
+  useEffect(() => {
+    const fetchRegisteredTeams = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('registrations')
+          .select('id, data')
+          .eq('type', 'elko-tournament')
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching registrations:', error);
+          return;
+        }
+
+        if (data) {
+          const teams: RegisteredTeam[] = data.map((reg) => {
+            const regData = reg.data as { fullName?: string; teammateName?: string };
+            return {
+              id: reg.id,
+              playerName: regData.fullName || 'Óþekkt',
+              teammateName: regData.teammateName || 'Óþekkt',
+            };
+          });
+          setRegisteredTeams(teams);
+        }
+      } catch (err) {
+        console.error('Error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRegisteredTeams();
+  }, []);
 
   useEffect(() => {
     if (location.hash) {
@@ -125,6 +176,13 @@ const Mot = () => {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [location]);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const scrollToRegistration = () => {
     const element = document.getElementById('skraning');
@@ -157,7 +215,7 @@ const Mot = () => {
   return (
     <Layout>
       {/* 1. HERO – Minimal, Mobile-First */}
-      <section className="pt-24 pb-6 md:pt-28 md:pb-8">
+      <section id="top" className="pt-24 pb-6 md:pt-28 md:pb-8">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             {/* Location badge */}
@@ -197,7 +255,7 @@ const Mot = () => {
                 className="btn-arena-gradient text-base"
                 onClick={scrollToRegistration}
               >
-                Skrá lið á mót
+                Skráning
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
               <Button 
@@ -213,39 +271,85 @@ const Mot = () => {
       </section>
 
 
-      {/* 3. REGISTRATION STATUS – Capacity Card */}
+      {/* 2. REGISTRATION STATUS – Capacity Card with Teams List */}
       <section className="py-4 md:py-6">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             <Card className="bg-card border-[hsl(var(--arena-green)/0.3)] glow-green-sm">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-                    <span className="font-semibold">Skráning opin</span>
+              <Collapsible open={isTeamsListOpen} onOpenChange={setIsTeamsListOpen}>
+                <CollapsibleTrigger asChild>
+                  <CardContent className="p-5 cursor-pointer hover:bg-muted/30 transition-colors">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                        <span className="font-semibold">Skráning opin</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">
+                          {remainingSpots} laus pláss
+                        </span>
+                        {isTeamsListOpen ? (
+                          <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    <Progress value={progressPercentage} className="h-3 mb-3" />
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[hsl(var(--arena-green))] font-bold">
+                        {registeredTeamsCount} / {TOURNAMENT_CONFIG.maxTeams} lið skráð
+                      </span>
+                      <span className="text-muted-foreground text-xs">
+                        Smelltu til að sjá skráð lið
+                      </span>
+                    </div>
+                  </CardContent>
+                </CollapsibleTrigger>
+                
+                <CollapsibleContent>
+                  <div className="px-5 pb-5 border-t border-border">
+                    <div className="pt-4">
+                      <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                        <Users className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                        Skráð lið
+                      </h3>
+                      
+                      {isLoading ? (
+                        <p className="text-sm text-muted-foreground">Hleður...</p>
+                      ) : registeredTeams.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">Engin lið skráð ennþá</p>
+                      ) : (
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {registeredTeams.map((team, index) => (
+                            <div 
+                              key={team.id} 
+                              className="flex items-center gap-3 py-2 px-3 bg-muted/30 rounded-lg"
+                            >
+                              <span className="text-xs font-mono text-muted-foreground w-6">
+                                #{index + 1}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">
+                                  {team.playerName} & {team.teammateName}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <span className="text-sm text-muted-foreground">
-                    {remainingSpots} laus pláss
-                  </span>
-                </div>
-                
-                <Progress value={progressPercentage} className="h-3 mb-3" />
-                
-                <div className="flex justify-between text-sm">
-                  <span className="text-[hsl(var(--arena-green))] font-bold">
-                    {TOURNAMENT_CONFIG.registeredTeams} / {TOURNAMENT_CONFIG.maxTeams} lið skráð
-                  </span>
-                  <span className="text-muted-foreground">
-                    {TOURNAMENT_CONFIG.maxPlayers} keppendur hámark
-                  </span>
-                </div>
-              </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
             </Card>
           </div>
         </div>
       </section>
 
-      {/* 4. PRICING CARD */}
+      {/* 3. PRICING CARD */}
       <section className="py-4 md:py-6">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
@@ -299,7 +403,7 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 5. SCHEDULE – Collapsible */}
+      {/* 4. SCHEDULE – Collapsible */}
       <section id="dagskra" className="py-4 md:py-6 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
@@ -346,7 +450,7 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 6. REGISTRATION FORM */}
+      {/* 5. REGISTRATION FORM */}
       <section id="skraning" className="py-8 md:py-10 bg-card/30 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
@@ -358,7 +462,7 @@ const Mot = () => {
                   </div>
                   <div>
                     <CardTitle className="font-display text-lg">
-                      Skrá lið á mót
+                      Skráning liðs
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
                       Skráning er fyrir lið (2 keppendur)
@@ -374,7 +478,7 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 7. CONTEXT ACCORDIONS – For Competitors & Parents */}
+      {/* 6. CONTEXT ACCORDIONS – For Competitors & Parents */}
       <section className="py-6 md:py-8">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
@@ -492,9 +596,9 @@ const Mot = () => {
         <Button 
           size="lg" 
           className="btn-arena-gradient w-full"
-          onClick={scrollToRegistration}
+          onClick={scrollToTop}
         >
-          Skrá lið á mót
+          Skráning
         </Button>
       </div>
 
