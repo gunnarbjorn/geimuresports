@@ -179,7 +179,8 @@ function formatElkoTournamentConfirmation(data: ElkoTournamentData): string {
       <h2 style="color: #22c55e; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Næstu skref</h2>
       <ol style="color: #ccc; line-height: 1.8;">
         <li>Liðið þitt birtist nú í listanum yfir skráð lið á vefsíðunni</li>
-        <li>Mættu á mótið ${escapeHtml(data.tournamentDate)} í Arena</li>
+        <li>Mætið í Arena <strong>20–30 mín fyrir fyrsta leik</strong> – keppnin hefst kl. 11:00</li>
+        <li>📺 Keppnin verður sýnd live á skjám í Arena</li>
         <li>Vertu með gott viðhorf og skemmtu þér!</li>
       </ol>
       <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;">
