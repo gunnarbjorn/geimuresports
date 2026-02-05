@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Geimur – Rafíþróttafélag Design System
-   Dark space esports theme with Geimur red accents
+/* Geimur – Icelandic Esports Future
+   Premium cinematic dark theme with Scandinavian minimalism
    All colors MUST be HSL.
 */
 
@@ -11,91 +11,95 @@
 
 @layer base {
   :root {
-    /* Deep space backgrounds */
-    --background: 225 50% 3%;
-    --foreground: 220 20% 95%;
+    /* Deep space navy backgrounds - near black with blue undertone */
+    --background: 222 47% 5%;
+    --foreground: 35 25% 92%;
 
-    /* Card surfaces - dark charcoal */
-    --card: 225 30% 7%;
-    --card-foreground: 220 20% 95%;
+    /* Card surfaces - subtle navy lift */
+    --card: 222 35% 8%;
+    --card-foreground: 35 25% 92%;
 
     /* Popover */
-    --popover: 225 30% 7%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 222 35% 8%;
+    --popover-foreground: 35 25% 92%;
 
-    /* Geimur Red Primary */
-    --primary: 5 70% 52%;
-    --primary-foreground: 0 0% 100%;
+    /* Muted terracotta red - premium, not aggressive */
+    --primary: 8 55% 48%;
+    --primary-foreground: 35 25% 96%;
 
-    /* Secondary - slightly lighter surface */
-    --secondary: 225 25% 12%;
-    --secondary-foreground: 220 20% 95%;
+    /* Secondary - subtle surface variation */
+    --secondary: 222 30% 12%;
+    --secondary-foreground: 35 25% 92%;
 
-    /* Muted - for subtle text */
-    --muted: 225 20% 15%;
-    --muted-foreground: 220 15% 65%;
+    /* Muted - for subtle backgrounds and text */
+    --muted: 222 25% 14%;
+    --muted-foreground: 220 15% 55%;
 
-    /* Accent - warm amber for highlights */
-    --accent: 30 100% 55%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - aurora teal for subtle highlights */
+    --accent: 170 45% 40%;
+    --accent-foreground: 35 25% 96%;
 
     /* Destructive */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 35 25% 96%;
 
-    /* Borders */
-    --border: 225 20% 15%;
-    --input: 225 20% 15%;
-    --ring: 5 70% 52%;
+    /* Borders - very subtle */
+    --border: 222 20% 16%;
+    --input: 222 20% 16%;
+    --ring: 8 55% 48%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
     /* Sidebar */
-    --sidebar-background: 225 30% 5%;
-    --sidebar-foreground: 220 20% 95%;
-    --sidebar-primary: 5 70% 52%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 225 25% 12%;
-    --sidebar-accent-foreground: 220 20% 95%;
-    --sidebar-border: 225 20% 15%;
-    --sidebar-ring: 5 70% 52%;
+    --sidebar-background: 222 40% 6%;
+    --sidebar-foreground: 35 25% 92%;
+    --sidebar-primary: 8 55% 48%;
+    --sidebar-primary-foreground: 35 25% 96%;
+    --sidebar-accent: 222 30% 12%;
+    --sidebar-accent-foreground: 35 25% 92%;
+    --sidebar-border: 222 20% 16%;
+    --sidebar-ring: 8 55% 48%;
 
-    /* Custom Geimur tokens */
-    --geimur-red: 5 70% 52%;
-    --geimur-red-deep: 5 80% 40%;
-    --geimur-amber: 30 100% 55%;
-    --geimur-glow: 5 70% 52%;
-    --space-dark: 225 50% 3%;
-    --space-surface: 225 30% 7%;
-    --space-border: 225 20% 15%;
+    /* Custom Geimur tokens - refined */
+    --geimur-red: 8 55% 48%;
+    --geimur-red-deep: 8 60% 38%;
+    --geimur-amber: 25 70% 50%;
+    --geimur-glow: 8 55% 48%;
+    --space-dark: 222 47% 5%;
+    --space-surface: 222 35% 8%;
+    --space-border: 222 20% 16%;
     
-    /* Arena/Tournament green accents */
-    --arena-green: 145 80% 42%;
-    --arena-green-glow: 145 70% 50%;
-    --arena-green-deep: 145 85% 32%;
+    /* Arena/Tournament accents - aurora inspired */
+    --arena-green: 160 50% 42%;
+    --arena-green-glow: 160 45% 50%;
+    --arena-green-deep: 160 55% 32%;
+    
+    /* Aurora teal for subtle cosmic accents */
+    --aurora-teal: 170 45% 40%;
+    --aurora-glow: 170 40% 50%;
   }
 
   .dark {
     /* Same as root - this is a dark-only theme */
-    --background: 225 50% 3%;
-    --foreground: 220 20% 95%;
-    --card: 225 30% 7%;
-    --card-foreground: 220 20% 95%;
-    --popover: 225 30% 7%;
-    --popover-foreground: 220 20% 95%;
-    --primary: 5 70% 52%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 225 25% 12%;
-    --secondary-foreground: 220 20% 95%;
-    --muted: 225 20% 15%;
-    --muted-foreground: 220 15% 65%;
-    --accent: 30 100% 55%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 225 20% 15%;
-    --input: 225 20% 15%;
-    --ring: 5 70% 52%;
+    --background: 222 47% 5%;
+    --foreground: 35 25% 92%;
+    --card: 222 35% 8%;
+    --card-foreground: 35 25% 92%;
+    --popover: 222 35% 8%;
+    --popover-foreground: 35 25% 92%;
+    --primary: 8 55% 48%;
+    --primary-foreground: 35 25% 96%;
+    --secondary: 222 30% 12%;
+    --secondary-foreground: 35 25% 92%;
+    --muted: 222 25% 14%;
+    --muted-foreground: 220 15% 55%;
+    --accent: 170 45% 40%;
+    --accent-foreground: 35 25% 96%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 35 25% 96%;
+    --border: 222 20% 16%;
+    --input: 222 20% 16%;
+    --ring: 8 55% 48%;
   }
 }
 
@@ -115,112 +119,113 @@
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Space Grotesk', sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 
 @layer utilities {
-  /* Starfield background */
+  /* Starfield background - more subtle and cinematic */
   .bg-starfield {
     background-image: 
-      radial-gradient(1px 1px at 20px 30px, hsl(var(--foreground) / 0.3), transparent),
-      radial-gradient(1px 1px at 40px 70px, hsl(var(--foreground) / 0.2), transparent),
-      radial-gradient(1px 1px at 50px 160px, hsl(var(--foreground) / 0.3), transparent),
-      radial-gradient(1px 1px at 90px 40px, hsl(var(--foreground) / 0.2), transparent),
-      radial-gradient(1px 1px at 130px 80px, hsl(var(--foreground) / 0.3), transparent),
-      radial-gradient(1.5px 1.5px at 160px 120px, hsl(var(--foreground) / 0.4), transparent),
-      radial-gradient(1px 1px at 200px 200px, hsl(var(--foreground) / 0.2), transparent),
-      radial-gradient(1px 1px at 220px 50px, hsl(var(--foreground) / 0.3), transparent),
-      radial-gradient(1px 1px at 280px 180px, hsl(var(--foreground) / 0.2), transparent),
-      radial-gradient(1.5px 1.5px at 320px 100px, hsl(var(--foreground) / 0.4), transparent);
-    background-size: 350px 250px;
+      radial-gradient(0.8px 0.8px at 20px 30px, hsl(var(--foreground) / 0.15), transparent),
+      radial-gradient(0.6px 0.6px at 40px 70px, hsl(var(--foreground) / 0.1), transparent),
+      radial-gradient(0.8px 0.8px at 50px 160px, hsl(var(--foreground) / 0.12), transparent),
+      radial-gradient(0.6px 0.6px at 90px 40px, hsl(var(--foreground) / 0.08), transparent),
+      radial-gradient(0.7px 0.7px at 130px 80px, hsl(var(--foreground) / 0.12), transparent),
+      radial-gradient(1px 1px at 160px 120px, hsl(var(--foreground) / 0.18), transparent),
+      radial-gradient(0.6px 0.6px at 200px 200px, hsl(var(--foreground) / 0.08), transparent),
+      radial-gradient(0.7px 0.7px at 220px 50px, hsl(var(--foreground) / 0.1), transparent),
+      radial-gradient(0.5px 0.5px at 280px 180px, hsl(var(--foreground) / 0.06), transparent),
+      radial-gradient(0.9px 0.9px at 320px 100px, hsl(var(--foreground) / 0.14), transparent);
+    background-size: 400px 300px;
     background-color: hsl(var(--background));
   }
 
-  /* Grid overlay */
+  /* Grid overlay - more subtle */
   .bg-grid {
     background-image: 
-      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
-    background-size: 60px 60px;
+      linear-gradient(hsl(var(--border) / 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.15) 1px, transparent 1px);
+    background-size: 80px 80px;
   }
 
-  /* Glow effects */
+  /* Glow effects - softer and more refined */
   .glow-red {
-    box-shadow: 0 0 40px hsl(var(--geimur-red) / 0.3), 
-                0 0 80px hsl(var(--geimur-red) / 0.15);
+    box-shadow: 0 0 60px hsl(var(--geimur-red) / 0.15), 
+                0 0 120px hsl(var(--geimur-red) / 0.08);
   }
 
   .glow-red-sm {
-    box-shadow: 0 0 20px hsl(var(--geimur-red) / 0.2);
+    box-shadow: 0 0 30px hsl(var(--geimur-red) / 0.12);
   }
 
   .glow-green {
-    box-shadow: 0 0 40px hsl(var(--arena-green) / 0.3), 
-                0 0 80px hsl(var(--arena-green) / 0.15);
+    box-shadow: 0 0 60px hsl(var(--arena-green) / 0.15), 
+                0 0 120px hsl(var(--arena-green) / 0.08);
   }
 
   .glow-green-sm {
-    box-shadow: 0 0 20px hsl(var(--arena-green) / 0.2);
+    box-shadow: 0 0 30px hsl(var(--arena-green) / 0.12);
   }
 
   .text-glow {
-    text-shadow: 0 0 40px hsl(var(--geimur-red) / 0.5);
+    text-shadow: 0 0 60px hsl(var(--geimur-red) / 0.3);
   }
 
   .text-glow-green {
-    text-shadow: 0 0 40px hsl(var(--arena-green) / 0.5);
+    text-shadow: 0 0 60px hsl(var(--arena-green) / 0.3);
   }
 
-  /* Hero glow background */
+  /* Hero glow background - more cinematic gradient */
   .hero-glow {
     background: radial-gradient(
-      ellipse 80% 50% at 50% 50%,
-      hsl(var(--geimur-red) / 0.15) 0%,
-      hsl(var(--geimur-red) / 0.05) 40%,
-      transparent 70%
+      ellipse 100% 60% at 50% 80%,
+      hsl(var(--geimur-red) / 0.08) 0%,
+      hsl(var(--geimur-red) / 0.02) 50%,
+      transparent 80%
     );
   }
 
-  /* Tournament hero with red/green split glow */
+  /* Tournament hero with aurora-inspired split glow */
   .hero-glow-tournament {
     background: 
       radial-gradient(
-        ellipse 60% 80% at 25% 50%,
-        hsl(var(--geimur-red) / 0.2) 0%,
-        transparent 60%
+        ellipse 50% 100% at 20% 100%,
+        hsl(var(--geimur-red) / 0.12) 0%,
+        transparent 70%
       ),
       radial-gradient(
-        ellipse 60% 80% at 75% 50%,
-        hsl(var(--arena-green) / 0.2) 0%,
-        transparent 60%
+        ellipse 60% 80% at 80% 80%,
+        hsl(var(--aurora-teal) / 0.08) 0%,
+        transparent 70%
       );
   }
 
-  /* Glassmorphism card */
+  /* Glassmorphism card - cleaner */
   .glass-card {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(12px);
-    border: 1px solid hsl(var(--border) / 0.5);
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid hsl(var(--border) / 0.4);
   }
 
-  /* Card hover effect */
+  /* Card hover effect - more subtle */
   .card-hover {
-    @apply transition-all duration-300;
+    @apply transition-all duration-500;
   }
   
   .card-hover:hover {
-    @apply border-primary/50;
-    box-shadow: 0 0 30px hsl(var(--geimur-red) / 0.15);
-    transform: translateY(-2px);
+    @apply border-primary/30;
+    box-shadow: 0 8px 40px hsl(var(--geimur-red) / 0.08);
+    transform: translateY(-3px);
   }
 
   /* Arena/Tournament card hover */
   .card-hover-arena:hover {
-    border-color: hsl(var(--arena-green) / 0.5);
-    box-shadow: 0 0 30px hsl(var(--arena-green) / 0.15);
+    border-color: hsl(var(--arena-green) / 0.3);
+    box-shadow: 0 8px 40px hsl(var(--arena-green) / 0.08);
   }
 
-  /* Button gradient */
+  /* Button gradient - refined */
   .btn-primary-gradient {
     background: linear-gradient(
       135deg,
@@ -232,7 +237,7 @@
   .btn-primary-gradient:hover {
     background: linear-gradient(
       135deg,
-      hsl(5 70% 58%) 0%,
+      hsl(8 55% 54%) 0%,
       hsl(var(--geimur-red)) 100%
     );
   }
@@ -255,25 +260,25 @@
     );
   }
 
-  /* Section spacing - tighter on mobile, slightly reduced on desktop */
+  /* Section spacing */
   .section-spacing {
-    @apply py-10 lg:py-16;
+    @apply py-12 lg:py-20;
   }
 
   .section-spacing-lg {
-    @apply py-12 lg:py-24;
+    @apply py-16 lg:py-28;
   }
 
   .section-heading-spacing {
-    @apply mb-8 lg:mb-12;
+    @apply mb-10 lg:mb-14;
   }
 
-  /* Hero sections - more top spacing from nav */
+  /* Hero sections */
   .hero-section {
-    @apply pt-20 pb-14 lg:pt-32 lg:pb-24;
+    @apply pt-24 pb-16 lg:pt-36 lg:pb-28;
   }
 
   .hero-section-lg {
-    @apply pt-24 pb-16 lg:pt-36 lg:pb-28;
+    @apply pt-28 pb-20 lg:pt-40 lg:pb-32;
   }
 }

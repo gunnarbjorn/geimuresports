@@ -21,7 +21,7 @@ const scrollToTop = () => {
 
 export function Footer() {
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className="bg-card/50 border-t border-border/40">
       <div className="container mx-auto px-4 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
@@ -67,7 +67,7 @@ export function Footer() {
                   <Link
                     to={link.href}
                     onClick={scrollToTop}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
                   >
                     {link.label}
                   </Link>
@@ -100,7 +100,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border">
+        <div className="mt-12 pt-8 border-t border-border/40">
           <p className="text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} Geimur – Rafíþróttafélag. Öll réttindi áskilin.
           </p>
