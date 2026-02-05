@@ -159,7 +159,7 @@ const Skraning = () => {
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6">
                   <div className="mb-4">
-                    <p className="text-sm text-muted-foreground">Elko-deildin Vor 2026 – Duos</p>
+                    <p className="text-sm text-muted-foreground">Fortnite Duos LAN mót – 28. febrúar í Arena</p>
                   </div>
                   <ElkoRegistrationForm />
                 </AccordionContent>
