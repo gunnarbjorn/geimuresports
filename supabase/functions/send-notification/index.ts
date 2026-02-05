@@ -264,46 +264,12 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const { type, data: rawData } = await req.json();
-    console.log(`v5 Processing ${type} notification`);
+    console.log(`v6 Processing ${type} notification`);
 
     if (!type || !rawData) {
       return new Response(
         JSON.stringify({ error: "Vantar nauðsynleg gögn" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    // Handle admin delete registration
-    if (type === "admin-delete-registration") {
-      const { registrationId } = rawData;
-      if (!registrationId) {
-        return new Response(
-          JSON.stringify({ error: "Vantar registrationId" }),
-          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-        );
-      }
-
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-      const { error: deleteError } = await supabase
-        .from("registrations")
-        .delete()
-        .eq("id", registrationId);
-
-      if (deleteError) {
-        console.error("Delete error:", deleteError);
-        return new Response(
-          JSON.stringify({ error: "Villa við eyðingu skráningar" }),
-          { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
-        );
-      }
-
-      console.log(`v5 Registration ${registrationId} deleted successfully`);
-      return new Response(
-        JSON.stringify({ success: true }),
-        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
@@ -352,6 +318,24 @@ const handler = async (req: Request): Promise<Response> => {
         }),
         { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
+    }
+
+    // Duplicate order ID check for tournament registrations
+    if (type === "elko-tournament") {
+      const elkoData = validatedData as ElkoTournamentData;
+      const { count: existingCount, error: dupError } = await supabase
+        .from("registrations")
+        .select("*", { count: "exact", head: true })
+        .eq("type", "elko-tournament")
+        .contains("data", { orderId: elkoData.orderId });
+
+      if (!dupError && existingCount && existingCount > 0) {
+        console.warn(`Duplicate order ID attempted: ${elkoData.orderId}`);
+        return new Response(
+          JSON.stringify({ error: "Þessi pöntunarnúmer er þegar skráð." }),
+          { status: 409, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
     }
 
     const dataWithIp = { ...validatedData, client_ip: clientIp };

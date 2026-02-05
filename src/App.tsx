@@ -9,6 +9,7 @@ import Mot from "./pages/Mot";
 import Skraning from "./pages/Skraning";
 import Um from "./pages/Um";
 import HafaSamband from "./pages/HafaSamband";
+import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/skraning" element={<Skraning />} />
           <Route path="/um" element={<Um />} />
           <Route path="/hafa-samband" element={<HafaSamband />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

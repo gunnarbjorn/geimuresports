@@ -122,16 +122,13 @@ const Mot = () => {
   const remainingSpots = TOURNAMENT_CONFIG.maxTeams - registeredTeamsCount;
   const progressPercentage = (registeredTeamsCount / TOURNAMENT_CONFIG.maxTeams) * 100;
 
-  // Fetch registered teams from database
+  // Fetch registered teams from database — uses security definer function
+  // that only returns non-PII fields for verified registrations
   useEffect(() => {
     const fetchRegisteredTeams = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('registrations')
-          .select('id, data')
-          .eq('type', 'elko-tournament')
-          .order('created_at', { ascending: true });
+        const { data, error } = await supabase.rpc('get_public_registrations');
 
         if (error) {
           console.error('Error fetching registrations:', error);
@@ -139,22 +136,14 @@ const Mot = () => {
         }
 
         if (data) {
-          const teams: RegisteredTeam[] = data.map((reg) => {
-            const regData = reg.data as { 
-              teamName?: string; 
-              player1Name?: string; 
-              player2Name?: string;
-              // Support legacy format
-              fullName?: string; 
-              teammateName?: string;
-            };
-            return {
-              id: reg.id,
-              teamName: regData.teamName || 'Óþekkt lið',
-              player1Name: regData.player1Name || regData.fullName || 'Óþekkt',
-              player2Name: regData.player2Name || regData.teammateName || 'Óþekkt',
-            };
-          });
+          const teams: RegisteredTeam[] = (data as any[])
+            .filter((r: any) => r.type === 'elko-tournament')
+            .map((r: any) => ({
+              id: r.id,
+              teamName: r.team_name || r.full_name || 'Óþekkt lið',
+              player1Name: r.player1_name || r.full_name || 'Óþekkt',
+              player2Name: r.player2_name || r.teammate_name || 'Óþekkt',
+            }));
           setRegisteredTeams(teams);
         }
       } catch (err) {

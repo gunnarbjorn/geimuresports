@@ -58,41 +58,23 @@ export type Database = {
       }
     }
     Views: {
-      registrations_public: {
-        Row: {
-          created_at: string | null
-          full_name: string | null
-          id: string | null
-          player1_name: string | null
-          player2_name: string | null
-          team_name: string | null
-          teammate_name: string | null
-          type: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          full_name?: never
-          id?: string | null
-          player1_name?: never
-          player2_name?: never
-          team_name?: never
-          teammate_name?: never
-          type?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          full_name?: never
-          id?: string | null
-          player1_name?: never
-          player2_name?: never
-          team_name?: never
-          teammate_name?: never
-          type?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_public_registrations: {
+        Args: never
+        Returns: {
+          created_at: string
+          full_name: string
+          id: string
+          player1_name: string
+          player2_name: string
+          team_name: string
+          teammate_name: string
+          type: string
+        }[]
+      }
+      get_registration_count: { Args: { _type: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
