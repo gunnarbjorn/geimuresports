@@ -1,4 +1,4 @@
-// Geimur Esports - Send Notification Edge Function
+// Geimur Esports - Send Notification Edge Function v3 - Rebuilt
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.25.76";
@@ -247,12 +247,14 @@ function getConfirmationSubject(type: string, data: TrainingData | TournamentDat
 
 // Validates and sanitizes data based on type, throws ZodError on failure
 function validateAndSanitizeData(type: string, data: Record<string, unknown>): TrainingData | TournamentData | ElkoTournamentData | ContactData {
+  console.log("Validating data for type:", type, "with keys:", Object.keys(data));
   switch (type) {
     case "training":
       return trainingSchema.parse(data);
     case "tournament":
       return tournamentSchema.parse(data);
     case "elko-tournament":
+      console.log("Using elkoTournamentSchema for validation");
       return elkoTournamentSchema.parse(data);
     case "contact":
       return contactSchema.parse(data);
