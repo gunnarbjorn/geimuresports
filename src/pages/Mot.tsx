@@ -270,7 +270,7 @@ const Mot = () => {
               </Button>
               <Button 
                 size="lg" 
-                variant="outline"
+                className="btn-primary-gradient"
                 onClick={scrollToSchedule}
               >
                 Sjá dagskrá
