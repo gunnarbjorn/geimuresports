@@ -97,7 +97,7 @@ const faqs = [{
 const Index = () => {
   return <Layout>
     {/* Tournament Hero Section */}
-    <section className="relative min-h-[100svh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Hero Background Image - Desktop */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
@@ -105,14 +105,14 @@ const Index = () => {
       />
       {/* Hero Background Image - Mobile */}
       <div 
-        className="absolute inset-0 bg-cover bg-top bg-no-repeat md:hidden"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
         style={{ backgroundImage: `url(${heroMobile})` }}
       />
       {/* Gradient overlays for readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
       <div className="absolute inset-0 hero-glow-tournament" />
       
-      <div className="container mx-auto px-4 relative z-10 pt-8 md:pt-0">
+      <div className="container mx-auto px-4 relative z-10 pt-4 md:pt-0">
         <div className="max-w-4xl mx-auto text-center">
           {/* Tournament Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-[hsl(var(--arena-green))] mb-6 glow-green-sm">
