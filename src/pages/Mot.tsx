@@ -121,7 +121,7 @@ const Mot = () => {
       {/* 1. HERO SECTION – Minimal, Mobile-First */}
       <section className="pt-24 pb-8 md:pt-32 md:pb-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto text-center">
             {/* Arena badge at top */}
             <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card mb-4">
               <MapPin className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--arena-green))]" />
@@ -166,7 +166,7 @@ const Mot = () => {
       {/* 2. PRICE SECTION – Single Card */}
       <section className="py-6 md:py-10">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
             <Card className="glass-card border-[hsl(var(--arena-green)/0.3)]">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
@@ -213,7 +213,7 @@ const Mot = () => {
       <Accordion type="single" collapsible>
         <section className="py-6 md:py-10">
           <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
               <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
@@ -260,7 +260,7 @@ const Mot = () => {
       {/* 5. Registration Form Section */}
       <section id="skraning" className="py-10 md:py-16 bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
             <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
               <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
                 <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ const Mot = () => {
       {/* 6. WHO IS THIS FOR – Accordion */}
       <section className="py-6 md:py-10">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
             <Accordion type="single" collapsible className="space-y-3">
               <AccordionItem value="keppendur" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
@@ -346,7 +346,7 @@ const Mot = () => {
       {/* 7. Rules & Trust */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
             <Accordion type="single" collapsible>
               <AccordionItem value="rules" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
