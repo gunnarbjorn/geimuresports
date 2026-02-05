@@ -136,8 +136,8 @@ const Aefingar = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {schedule.map((slot, index) => (
-              <Card key={index} className="bg-card border-border card-hover text-center">
-                <CardHeader>
+              <Card key={index} className="glass-card border-border card-hover text-center">
+                <CardHeader className="pb-3">
                   <Calendar className="h-8 w-8 text-primary mx-auto mb-2" />
                   <CardTitle className="font-display text-lg">{slot.day}</CardTitle>
                 </CardHeader>
@@ -168,7 +168,7 @@ const Aefingar = () => {
           <div className="max-w-4xl mx-auto">
             <div className="space-y-6">
               {sessionSteps.map((item, index) => (
-                <Card key={index} className="bg-card border-border card-hover">
+                <Card key={index} className="glass-card border-border card-hover">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-6">
                       <div className="flex-shrink-0">

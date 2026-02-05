@@ -68,6 +68,11 @@
     --space-dark: 225 50% 3%;
     --space-surface: 225 30% 7%;
     --space-border: 225 20% 15%;
+    
+    /* Arena/Tournament green accents */
+    --arena-green: 145 80% 42%;
+    --arena-green-glow: 145 70% 50%;
+    --arena-green-deep: 145 85% 32%;
   }
 
   .dark {
@@ -149,8 +154,21 @@
     box-shadow: 0 0 20px hsl(var(--geimur-red) / 0.2);
   }
 
+  .glow-green {
+    box-shadow: 0 0 40px hsl(var(--arena-green) / 0.3), 
+                0 0 80px hsl(var(--arena-green) / 0.15);
+  }
+
+  .glow-green-sm {
+    box-shadow: 0 0 20px hsl(var(--arena-green) / 0.2);
+  }
+
   .text-glow {
     text-shadow: 0 0 40px hsl(var(--geimur-red) / 0.5);
+  }
+
+  .text-glow-green {
+    text-shadow: 0 0 40px hsl(var(--arena-green) / 0.5);
   }
 
   /* Hero glow background */
@@ -163,6 +181,28 @@
     );
   }
 
+  /* Tournament hero with red/green split glow */
+  .hero-glow-tournament {
+    background: 
+      radial-gradient(
+        ellipse 60% 80% at 25% 50%,
+        hsl(var(--geimur-red) / 0.2) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 80% at 75% 50%,
+        hsl(var(--arena-green) / 0.2) 0%,
+        transparent 60%
+      );
+  }
+
+  /* Glassmorphism card */
+  .glass-card {
+    background: hsl(var(--card) / 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
   /* Card hover effect */
   .card-hover {
     @apply transition-all duration-300;
@@ -172,6 +212,12 @@
     @apply border-primary/50;
     box-shadow: 0 0 30px hsl(var(--geimur-red) / 0.15);
     transform: translateY(-2px);
+  }
+
+  /* Arena/Tournament card hover */
+  .card-hover-arena:hover {
+    border-color: hsl(var(--arena-green) / 0.5);
+    box-shadow: 0 0 30px hsl(var(--arena-green) / 0.15);
   }
 
   /* Button gradient */
@@ -188,6 +234,24 @@
       135deg,
       hsl(5 70% 58%) 0%,
       hsl(var(--geimur-red)) 100%
+    );
+  }
+
+  /* Arena green button */
+  .btn-arena-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--arena-green)) 0%,
+      hsl(var(--arena-green-deep)) 100%
+    );
+    color: white;
+  }
+
+  .btn-arena-gradient:hover {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--arena-green-glow)) 0%,
+      hsl(var(--arena-green)) 100%
     );
   }
 
