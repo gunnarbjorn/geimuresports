@@ -121,7 +121,7 @@ const Index = () => {
                 <span>Skráning</span>
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-border/60 text-muted-foreground hover:text-foreground hover:border-border">
+            <Button asChild size="lg" className="btn-primary-gradient">
               <Link to="/mot#skrad-lid">
                 <Users className="mr-2 h-5 w-5" />
                 Skráðir keppendur
