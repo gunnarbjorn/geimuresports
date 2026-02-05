@@ -22,8 +22,8 @@ const navLinks = [{
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border/50">
-      <div className="mx-auto px-4 sm:px-6 lg:container">
+  return <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+      <div className="mx-auto px-3 sm:px-4 lg:container">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link 
@@ -38,15 +38,15 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-10">
-            {navLinks.map(link => <Link key={link.href} to={link.href} className={`text-sm font-medium tracking-wide uppercase transition-colors duration-300 hover:text-foreground ${location.pathname === link.href ? "text-foreground" : "text-muted-foreground"}`}>
+          <div className="hidden lg:flex items-center gap-8">
+            {navLinks.map(link => <Link key={link.href} to={link.href} className={`text-sm font-medium transition-colors hover:text-primary ${location.pathname === link.href ? "text-primary" : "text-muted-foreground"}`}>
                 {link.label}
               </Link>)}
           </div>
 
           {/* CTA Button - Desktop */}
           <div className="hidden lg:block">
-            <Button asChild className="btn-primary-gradient px-6">
+            <Button asChild className="btn-primary-gradient">
               <Link to="/skraning">Skrá mig</Link>
             </Button>
           </div>

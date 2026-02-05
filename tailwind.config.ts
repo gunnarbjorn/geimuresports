@@ -72,10 +72,6 @@ export default {
           surface: "hsl(var(--space-surface))",
           border: "hsl(var(--space-border))",
         },
-        aurora: {
-          teal: "hsl(var(--aurora-teal))",
-          glow: "hsl(var(--aurora-glow))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
