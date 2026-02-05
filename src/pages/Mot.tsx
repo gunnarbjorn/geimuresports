@@ -169,49 +169,6 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 2. GRUNNUPPLÝSINGAR UM MÓTIÐ */}
-      <section className="py-12 md:py-16 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
-              Grunnupplýsingar
-            </h2>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <Card className="glass-card text-center p-4">
-                <Gamepad2 className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Keppnisform</p>
-                <p className="font-semibold">Duos</p>
-              </Card>
-              <Card className="glass-card text-center p-4">
-                <Target className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Spilun</p>
-                <p className="font-semibold">Build</p>
-              </Card>
-              <Card className="glass-card text-center p-4">
-                <MapPin className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Staðsetning</p>
-                <p className="font-semibold">Arena</p>
-              </Card>
-              <Card className="glass-card text-center p-4">
-                <Users className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Hámarksfjöldi</p>
-                <p className="font-semibold">100 keppendur</p>
-              </Card>
-              <Card className="glass-card text-center p-4">
-                <ShieldCheck className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Aldur</p>
-                <p className="font-semibold">Allur aldur</p>
-              </Card>
-              <Card className="glass-card text-center p-4">
-                <Ticket className="h-6 w-6 text-primary mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">Skráning</p>
-                <p className="font-semibold">geimuresports.is</p>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 3. VERÐ & SKRÁNING */}
       <section className="py-12 md:py-16">
