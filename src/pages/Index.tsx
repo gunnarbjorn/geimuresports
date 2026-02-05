@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, Swords, Clock, ShieldCheck } from "lucide-react";
-import duosHeroImage from "@/assets/duos-tournament-hero.png";
+import heroDesktop from "@/assets/hero-desktop.png";
+import heroMobile from "@/assets/hero-mobile.jpeg";
 
 const stats = [{
   label: "Æfingar í viku",
@@ -89,10 +90,15 @@ const Index = () => {
   return <Layout>
     {/* Tournament Hero Section */}
     <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
-      {/* Hero Background Image */}
+      {/* Hero Background Image - Desktop */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${duosHeroImage})` }}
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
+        style={{ backgroundImage: `url(${heroDesktop})` }}
+      />
+      {/* Hero Background Image - Mobile */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
+        style={{ backgroundImage: `url(${heroMobile})` }}
       />
       {/* Gradient overlays for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
