@@ -115,10 +115,10 @@ const Index = () => {
           
           {/* CTAs - Green primary, smaller secondary */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg" className="btn-arena-gradient text-lg px-8 py-7 glow-green-sm font-bold">
-              <Link to="/mot#skraning">
-                <Swords className="mr-2 h-5 w-5" />
-                Skrá lið á mót
+            <Button asChild size="lg" className="btn-arena-gradient text-lg px-10 py-7 glow-green-sm font-bold">
+              <Link to="/mot#skraning" className="flex items-center justify-center">
+                <Swords className="mr-2.5 h-5 w-5" />
+                <span>Skrá lið á mót</span>
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-border/60 text-muted-foreground hover:text-foreground hover:border-border">
