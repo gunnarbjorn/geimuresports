@@ -87,7 +87,14 @@ const Mot = () => {
       setTimeout(() => {
         const element = document.querySelector(location.hash);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          const navbarHeight = 80;
+          const additionalOffset = 24;
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+          const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
         }
       }, 100);
     } else {
@@ -143,7 +150,7 @@ const Mot = () => {
               className="btn-arena-gradient text-base w-full sm:w-auto"
               onClick={scrollToRegistration}
             >
-              Skrá mig í mót
+              Skrá lið á mót
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
             
@@ -389,7 +396,7 @@ const Mot = () => {
           className="btn-arena-gradient w-full"
           onClick={scrollToRegistration}
         >
-          Skrá mig í mót
+          Skrá lið á mót
         </Button>
       </div>
 
