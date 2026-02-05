@@ -73,8 +73,8 @@ const faqs = [{
 }];
 const Index = () => {
   return <Layout>
-    {/* Tournament Hero Section */}
-    <section className="relative min-h-[75vh] md:min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
+    {/* Tournament Hero Section - Cinematic */}
+    <section className="relative min-h-[80vh] md:min-h-[90vh] lg:min-h-screen flex items-center justify-center overflow-hidden">
       {/* Hero Background Image - Desktop */}
       <div className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block" style={{
         backgroundImage: `url(${heroDesktop})`
@@ -84,44 +84,49 @@ const Index = () => {
         backgroundImage: `url(${heroMobile})`,
         backgroundPosition: 'center 38%'
       }} />
-      {/* Gradient overlays for readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
+      {/* Gradient overlays - more cinematic */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-transparent" />
       <div className="absolute inset-0 hero-glow-tournament" />
       
-      <div className="container mx-auto px-4 relative z-10 pt-0 md:pt-0">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Tournament Badge */}
-          
-          
-          {/* Title */}
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4">
-            <span className="text-glow">FORTNITE</span>{" "}
-            <span className="text-[hsl(var(--arena-green))] text-glow-green">DUOS</span>{" "}
-            <span className="text-glow">MÓT</span>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Title - larger, more impactful */}
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-foreground mb-6 tracking-tight">
+            <span className="text-glow">FORTNITE</span>
+            <br className="sm:hidden" />
+            <span className="text-[hsl(var(--arena-green))] text-glow-green"> DUOS</span>
+            <br className="sm:hidden" />
+            <span className="text-glow"> MÓT</span>
           </h1>
           
-          {/* Date/Details - Combined single row */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-8 px-4 py-3 rounded-full bg-card/60 border border-border backdrop-blur-sm">
-            <span className="flex items-center gap-1.5 text-sm font-medium">
+          {/* Subtitle - calmer */}
+          <p className="text-muted-foreground text-lg md:text-xl max-w-xl mx-auto mb-8">
+            Keppnisdagur í Arena með stemningu, áhorfendum og streymi
+          </p>
+          
+          {/* Date/Details - cleaner badge */}
+          <div className="inline-flex flex-wrap items-center justify-center gap-3 mb-10 px-6 py-3 rounded-full bg-card/50 border border-border/40 backdrop-blur-md">
+            <span className="flex items-center gap-2 text-sm font-medium text-foreground">
               <Calendar className="h-4 w-4 text-primary" />
               28. febrúar 2026
             </span>
-            <span className="text-muted-foreground">·</span>
-            <span className="flex items-center gap-1.5 text-sm font-medium">
-              <MapPin className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+            <span className="text-border">·</span>
+            <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+              <MapPin className="h-4 w-4 text-[hsl(var(--aurora-teal))]" />
               Arena
             </span>
           </div>
           
-          {/* CTAs - Green primary, smaller secondary */}
+          {/* CTAs - premium styling */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button asChild size="lg" className="btn-arena-gradient text-lg px-10 py-7 glow-green-sm font-bold">
+            <Button asChild size="lg" className="btn-arena-gradient text-base px-10 py-7 glow-green-sm font-semibold tracking-wide">
               <Link to="/mot#skraning">
                 <Swords className="mr-2 h-5 w-5" />
                 Skrá mig í mót
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-border/60 text-muted-foreground hover:text-foreground hover:border-border">
+            <Button asChild size="lg" variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-transparent">
               <Link to="/aefingar">
                 <Gamepad2 className="mr-2 h-5 w-5" />
                 Skoða æfingar
@@ -130,6 +135,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      {/* Subtle bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </section>
 
     {/* Why Geimur Section */}
