@@ -3,7 +3,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, Swords, Clock, ShieldCheck } from "lucide-react";
+import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, Swords, MapPin, ShieldCheck } from "lucide-react";
 import heroDesktop from "@/assets/hero-desktop.png";
 import heroMobile from "@/assets/hero-mobile.jpeg";
 const benefits = [{
@@ -108,7 +108,7 @@ const Index = () => {
             </span>
             <span className="text-muted-foreground">·</span>
             <span className="flex items-center gap-1.5 text-sm font-medium">
-              <Clock className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+              <MapPin className="h-4 w-4 text-[hsl(var(--arena-green))]" />
               Arena
             </span>
           </div>
