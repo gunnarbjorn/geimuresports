@@ -2,3 +2,4 @@ project_id = "kgkljqvwhmdhrjeyqpti"
 
 [functions.send-notification]
 verify_jwt = false
+# Force redeploy v2
