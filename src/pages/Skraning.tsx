@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { TrainingForm } from "@/components/forms/TrainingForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Calendar, 
   Trophy, 
   ArrowRight, 
   MapPin, 
-  Clock, 
   Users,
   Gamepad2,
   ChevronRight,
@@ -30,7 +30,6 @@ const ACTIVE_TOURNAMENT = {
   date: "Lau 28. feb",
   time: "11:00",
   format: "Duo",
-  registeredTeams: 12,
   maxTeams: 50,
   entryFeePerTeam: 8880,
 };
@@ -38,9 +37,25 @@ const ACTIVE_TOURNAMENT = {
 const Skraning = () => {
   const location = useLocation();
   const [openSection, setOpenSection] = useState<string>("aefingar");
+  const [registeredTeamsCount, setRegisteredTeamsCount] = useState(0);
   
-  const remainingSpots = ACTIVE_TOURNAMENT.maxTeams - ACTIVE_TOURNAMENT.registeredTeams;
-  const progressPercentage = (ACTIVE_TOURNAMENT.registeredTeams / ACTIVE_TOURNAMENT.maxTeams) * 100;
+  const remainingSpots = ACTIVE_TOURNAMENT.maxTeams - registeredTeamsCount;
+  const progressPercentage = (registeredTeamsCount / ACTIVE_TOURNAMENT.maxTeams) * 100;
+
+  // Fetch registered teams count
+  useEffect(() => {
+    const fetchTeamsCount = async () => {
+      const { count, error } = await supabase
+        .from('registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('type', 'elko-tournament');
+      
+      if (!error && count !== null) {
+        setRegisteredTeamsCount(count);
+      }
+    };
+    fetchTeamsCount();
+  }, []);
 
   // Scroll to top when navigating to this page
   useEffect(() => {
@@ -140,12 +155,12 @@ const Skraning = () => {
                       <div className="mb-3">
                         <Progress value={progressPercentage} className="h-1.5 mb-1" />
                         <p className="text-xs text-[hsl(var(--arena-green))]">
-                          {ACTIVE_TOURNAMENT.registeredTeams}/{ACTIVE_TOURNAMENT.maxTeams} lið · {remainingSpots} laus
+                          {registeredTeamsCount}/{ACTIVE_TOURNAMENT.maxTeams} lið · {remainingSpots} laus
                         </p>
                       </div>
                       
                       <span className="inline-flex items-center text-sm text-[hsl(var(--arena-green))] font-medium">
-                        Skoða & skrá
+                        Skráð lið
                         <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </div>
@@ -206,7 +221,7 @@ const Skraning = () => {
                   </div>
                   <Button asChild className="btn-arena-gradient sm:w-auto">
                     <Link to="/mot">
-                      Skoða mót
+                      Skráning
                       <ChevronRight className="ml-1 h-4 w-4" />
                     </Link>
                   </Button>
