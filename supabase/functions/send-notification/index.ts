@@ -1,7 +1,7 @@
-// Geimur Esports - Send Notification Edge Function v3 - Rebuilt
-import { Resend } from "https://esm.sh/resend@2.0.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { z } from "https://esm.sh/zod@3.25.76";
+// Geimur Esports - Send Notification Edge Function v4
+import { Resend } from "npm:resend@2.0.0";
+import { createClient } from "npm:@supabase/supabase-js@2";
+import { z } from "npm:zod@3.25.76";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -57,7 +57,6 @@ type TournamentData = z.infer<typeof tournamentSchema>;
 type ElkoTournamentData = z.infer<typeof elkoTournamentSchema>;
 type ContactData = z.infer<typeof contactSchema>;
 
-// HTML escape function to prevent XSS in email templates
 function escapeHtml(str: unknown): string {
   const map: Record<string, string> = {
     '&': '&amp;',
@@ -106,7 +105,6 @@ function formatElkoTournamentEmail(data: ElkoTournamentData): string {
       <h1 style="color: #22c55e; border-bottom: 2px solid #22c55e; padding-bottom: 10px;">
         🎮 Ný liðsskráning – ${escapeHtml(data.tournamentName)}
       </h1>
-      
       <h2 style="color: #333; margin-top: 20px;">Liðsupplýsingar</h2>
       <table style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Nafn liðs:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.teamName)}</td></tr>
@@ -114,13 +112,11 @@ function formatElkoTournamentEmail(data: ElkoTournamentData): string {
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Spilari 2:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.player2Name)}</td></tr>
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Netfang:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.email)}</td></tr>
       </table>
-      
       <h2 style="color: #333; margin-top: 20px;">Mót</h2>
       <table style="width: 100%; border-collapse: collapse;">
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Mót:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.tournamentName)}</td></tr>
         <tr><td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Dagsetning:</strong></td><td style="padding: 8px 0; border-bottom: 1px solid #eee;">${escapeHtml(data.tournamentDate)}</td></tr>
       </table>
-      
       <h2 style="color: #333; margin-top: 20px;">Greiðsla</h2>
       <p style="background: #f5f5f5; padding: 15px; border-radius: 8px;">
         <strong>Order ID:</strong> ${escapeHtml(data.orderId)}
@@ -140,7 +136,6 @@ function formatContactEmail(data: ContactData): string {
   `;
 }
 
-// Confirmation emails for registrants
 function formatTrainingConfirmation(data: TrainingData): string {
   return `
     <h1>Takk fyrir skráninguna!</h1>
@@ -175,27 +170,23 @@ function formatElkoTournamentConfirmation(data: ElkoTournamentData): string {
         <h1 style="color: #22c55e; margin: 0;">🎮 Liðið þitt er skráð!</h1>
         <p style="color: #888; margin-top: 10px;">${escapeHtml(data.tournamentName)} · ${escapeHtml(data.tournamentDate)}</p>
       </div>
-      
       <div style="background: #1a1a1a; padding: 20px; border-radius: 8px; margin: 20px 0;">
         <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Nafn liðs:</strong> ${escapeHtml(data.teamName)}</p>
         <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Spilari 1:</strong> ${escapeHtml(data.player1Name)}</p>
         <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Spilari 2:</strong> ${escapeHtml(data.player2Name)}</p>
         <p style="margin: 5px 0; color: #ccc;"><strong style="color: #22c55e;">Order ID:</strong> ${escapeHtml(data.orderId)}</p>
       </div>
-      
       <h2 style="color: #22c55e; border-bottom: 1px solid #333; padding-bottom: 10px;">📋 Næstu skref</h2>
       <ol style="color: #ccc; line-height: 1.8;">
         <li>Liðið þitt birtist nú í listanum yfir skráð lið á vefsíðunni</li>
         <li>Mættu á mótið ${escapeHtml(data.tournamentDate)} í Arena</li>
         <li>Vertu með gott viðhorf og skemmtu þér!</li>
       </ol>
-      
       <div style="background: #1a1a1a; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center;">
         <p style="color: #888; margin: 0; font-size: 14px;">
           Ef þú hefur spurningar, hafðu samband á Discord eða sendu okkur email.
         </p>
       </div>
-      
       <p style="color: #888; margin-top: 30px; text-align: center;">
         Gangi þér vel!<br>
         <strong style="color: #22c55e;">Geimur Esports</strong>
@@ -245,16 +236,15 @@ function getConfirmationSubject(type: string, data: TrainingData | TournamentDat
   }
 }
 
-// Validates and sanitizes data based on type, throws ZodError on failure
 function validateAndSanitizeData(type: string, data: Record<string, unknown>): TrainingData | TournamentData | ElkoTournamentData | ContactData {
-  console.log("Validating data for type:", type, "with keys:", Object.keys(data));
+  console.log("v4 validateAndSanitizeData - type:", type, "keys:", Object.keys(data));
   switch (type) {
     case "training":
       return trainingSchema.parse(data);
     case "tournament":
       return tournamentSchema.parse(data);
     case "elko-tournament":
-      console.log("Using elkoTournamentSchema for validation");
+      console.log("v4 Using elkoTournamentSchema");
       return elkoTournamentSchema.parse(data);
     case "contact":
       return contactSchema.parse(data);
@@ -263,21 +253,18 @@ function validateAndSanitizeData(type: string, data: Record<string, unknown>): T
   }
 }
 
-// Rate limiting settings
-const RATE_LIMIT_MAX = 5; // Max submissions per time window
-const RATE_LIMIT_WINDOW_MINUTES = 60; // Time window in minutes
+const RATE_LIMIT_MAX = 5;
+const RATE_LIMIT_WINDOW_MINUTES = 60;
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
     const { type, data: rawData }: NotificationRequest = await req.json();
-    console.log(`Processing ${type} notification`);
+    console.log(`v4 Processing ${type} notification`);
 
-    // Validate required fields
     if (!type || !rawData) {
       return new Response(
         JSON.stringify({ error: "Vantar nauðsynleg gögn" }),
@@ -285,7 +272,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Validate type
     if (!["training", "tournament", "elko-tournament", "contact"].includes(type)) {
       return new Response(
         JSON.stringify({ error: "Ógild tegund skráningar" }),
@@ -293,30 +279,25 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Server-side validation and sanitization
     let validatedData: TrainingData | TournamentData | ElkoTournamentData | ContactData;
     try {
       validatedData = validateAndSanitizeData(type, rawData);
     } catch (validationError) {
-      console.error("Validation error:", validationError);
-      // Return generic validation error to client (don't expose details)
+      console.error("v4 Validation error:", validationError);
       return new Response(
         JSON.stringify({ error: "Ógild gögn. Vinsamlegast athugaðu alla reiti." }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Create Supabase client with service role for database operations
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get client IP for rate limiting
     const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || 
                      req.headers.get("cf-connecting-ip") || 
                      "unknown";
     
-    // Check rate limit - count recent submissions from this IP
     const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60 * 1000).toISOString();
     
     const { count, error: countError } = await supabase
@@ -327,7 +308,6 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (countError) {
       console.error("Rate limit check error:", countError);
-      // Continue anyway - don't block legitimate users due to rate limit check failure
     } else if (count !== null && count >= RATE_LIMIT_MAX) {
       console.warn(`Rate limit exceeded for IP: ${clientIp} (${count} submissions in ${RATE_LIMIT_WINDOW_MINUTES} min)`);
       return new Response(
@@ -335,24 +315,18 @@ const handler = async (req: Request): Promise<Response> => {
           error: "Of margar skráningar. Vinsamlegast reyndu aftur síðar.",
           code: "RATE_LIMIT_EXCEEDED"
         }),
-        {
-          status: 429,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
+        { status: 429, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Add client IP to data for rate limiting tracking
     const dataWithIp = { ...validatedData, client_ip: clientIp };
 
-    // Save to database
     const { error: dbError } = await supabase
       .from("registrations")
       .insert({ type, data: dataWithIp });
 
     if (dbError) {
       console.error("Database insert error:", dbError);
-      // Return generic error to client
       return new Response(
         JSON.stringify({ error: "Villa við vistun. Vinsamlegast reyndu aftur." }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -360,7 +334,6 @@ const handler = async (req: Request): Promise<Response> => {
     }
     console.log("Registration saved to database");
 
-    // Format email based on type
     let html: string;
     let confirmationHtml: string;
     switch (type) {
@@ -385,7 +358,6 @@ const handler = async (req: Request): Promise<Response> => {
         confirmationHtml = html;
     }
 
-    // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
       from: FROM_EMAIL,
       to: [NOTIFICATION_EMAIL],
@@ -403,7 +375,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send confirmation email to registrant
     const registrantEmail = 'email' in validatedData ? validatedData.email : null;
     let confirmationResponse = null;
     
@@ -418,7 +389,6 @@ const handler = async (req: Request): Promise<Response> => {
 
       if (confirmationResponse?.error) {
         console.error("Confirmation email send error:", confirmationResponse.error);
-        // Don't fail the whole request if confirmation email fails
         console.warn("Continuing despite confirmation email failure");
       }
     }
@@ -429,22 +399,13 @@ const handler = async (req: Request): Promise<Response> => {
         adminEmailId: adminEmailResponse.data?.id,
         confirmationEmailId: confirmationResponse?.data?.id 
       }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error: unknown) {
-    // Log detailed error server-side only
     console.error("Error in send-notification function:", error);
-    
-    // Return generic error to client (no internal details)
     return new Response(
       JSON.stringify({ error: "Villa kom upp. Vinsamlegast reyndu aftur síðar." }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 };
