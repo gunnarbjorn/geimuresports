@@ -155,10 +155,6 @@ const Mot = () => {
               Skrá lið á mót
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
-            
-            <p className="text-xs text-[hsl(var(--arena-green))] mt-3 font-medium">
-              Hámarksfjöldi 100 keppendur
-            </p>
           </div>
         </div>
       </section>
@@ -170,8 +166,8 @@ const Mot = () => {
             <Card className="glass-card border-[hsl(var(--arena-green)/0.3)]">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                    <Ticket className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                    <Ticket className="h-4 w-4 md:h-5 md:w-5 text-[hsl(var(--arena-green))]" />
                   </div>
                   <CardTitle className="text-lg">Verð</CardTitle>
                 </div>
@@ -217,8 +213,8 @@ const Mot = () => {
               <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock className="h-4 w-4 text-primary" />
+                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Clock className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
                     </div>
                     <span className="font-display font-semibold text-left">Sjá dagskrá mótsins</span>
                   </div>
@@ -264,8 +260,8 @@ const Mot = () => {
             <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
               <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                    <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                    <Trophy className="h-4 w-4 md:h-5 md:w-5 text-[hsl(var(--arena-green))]" />
                   </div>
                   <CardTitle className="font-display text-lg md:text-xl">
                     Skráning í mót
@@ -288,8 +284,8 @@ const Mot = () => {
               <AccordionItem value="keppendur" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
-                      <Gamepad2 className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
+                      <Gamepad2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-[hsl(var(--arena-green))]" />
                     </div>
                     <span className="font-display font-semibold text-left">Fyrir keppendur</span>
                   </div>
@@ -315,8 +311,8 @@ const Mot = () => {
               <AccordionItem value="foreldrar" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Heart className="h-4 w-4 text-primary" />
+                    <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Heart className="h-3.5 w-3.5 md:h-4 md:w-4 text-primary" />
                     </div>
                     <span className="font-display font-semibold text-left">Fyrir foreldra</span>
                   </div>
