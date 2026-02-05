@@ -123,16 +123,12 @@ const Mot = () => {
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-6 bg-[hsl(var(--arena-green)/0.1)] text-[hsl(var(--arena-green))] border-0 text-sm px-4 py-2">
               <Gamepad2 className="h-4 w-4 mr-2" />
-              LAN mót í Arena
+              LAN MÓT
             </Badge>
             
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-8">
               Fortnite Duos mót í Arena
             </h1>
-            
-            <p className="text-muted-foreground text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-              Keppnisdagur í Arena með stemningu, áhorfendum og streymi.
-            </p>
             
             <div className="flex flex-wrap justify-center gap-3 mb-8">
               <Badge variant="outline" className="text-sm px-4 py-2 bg-card">
@@ -142,10 +138,6 @@ const Mot = () => {
               <Badge variant="outline" className="text-sm px-4 py-2 bg-card">
                 <Clock className="h-4 w-4 mr-2 text-primary" />
                 11:00 – 14:00
-              </Badge>
-              <Badge variant="outline" className="text-sm px-4 py-2 bg-card">
-                <MapPin className="h-4 w-4 mr-2 text-primary" />
-                Arena
               </Badge>
               <Badge variant="outline" className="text-sm px-4 py-2 bg-card">
                 <Users className="h-4 w-4 mr-2 text-primary" />
