@@ -7,11 +7,11 @@ const navLinks = [{
   href: "/",
   label: "Heim"
 }, {
-  href: "/aefingar",
-  label: "Æfingar"
-}, {
   href: "/mot",
   label: "Mót"
+}, {
+  href: "/aefingar",
+  label: "Æfingar"
 }, {
   href: "/um",
   label: "Um okkur"
