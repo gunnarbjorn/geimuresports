@@ -97,22 +97,22 @@ const faqs = [{
 const Index = () => {
   return <Layout>
     {/* Tournament Hero Section */}
-    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[75vh] md:min-h-[85vh] lg:min-h-[90vh] flex items-start md:items-center justify-center overflow-hidden pt-16 md:pt-0">
       {/* Hero Background Image - Desktop */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
         style={{ backgroundImage: `url(${heroDesktop})` }}
       />
-      {/* Hero Background Image - Mobile */}
+      {/* Hero Background Image - Mobile - positioned at top */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
-        style={{ backgroundImage: `url(${heroMobile})` }}
+        className="absolute inset-0 bg-cover bg-no-repeat md:hidden"
+        style={{ backgroundImage: `url(${heroMobile})`, backgroundPosition: 'top center' }}
       />
       {/* Gradient overlays for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
       <div className="absolute inset-0 hero-glow-tournament" />
       
-      <div className="container mx-auto px-4 relative z-10 pt-4 md:pt-0">
+      <div className="container mx-auto px-4 relative z-10 pt-0 md:pt-0">
         <div className="max-w-4xl mx-auto text-center">
           {/* Tournament Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-[hsl(var(--arena-green))] mb-6 glow-green-sm">
