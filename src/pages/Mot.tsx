@@ -115,6 +115,7 @@ const Mot = () => {
   const [registeredTeams, setRegisteredTeams] = useState<RegisteredTeam[]>([]);
   const [isTeamsListOpen, setIsTeamsListOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState<string | undefined>(undefined);
 
   const registeredTeamsCount = registeredTeams.length;
   const remainingSpots = TOURNAMENT_CONFIG.maxTeams - registeredTeamsCount;
@@ -199,17 +200,23 @@ const Mot = () => {
   };
 
   const scrollToSchedule = () => {
-    const element = document.getElementById('dagskra');
-    if (element) {
-      const navbarHeight = 80;
-      const additionalOffset = 24;
-      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-      const offsetPosition = elementPosition - navbarHeight - additionalOffset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
+    // Open the accordion first
+    setScheduleOpen("dagskra");
+    
+    // Then scroll after a brief delay to allow accordion to open
+    setTimeout(() => {
+      const element = document.getElementById('dagskra');
+      if (element) {
+        const navbarHeight = 80;
+        const additionalOffset = 24;
+        const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+        const offsetPosition = elementPosition - navbarHeight - additionalOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
 
   return (
@@ -407,7 +414,7 @@ const Mot = () => {
       <section id="dagskra" className="py-4 md:py-6 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
-            <Accordion type="single" collapsible>
+            <Accordion type="single" collapsible value={scheduleOpen} onValueChange={setScheduleOpen}>
               <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
