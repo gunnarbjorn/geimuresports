@@ -79,7 +79,7 @@ const faqs = [{
 const Index = () => {
   return <Layout>
     {/* Tournament Hero Section */}
-    <section className="relative min-h-[75vh] md:min-h-[85vh] lg:min-h-[90vh] flex items-start md:items-center justify-center overflow-hidden pt-16 md:pt-0">
+    <section className="relative min-h-[75vh] md:min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Hero Background Image - Desktop */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
