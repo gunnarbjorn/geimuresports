@@ -14,10 +14,6 @@ const stats = [{
   label: "Mót á tímabilinu",
   value: "6+",
   icon: Trophy
-}, {
-  label: "Félagsandi + hreyfing",
-  value: "✓",
-  icon: Heart
 }];
 
 const benefits = [{
