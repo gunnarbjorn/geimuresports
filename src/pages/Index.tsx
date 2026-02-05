@@ -103,10 +103,10 @@ const Index = () => {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
         style={{ backgroundImage: `url(${heroDesktop})` }}
       />
-      {/* Hero Background Image - Mobile - positioned at top */}
+      {/* Hero Background Image - Mobile - positioned to show torso area */}
       <div 
         className="absolute inset-0 bg-cover bg-no-repeat md:hidden"
-        style={{ backgroundImage: `url(${heroMobile})`, backgroundPosition: 'top center' }}
+        style={{ backgroundImage: `url(${heroMobile})`, backgroundPosition: 'center 38%' }}
       />
       {/* Gradient overlays for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
