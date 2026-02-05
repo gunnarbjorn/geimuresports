@@ -122,6 +122,12 @@ const Mot = () => {
       <section className="pt-24 pb-8 md:pt-32 md:pb-12">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
+            {/* Arena badge at top */}
+            <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card mb-4">
+              <MapPin className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--arena-green))]" />
+              Arena
+            </Badge>
+            
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
               Fortnite Duos mót í Arena
             </h1>
@@ -134,10 +140,6 @@ const Mot = () => {
               <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card">
                 <Clock className="h-3.5 w-3.5 mr-1.5 text-primary" />
                 11:00–14:00
-              </Badge>
-              <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card">
-                <MapPin className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--arena-green))]" />
-                Arena
               </Badge>
               <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card">
                 <Users className="h-3.5 w-3.5 mr-1.5 text-primary" />
@@ -154,8 +156,8 @@ const Mot = () => {
               <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
             
-            <p className="text-xs text-muted-foreground mt-3">
-              <span className="text-[hsl(var(--arena-green))] font-semibold">HARD CAP</span> – Hámarksfjöldi 100 keppendur
+            <p className="text-xs text-[hsl(var(--arena-green))] mt-3 font-medium">
+              Hámarksfjöldi 100 keppendur
             </p>
           </div>
         </div>
