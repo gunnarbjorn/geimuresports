@@ -160,6 +160,11 @@ const Mot = () => {
 
   useEffect(() => {
     if (location.hash) {
+      // Auto-open teams list if navigating to #skrad-lid
+      if (location.hash === '#skrad-lid') {
+        setIsTeamsListOpen(true);
+      }
+      
       setTimeout(() => {
         const element = document.querySelector(location.hash);
         if (element) {
@@ -282,7 +287,7 @@ const Mot = () => {
       <section className="py-4 md:py-6">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
-            <Card className="bg-card border-[hsl(var(--arena-green)/0.3)] glow-green-sm">
+            <Card id="skrad-lid" className="bg-card border-[hsl(var(--arena-green)/0.3)] glow-green-sm scroll-mt-28">
               <Collapsible open={isTeamsListOpen} onOpenChange={setIsTeamsListOpen}>
                 <CollapsibleTrigger asChild>
                   <CardContent className="p-5 cursor-pointer hover:bg-muted/30 transition-colors">
