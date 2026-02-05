@@ -121,7 +121,7 @@ const Index = () => {
                 Skrá mig í mót
               </Link>
             </Button>
-            <Button asChild size="lg" variant="ghost" className="text-muted-foreground hover:text-foreground">
+            <Button asChild size="lg" variant="outline" className="border-border/60 text-muted-foreground hover:text-foreground hover:border-border">
               <Link to="/aefingar">
                 <Gamepad2 className="mr-2 h-5 w-5" />
                 Skoða æfingar
