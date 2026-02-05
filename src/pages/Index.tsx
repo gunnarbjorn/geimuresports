@@ -6,7 +6,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, Swords, Clock, ShieldCheck } from "lucide-react";
 import heroDesktop from "@/assets/hero-desktop.png";
 import heroMobile from "@/assets/hero-mobile.jpeg";
-
 const benefits = [{
   title: "Markviss þjálfun",
   description: "Mechanics, game sense og strategy frá reyndum þjálfurum.",
@@ -24,14 +23,13 @@ const benefits = [{
   description: "Kepptu í skipulögðum mótum og settu þér skýr markmið.",
   icon: Trophy
 }];
-
 const packages = [{
   name: "Nýliðar",
   value: "nylidar",
   description: "Fyrir þá sem eru að byrja.",
   sessionsPerWeek: 1,
   monthlyPrice: 12900,
-  features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hámark 10 í hóp", "Aðgangur að Discord"],
+  features: ["1x æfing í viku", "Grunnatriði Fortnite", "Hámark 10 í hóp", "Aðgangur að Discord"]
 }, {
   name: "Framhald",
   value: "framhald",
@@ -47,15 +45,13 @@ const packages = [{
   sessionsPerWeek: 1,
   monthlyPrice: 16900,
   isFamily: true,
-  features: ["1x æfing í viku", "Sérhópar fyrir fjölskyldur", "Hámark 10 í hóp", "Skemmtilegt og fræðandi"],
+  features: ["1x æfing í viku", "Sérhópar fyrir fjölskyldur", "Hámark 10 í hóp", "Skemmtilegt og fræðandi"]
 }];
-
 const formatPrice = (price: number) => price.toLocaleString('is-IS');
 const calculatePerSession = (monthlyPrice: number, sessionsPerWeek: number) => {
   const sessionsPerMonth = sessionsPerWeek * 4;
   return Math.round(monthlyPrice / sessionsPerMonth);
 };
-
 const faqs = [{
   question: "Hvernig virka æfingarnar í gegnum netið?",
   answer: "Æfingarnar fara fram í gegnum Discord. Þjálfarinn tengist við hópinn og fer yfir mechanics, strategy og game sense í beinni útsendingu. Þátttakendur spila saman og fá endurgjöf í rauntíma."
@@ -75,21 +71,19 @@ const faqs = [{
   question: "Hvað með foreldra – mega þeir vera með?",
   answer: "Já! Við bjóðum upp á sérstakan 'Foreldri + barn' pakka þar sem foreldri og barn spila og læra saman í æfingum í gegnum netið."
 }];
-
 const Index = () => {
   return <Layout>
     {/* Tournament Hero Section */}
     <section className="relative min-h-[75vh] md:min-h-[85vh] lg:min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Hero Background Image - Desktop */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
-        style={{ backgroundImage: `url(${heroDesktop})` }}
-      />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block" style={{
+        backgroundImage: `url(${heroDesktop})`
+      }} />
       {/* Hero Background Image - Mobile - positioned to show torso area */}
-      <div 
-        className="absolute inset-0 bg-cover bg-no-repeat md:hidden"
-        style={{ backgroundImage: `url(${heroMobile})`, backgroundPosition: 'center 38%' }}
-      />
+      <div className="absolute inset-0 bg-cover bg-no-repeat md:hidden" style={{
+        backgroundImage: `url(${heroMobile})`,
+        backgroundPosition: 'center 38%'
+      }} />
       {/* Gradient overlays for readability */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
       <div className="absolute inset-0 hero-glow-tournament" />
@@ -97,10 +91,7 @@ const Index = () => {
       <div className="container mx-auto px-4 relative z-10 pt-0 md:pt-0">
         <div className="max-w-4xl mx-auto text-center">
           {/* Tournament Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card text-[hsl(var(--arena-green))] mb-6 glow-green-sm">
-            <Swords className="h-5 w-5" />
-            <span className="font-bold tracking-wide">DUOS ARENA</span>
-          </div>
+          
           
           {/* Title */}
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-4">
@@ -159,8 +150,7 @@ const Index = () => {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {benefits.map((benefit, index) => (
-            <Card key={index} className="glass-card border-border card-hover">
+          {benefits.map((benefit, index) => <Card key={index} className="glass-card border-border card-hover">
               <CardHeader className="pb-2">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
                   <benefit.icon className="h-5 w-5 text-primary" />
@@ -172,8 +162,7 @@ const Index = () => {
                   {benefit.description}
                 </CardDescription>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
       </div>
     </section>
@@ -202,15 +191,12 @@ const Index = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {packages.map((pkg, index) => (
-            <Card key={index} className={`glass-card border-border card-hover relative ${pkg.featured ? 'border-primary glow-red-sm' : ''}`}>
-              {pkg.featured && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          {packages.map((pkg, index) => <Card key={index} className={`glass-card border-border card-hover relative ${pkg.featured ? 'border-primary glow-red-sm' : ''}`}>
+              {pkg.featured && <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                   <span className="px-4 py-1 rounded-full text-xs font-bold bg-primary text-primary-foreground">
                     Vinsælast
                   </span>
-                </div>
-              )}
+                </div>}
               <CardHeader className="text-center pt-8">
                 <CardTitle className="font-display text-2xl">{pkg.name}</CardTitle>
                 <CardDescription>{pkg.description}</CardDescription>
@@ -228,21 +214,18 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3 mb-6">
-                  {pkg.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center gap-3 text-sm">
+                  {pkg.features.map((feature, featureIndex) => <li key={featureIndex} className="flex items-center gap-3 text-sm">
                       <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <span className="text-primary text-xs">✓</span>
                       </div>
                       {feature}
-                    </li>
-                  ))}
+                    </li>)}
                 </ul>
                 <Button asChild className={`w-full ${pkg.featured ? 'btn-primary-gradient' : ''}`} variant={pkg.featured ? 'default' : 'outline'}>
                   <Link to={`/aefingar?group=${pkg.value}#skraning`}>Skrá mig</Link>
                 </Button>
               </CardContent>
-            </Card>
-          ))}
+            </Card>)}
         </div>
       </div>
     </section>
@@ -261,16 +244,14 @@ const Index = () => {
         
         <div className="max-w-3xl mx-auto">
           <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem key={index} value={`item-${index}`} className="glass-card border border-border rounded-xl px-6">
+            {faqs.map((faq, index) => <AccordionItem key={index} value={`item-${index}`} className="glass-card border border-border rounded-xl px-6">
                 <AccordionTrigger className="text-left font-display font-medium hover:text-primary hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground">
                   {faq.answer}
                 </AccordionContent>
-              </AccordionItem>
-            ))}
+              </AccordionItem>)}
           </Accordion>
         </div>
       </div>
@@ -296,7 +277,10 @@ const Index = () => {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-primary/50">
-                <Link to="/hafa-samband" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Hafa samband</Link>
+                <Link to="/hafa-samband" onClick={() => window.scrollTo({
+                  top: 0,
+                  behavior: 'smooth'
+                })}>Hafa samband</Link>
               </Button>
             </div>
           </CardContent>
