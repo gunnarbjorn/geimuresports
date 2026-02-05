@@ -109,12 +109,7 @@ const Index = () => {
             <span className="text-muted-foreground">·</span>
             <span className="flex items-center gap-1.5 text-sm font-medium">
               <Clock className="h-4 w-4 text-[hsl(var(--arena-green))]" />
-              Online
-            </span>
-            <span className="text-muted-foreground">·</span>
-            <span className="flex items-center gap-1.5 text-sm font-medium">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              8–16 ára
+              Arena
             </span>
           </div>
           
