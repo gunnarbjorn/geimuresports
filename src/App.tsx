@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Aefingar from "./pages/Aefingar";
 import Mot from "./pages/Mot";
+import ArenaLan from "./pages/ArenaLan";
 import Skraning from "./pages/Skraning";
 import Um from "./pages/Um";
 import HafaSamband from "./pages/HafaSamband";
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/aefingar" element={<Aefingar />} />
           <Route path="/mot" element={<Mot />} />
+          <Route path="/arena-lan" element={<ArenaLan />} />
           <Route path="/skraning" element={<Skraning />} />
           <Route path="/um" element={<Um />} />
           <Route path="/hafa-samband" element={<HafaSamband />} />
