@@ -1,3 +1,4 @@
+// Geimur Esports - Send Notification Edge Function
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from "https://esm.sh/zod@3.25.76";
