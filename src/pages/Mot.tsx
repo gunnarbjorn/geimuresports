@@ -255,7 +255,7 @@ const Mot = () => {
                 className="btn-arena-gradient text-base"
                 onClick={scrollToRegistration}
               >
-                Skráning
+                Skrá mitt lið
                 <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
               <Button 
@@ -407,7 +407,7 @@ const Mot = () => {
       <section id="dagskra" className="py-4 md:py-6 scroll-mt-24">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
-            <Accordion type="single" collapsible defaultValue="dagskra">
+            <Accordion type="single" collapsible>
               <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
                 <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
                   <div className="flex items-center gap-3">
@@ -591,19 +591,6 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* Sticky bottom CTA on mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border md:hidden z-40">
-        <Button 
-          size="lg" 
-          className="btn-arena-gradient w-full"
-          onClick={scrollToTop}
-        >
-          Skráning
-        </Button>
-      </div>
-
-      {/* Bottom padding for sticky CTA */}
-      <div className="h-20 md:hidden" />
     </Layout>
   );
 };
