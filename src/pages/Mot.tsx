@@ -154,7 +154,124 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 2. WHO IS THIS FOR – Accordion */}
+      {/* 2. PRICE SECTION – Single Card */}
+      <section className="py-6 md:py-10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <Card className="glass-card border-[hsl(var(--arena-green)/0.3)]">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                    <Ticket className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                  </div>
+                  <CardTitle className="text-lg">Verð</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Entry fee */}
+                <div className="flex items-center justify-between py-3 border-b border-border">
+                  <div>
+                    <p className="font-medium">Keppnisgjald</p>
+                    <p className="text-sm text-muted-foreground">á keppanda</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-[hsl(var(--arena-green))]">4.440 kr</p>
+                    <p className="text-xs text-muted-foreground">8.880 kr/lið</p>
+                  </div>
+                </div>
+                
+                {/* Pizza option */}
+                <div className="flex items-center justify-between py-3">
+                  <div className="flex items-center gap-3">
+                    <Pizza className="h-5 w-5 text-accent" />
+                    <div>
+                      <p className="font-medium">Pizza pakki</p>
+                      <p className="text-xs text-muted-foreground">Valfrjálst – veldu í skráningu</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">+1.000 kr</p>
+                    <p className="text-xs text-muted-foreground">+2.000 kr/lið</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. SCHEDULE – Accordion */}
+      <Accordion type="single" collapsible>
+        <section className="py-6 md:py-10">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto">
+              <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
+                <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Clock className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="font-display font-semibold text-left">Sjá dagskrá mótsins</span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-5 pb-5">
+                  <div className="space-y-2">
+                    {[
+                      { time: "11:00", title: "Leikur 1", icon: Timer, color: "arena-green" },
+                      { time: "11:30", title: "Leikur 2", icon: Timer, color: "arena-green" },
+                      { time: "12:00", title: "Leikur 3", icon: Timer, color: "arena-green" },
+                      { time: "12:30", title: "Pása (pizza / hvíld)", icon: Pause, color: "accent" },
+                      { time: "13:00", title: "Leikur 4", icon: Timer, color: "arena-green" },
+                      { time: "13:30", title: "Leikur 5", icon: Timer, color: "arena-green" },
+                      { time: "14:00", title: "Verðlaun & raffle", icon: PartyPopper, color: "primary" },
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-center gap-3 py-2">
+                        <Badge 
+                          variant="outline" 
+                          className={`text-xs font-mono ${
+                            item.color === 'accent' ? 'bg-accent/10 text-accent border-accent/30' :
+                            item.color === 'primary' ? 'bg-primary/10 text-primary border-primary/30' :
+                            'bg-[hsl(var(--arena-green)/0.1)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]'
+                          }`}
+                        >
+                          {item.time}
+                        </Badge>
+                        <span className="text-sm">{item.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </div>
+          </div>
+        </section>
+      </Accordion>
+
+
+      {/* 5. Registration Form Section */}
+      <section id="skraning" className="py-10 md:py-16 bg-card/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
+              <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+                    <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                  </div>
+                  <CardTitle className="font-display text-lg md:text-xl">
+                    Skráning í mót
+                  </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="p-5 md:p-6">
+                <ElkoRegistrationForm />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. WHO IS THIS FOR – Accordion */}
       <section className="py-6 md:py-10">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
@@ -217,123 +334,7 @@ const Mot = () => {
         </div>
       </section>
 
-      {/* 3. PRICE SECTION – Single Card */}
-      <section className="py-6 md:py-10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <Card className="glass-card border-[hsl(var(--arena-green)/0.3)]">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                    <Ticket className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-                  </div>
-                  <CardTitle className="text-lg">Verð</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Entry fee */}
-                <div className="flex items-center justify-between py-3 border-b border-border">
-                  <div>
-                    <p className="font-medium">Keppnisgjald</p>
-                    <p className="text-sm text-muted-foreground">á keppanda</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold text-[hsl(var(--arena-green))]">4.440 kr</p>
-                    <p className="text-xs text-muted-foreground">8.880 kr/lið</p>
-                  </div>
-                </div>
-                
-                {/* Pizza option */}
-                <div className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <Pizza className="h-5 w-5 text-accent" />
-                    <div>
-                      <p className="font-medium">Pizza pakki</p>
-                      <p className="text-xs text-muted-foreground">Valfrjálst – veldu í skráningu</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold">+1.000 kr</p>
-                    <p className="text-xs text-muted-foreground">+2.000 kr/lið</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. SCHEDULE – Accordion */}
-      <section className="py-6 md:py-10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
-                <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Clock className="h-4 w-4 text-primary" />
-                    </div>
-                    <span className="font-display font-semibold text-left">Sjá dagskrá mótsins</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-5 pb-5">
-                  <div className="space-y-2">
-                    {[
-                      { time: "11:00", title: "Leikur 1", icon: Timer, color: "arena-green" },
-                      { time: "11:30", title: "Leikur 2", icon: Timer, color: "arena-green" },
-                      { time: "12:00", title: "Leikur 3", icon: Timer, color: "arena-green" },
-                      { time: "12:30", title: "Pása (pizza / hvíld)", icon: Pause, color: "accent" },
-                      { time: "13:00", title: "Leikur 4", icon: Timer, color: "arena-green" },
-                      { time: "13:30", title: "Leikur 5", icon: Timer, color: "arena-green" },
-                      { time: "14:00", title: "Verðlaun & raffle", icon: PartyPopper, color: "primary" },
-                    ].map((item, index) => (
-                      <div key={index} className="flex items-center gap-3 py-2">
-                        <Badge 
-                          variant="outline" 
-                          className={`text-xs font-mono ${
-                            item.color === 'accent' ? 'bg-accent/10 text-accent border-accent/30' :
-                            item.color === 'primary' ? 'bg-primary/10 text-primary border-primary/30' :
-                            'bg-[hsl(var(--arena-green)/0.1)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]'
-                          }`}
-                        >
-                          {item.time}
-                        </Badge>
-                        <span className="text-sm">{item.title}</span>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Registration Form Section */}
-      <section id="skraning" className="py-10 md:py-16 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
-              <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                    <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-                  </div>
-                  <CardTitle className="font-display text-lg md:text-xl">
-                    Skráning í mót
-                  </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="p-5 md:p-6">
-                <ElkoRegistrationForm />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* 6. Rules & Trust */}
+      {/* 7. Rules & Trust */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto">
