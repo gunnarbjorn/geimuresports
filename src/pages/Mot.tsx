@@ -198,8 +198,8 @@ const Mot = () => {
     }
   };
 
-  const scrollToTeamsList = () => {
-    const element = document.getElementById('skraning-opin');
+  const scrollToSchedule = () => {
+    const element = document.getElementById('dagskra');
     if (element) {
       const navbarHeight = 80;
       const additionalOffset = 24;
@@ -209,8 +209,6 @@ const Mot = () => {
         top: offsetPosition,
         behavior: 'smooth'
       });
-      // Open the teams list
-      setIsTeamsListOpen(true);
     }
   };
 
@@ -263,9 +261,9 @@ const Mot = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={scrollToTeamsList}
+                onClick={scrollToSchedule}
               >
-                Skráð lið
+                Sjá dagskrá
               </Button>
             </div>
           </div>
@@ -274,7 +272,7 @@ const Mot = () => {
 
 
       {/* 2. REGISTRATION STATUS – Capacity Card with Teams List */}
-      <section id="skraning-opin" className="py-4 md:py-6 scroll-mt-24">
+      <section className="py-4 md:py-6">
         <div className="container mx-auto px-4">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             <Card className="bg-card border-[hsl(var(--arena-green)/0.3)] glow-green-sm">
