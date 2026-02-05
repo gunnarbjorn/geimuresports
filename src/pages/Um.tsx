@@ -46,13 +46,14 @@ const Um = () => {
                 <img src={geimurLogo} alt="Geimur" className="h-40 md:h-56 w-auto opacity-90" />
               </div>
               <div className="lg:w-2/3 text-center lg:text-left">
-                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">Hvað er Geimur?</h1>
-                <p className="text-lg md:text-xl text-muted-foreground mb-6">
+                <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-glow">
+                  Hvað er Geimur?
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground mb-6 leading-relaxed">
                   Geimur er rafíþróttafélag stofnað til að efla íslenska leikara á fagmannlegan og 
                   heilbrigðan hátt. Við trúum að tölvuleikir geti verið vettvangur fyrir persónulegan 
                   þroska, liðsanda og markvissa þjálfun.
                 </p>
-                
               </div>
             </div>
           </div>
@@ -109,15 +110,15 @@ const Um = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {values.map((value, index) => <Card key={index} className="bg-card border-border card-hover text-center">
+            {values.map((value, index) => <Card key={index} className="glass-card border-border card-hover text-center">
                 <CardHeader>
                   <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <value.icon className="h-8 w-8 text-primary" />
                   </div>
-                  <CardTitle className="font-display text-xl">{value.title}</CardTitle>
+                  <CardTitle className="font-display text-2xl">{value.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-muted-foreground">
+                  <CardDescription className="text-muted-foreground text-base">
                     {value.description}
                   </CardDescription>
                 </CardContent>
@@ -139,18 +140,18 @@ const Um = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {team.map((member, index) => <Card key={index} className="bg-card border-border card-hover">
+            {team.map((member, index) => <Card key={index} className="glass-card border-border card-hover">
                 <CardHeader className="text-center">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center mx-auto mb-4">
                     <span className="font-display text-2xl font-bold text-primary">
                       {member.name.charAt(0)}
                     </span>
                   </div>
-                  <CardTitle className="font-display text-lg">{member.name}</CardTitle>
-                  <span className="text-sm text-primary font-medium">{member.role}</span>
+                  <CardTitle className="font-display text-xl">{member.name}</CardTitle>
+                  <span className="text-sm text-primary font-semibold">{member.role}</span>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-center text-muted-foreground text-sm">
+                  <CardDescription className="text-center text-muted-foreground">
                     {member.description}
                   </CardDescription>
                 </CardContent>
