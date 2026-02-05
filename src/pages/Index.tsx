@@ -7,14 +7,22 @@ import { Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, Swords, C
 import heroDesktop from "@/assets/hero-desktop.png";
 import heroMobile from "@/assets/hero-mobile.jpeg";
 
-const stats = [{
+const trustItems = [{
   label: "Æfingar í viku",
   value: "3x",
   icon: Calendar
 }, {
-  label: "Mót á tímabilinu",
+  label: "Mót á tímabili",
   value: "6+",
   icon: Trophy
+}, {
+  label: "Skipulagt af Geimur",
+  value: "✓",
+  icon: ShieldCheck
+}, {
+  label: "Discord eftirlit",
+  value: "✓",
+  icon: Users
 }];
 
 const benefits = [{
@@ -119,79 +127,83 @@ const Index = () => {
             <span className="text-glow">MÓT</span>
           </h1>
           
-          {/* Date/Details */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/80 border border-border">
-              <Calendar className="h-5 w-5 text-primary" />
-              <span className="font-bold">28. febrúar 2026</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/80 border border-border">
-              <Clock className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-              <span className="font-medium">Online</span>
-            </div>
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card/80 border border-border">
-              <Users className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">8–16 ára</span>
-            </div>
+          {/* Date/Details - Combined single row */}
+          <div className="inline-flex flex-wrap items-center justify-center gap-2 mb-8 px-4 py-3 rounded-full bg-card/60 border border-border backdrop-blur-sm">
+            <span className="flex items-center gap-1.5 text-sm font-medium">
+              <Calendar className="h-4 w-4 text-primary" />
+              28. febrúar 2026
+            </span>
+            <span className="text-muted-foreground">·</span>
+            <span className="flex items-center gap-1.5 text-sm font-medium">
+              <Clock className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+              Online
+            </span>
+            <span className="text-muted-foreground">·</span>
+            <span className="flex items-center gap-1.5 text-sm font-medium">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              8–16 ára
+            </span>
           </div>
           
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Button asChild size="lg" className="btn-arena-gradient text-lg px-8 py-6 glow-green-sm">
+          {/* CTAs - Green primary, smaller secondary */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button asChild size="lg" className="btn-arena-gradient text-lg px-10 py-7 glow-green-sm font-bold">
               <Link to="/mot#skraning">
                 <Swords className="mr-2 h-5 w-5" />
                 Skrá mig í mót
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary/50 hover:border-primary text-lg px-8 py-6">
+            <Button asChild size="lg" variant="ghost" className="text-muted-foreground hover:text-foreground">
               <Link to="/aefingar">
                 <Gamepad2 className="mr-2 h-5 w-5" />
                 Skoða æfingar
               </Link>
             </Button>
           </div>
-          
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {stats.map((stat, index) => (
-              <Card key={index} className="glass-card border-border card-hover">
-                <CardContent className="flex items-center justify-start sm:justify-center gap-4 px-5 py-5 sm:p-6">
-                  <stat.icon className="h-8 w-8 text-primary flex-shrink-0" />
-                  <div className="text-left">
-                    <p className="font-display text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </div>
       </div>
     </section>
 
-    {/* Benefits Section - Cleaner, trust-focused */}
+    {/* Trust Section - Right after hero */}
+    <section className="py-8 md:py-12 border-b border-border/50">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          {trustItems.map((item, index) => (
+            <div key={index} className="flex items-center gap-3 p-4 rounded-xl bg-card/50 border border-border/50">
+              <item.icon className="h-6 w-6 text-primary flex-shrink-0" />
+              <div>
+                <p className="font-bold text-foreground">{item.value}</p>
+                <p className="text-xs text-muted-foreground">{item.label}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* Why Geimur Section */}
     <section className="section-spacing-lg">
       <div className="container mx-auto px-4">
         <div className="text-center section-heading-spacing">
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            Hvað færðu hjá Geimi?
+            Af hverju Geimur?
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Fagleg rafíþróttaþjálfun í öruggu og skipulögðu umhverfi.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {benefits.map((benefit, index) => (
             <Card key={index} className="glass-card border-border card-hover">
-              <CardHeader>
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <benefit.icon className="h-6 w-6 text-primary" />
+              <CardHeader className="pb-2">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                  <benefit.icon className="h-5 w-5 text-primary" />
                 </div>
-                <CardTitle className="font-display text-xl">{benefit.title}</CardTitle>
+                <CardTitle className="font-display text-lg">{benefit.title}</CardTitle>
               </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground">
+              <CardContent className="pt-0">
+                <CardDescription className="text-muted-foreground text-sm">
                   {benefit.description}
                 </CardDescription>
               </CardContent>
