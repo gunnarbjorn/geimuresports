@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
 import {
   Table,
   TableBody,
@@ -26,19 +26,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { 
-  Lock, 
-  Trash2, 
-  Users, 
+import {
+  Trash2,
+  Users,
   RefreshCw,
   Shield,
   Mail,
   Hash,
   Calendar,
+  CheckCircle,
+  XCircle,
+  Loader2,
+  ShieldAlert,
 } from "lucide-react";
-
-// Simple password protection - change this to a secure password
-const ADMIN_PASSWORD = "geimur2026";
 
 interface RegistrationData {
   teamName?: string;
@@ -46,14 +46,10 @@ interface RegistrationData {
   player2Name?: string;
   email?: string;
   orderId?: string;
-  // Legacy fields
   fullName?: string;
   teammateName?: string;
   fortniteName?: string;
   phone?: string;
-  discordUserId?: string;
-  epicId?: string;
-  kennitala?: string;
 }
 
 interface Registration {
@@ -61,43 +57,28 @@ interface Registration {
   created_at: string;
   type: string;
   data: RegistrationData;
+  verified: boolean;
 }
 
 const AdminPage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { user, isAdmin, isLoading: authLoading, signOut } = useAdminAuth();
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  // Check if already authenticated in session
+  // Redirect to auth if not logged in
   useEffect(() => {
-    const stored = sessionStorage.getItem("admin-auth");
-    if (stored === "true") {
-      setIsAuthenticated(true);
+    if (!authLoading && !user) {
+      navigate("/auth");
     }
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("admin-auth", "true");
-      toast.success("Innskráning tókst!");
-    } else {
-      toast.error("Rangt lykilorð");
-    }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem("admin-auth");
-    setPassword("");
-  };
+  }, [authLoading, user, navigate]);
 
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
+      // RLS policy ensures only admins can SELECT from registrations
       const { data, error } = await supabase
         .from("registrations")
         .select("*")
@@ -110,12 +91,12 @@ const AdminPage = () => {
         return;
       }
 
-      // Cast the data to our Registration type
-      const typedData: Registration[] = (data || []).map((item) => ({
+      const typedData: Registration[] = (data || []).map((item: any) => ({
         id: item.id,
         created_at: item.created_at,
         type: item.type,
         data: item.data as RegistrationData,
+        verified: item.verified ?? false,
       }));
       setRegistrations(typedData);
     } catch (err) {
@@ -129,22 +110,15 @@ const AdminPage = () => {
   const handleDelete = async (id: string) => {
     setDeletingId(id);
     try {
-      const { data, error } = await supabase.functions.invoke("send-notification", {
-        body: {
-          type: "admin-delete-registration",
-          data: { registrationId: id },
-        },
-      });
+      // Direct delete via Supabase client — RLS policy authorizes admin
+      const { error } = await supabase
+        .from("registrations")
+        .delete()
+        .eq("id", id);
 
       if (error) {
-        console.error("Edge function error:", error);
+        console.error("Delete error:", error);
         toast.error("Villa við eyðingu skráningar");
-        return;
-      }
-
-      if (data?.error) {
-        console.error("Delete error:", data.error);
-        toast.error("Villa við eyðingu", { description: data.error });
         return;
       }
 
@@ -158,44 +132,73 @@ const AdminPage = () => {
     }
   };
 
+  const handleToggleVerified = async (id: string, currentStatus: boolean) => {
+    setTogglingId(id);
+    try {
+      // Direct update via Supabase client — RLS policy authorizes admin
+      const { error } = await supabase
+        .from("registrations")
+        .update({ verified: !currentStatus } as any)
+        .eq("id", id);
+
+      if (error) {
+        console.error("Update error:", error);
+        toast.error("Villa við uppfærslu");
+        return;
+      }
+
+      toast.success(
+        currentStatus ? "Staðfesting afturkölluð" : "Skráning staðfest!"
+      );
+      setRegistrations((prev) =>
+        prev.map((r) =>
+          r.id === id ? { ...r, verified: !currentStatus } : r
+        )
+      );
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("Villa kom upp");
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAdmin) {
       fetchRegistrations();
     }
-  }, [isAuthenticated]);
+  }, [isAdmin]);
 
-  // Login screen
-  if (!isAuthenticated) {
+  // Loading state
+  if (authLoading) {
+    return (
+      <Layout>
+        <div className="min-h-screen pt-24 pb-12 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </Layout>
+    );
+  }
+
+  // Authenticated but not admin
+  if (user && !isAdmin) {
     return (
       <Layout>
         <div className="min-h-screen pt-24 pb-12">
           <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto">
+            <div className="max-w-md mx-auto text-center">
               <Card>
-                <CardHeader className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                    <Lock className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle>Admin aðgangur</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="password">Lykilorð</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Sláðu inn lykilorð"
-                        className="bg-secondary"
-                      />
-                    </div>
-                    <Button type="submit" className="w-full">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Skrá inn
-                    </Button>
-                  </form>
+                <CardContent className="pt-8 pb-8">
+                  <ShieldAlert className="h-16 w-16 text-destructive mx-auto mb-4" />
+                  <h2 className="font-display text-xl font-bold mb-2">
+                    Aðgangur bannaður
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    Þú hefur ekki admin réttindi. Hafðu samband við kerfisstjóra.
+                  </p>
+                  <Button variant="outline" onClick={signOut}>
+                    Útskrá
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -205,7 +208,11 @@ const AdminPage = () => {
     );
   }
 
-  // Admin dashboard
+  // Not logged in (redirect effect should handle this)
+  if (!user) return null;
+
+  const verifiedCount = registrations.filter((r) => r.verified).length;
+
   return (
     <Layout>
       <div className="min-h-screen pt-24 pb-12">
@@ -217,8 +224,8 @@ const AdminPage = () => {
                 <h1 className="font-display text-2xl md:text-3xl font-bold">
                   Skráningar stjórnborð
                 </h1>
-                <p className="text-muted-foreground">
-                  Skoða og stjórna skráningum á Elko deildina
+                <p className="text-sm text-muted-foreground">
+                  {user.email} · Admin
                 </p>
               </div>
               <div className="flex gap-2">
@@ -227,52 +234,73 @@ const AdminPage = () => {
                   onClick={fetchRegistrations}
                   disabled={isLoading}
                 >
-                  <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+                  />
                   Uppfæra
                 </Button>
-                <Button variant="ghost" onClick={handleLogout}>
+                <Button variant="ghost" onClick={signOut}>
                   Útskrá
                 </Button>
               </div>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <Card>
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                      <Users className="h-6 w-6 text-[hsl(var(--arena-green))]" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <Users className="h-5 w-5 text-foreground" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">{registrations.length}</p>
-                      <p className="text-sm text-muted-foreground">Skráð lið</p>
+                      <p className="text-2xl font-bold">
+                        {registrations.length}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Heildar</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-primary" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
+                      <CheckCircle className="h-5 w-5 text-[hsl(var(--arena-green))]" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">{registrations.length * 2}</p>
-                      <p className="text-sm text-muted-foreground">Keppendur</p>
+                      <p className="text-2xl font-bold">{verifiedCount}</p>
+                      <p className="text-xs text-muted-foreground">Staðfest</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                      <Hash className="h-6 w-6 text-accent" />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                      <XCircle className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <p className="text-2xl font-bold">{50 - registrations.length}</p>
-                      <p className="text-sm text-muted-foreground">Laus pláss</p>
+                      <p className="text-2xl font-bold">
+                        {registrations.length - verifiedCount}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Óstaðfest</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <Hash className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold">
+                        {50 - verifiedCount}
+                      </p>
+                      <p className="text-xs text-muted-foreground">Laus pláss</p>
                     </div>
                   </div>
                 </CardContent>
@@ -283,13 +311,14 @@ const AdminPage = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
+                  <Shield className="h-5 w-5" />
                   Allar skráningar
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {isLoading ? (
                   <div className="text-center py-8 text-muted-foreground">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
                     Hleður skráningum...
                   </div>
                 ) : registrations.length === 0 ? (
@@ -302,29 +331,66 @@ const AdminPage = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="w-12">#</TableHead>
+                          <TableHead className="w-16">Staða</TableHead>
                           <TableHead>Lið</TableHead>
                           <TableHead>Spilari 1</TableHead>
                           <TableHead>Spilari 2</TableHead>
                           <TableHead>Email</TableHead>
                           <TableHead>Order ID</TableHead>
                           <TableHead>Skráð</TableHead>
-                          <TableHead className="w-20">Aðgerðir</TableHead>
+                          <TableHead className="w-20">Eyða</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {registrations.map((reg, index) => (
-                          <TableRow key={reg.id}>
+                          <TableRow
+                            key={reg.id}
+                            className={!reg.verified ? "opacity-60" : ""}
+                          >
                             <TableCell className="font-mono text-muted-foreground">
                               {index + 1}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={
+                                  reg.verified
+                                    ? "text-[hsl(var(--arena-green))] hover:text-[hsl(var(--arena-green))]"
+                                    : "text-muted-foreground"
+                                }
+                                disabled={togglingId === reg.id}
+                                onClick={() =>
+                                  handleToggleVerified(reg.id, reg.verified)
+                                }
+                                title={
+                                  reg.verified
+                                    ? "Afturkalla staðfestingu"
+                                    : "Staðfesta skráningu"
+                                }
+                              >
+                                {togglingId === reg.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : reg.verified ? (
+                                  <CheckCircle className="h-4 w-4" />
+                                ) : (
+                                  <XCircle className="h-4 w-4" />
+                                )}
+                              </Button>
                             </TableCell>
                             <TableCell className="font-medium">
                               {reg.data.teamName || "Óþekkt lið"}
                             </TableCell>
                             <TableCell>
-                              {reg.data.player1Name || reg.data.fullName || reg.data.fortniteName || "—"}
+                              {reg.data.player1Name ||
+                                reg.data.fullName ||
+                                reg.data.fortniteName ||
+                                "—"}
                             </TableCell>
                             <TableCell>
-                              {reg.data.player2Name || reg.data.teammateName || "—"}
+                              {reg.data.player2Name ||
+                                reg.data.teammateName ||
+                                "—"}
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1 text-sm">
@@ -333,14 +399,19 @@ const AdminPage = () => {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="font-mono text-xs">
+                              <Badge
+                                variant="outline"
+                                className="font-mono text-xs"
+                              >
                                 {reg.data.orderId || "—"}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               <div className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {new Date(reg.created_at).toLocaleDateString("is-IS")}
+                                {new Date(reg.created_at).toLocaleDateString(
+                                  "is-IS"
+                                )}
                               </div>
                             </TableCell>
                             <TableCell>
@@ -357,15 +428,22 @@ const AdminPage = () => {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Eyða skráningu?</AlertDialogTitle>
+                                    <AlertDialogTitle>
+                                      Eyða skráningu?
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Ertu viss um að þú viljir eyða skráningu liðsins{" "}
-                                      <strong>{reg.data.teamName || "Óþekkt"}</strong>?
-                                      Þetta er ekki hægt að afturkalla.
+                                      Ertu viss um að þú viljir eyða skráningu
+                                      liðsins{" "}
+                                      <strong>
+                                        {reg.data.teamName || "Óþekkt"}
+                                      </strong>
+                                      ? Þetta er ekki hægt að afturkalla.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Hætta við</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Hætta við
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => handleDelete(reg.id)}
                                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

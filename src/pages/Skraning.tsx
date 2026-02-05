@@ -42,16 +42,15 @@ const Skraning = () => {
   const remainingSpots = ACTIVE_TOURNAMENT.maxTeams - registeredTeamsCount;
   const progressPercentage = (registeredTeamsCount / ACTIVE_TOURNAMENT.maxTeams) * 100;
 
-  // Fetch registered teams count
+  // Fetch verified registration count via security definer function
   useEffect(() => {
     const fetchTeamsCount = async () => {
-      const { count, error } = await supabase
-        .from('registrations')
-        .select('*', { count: 'exact', head: true })
-        .eq('type', 'elko-tournament');
-      
-      if (!error && count !== null) {
-        setRegisteredTeamsCount(count);
+      const { data, error } = await supabase.rpc('get_registration_count', {
+        _type: 'elko-tournament',
+      });
+
+      if (!error && data !== null) {
+        setRegisteredTeamsCount(data as number);
       }
     };
     fetchTeamsCount();
