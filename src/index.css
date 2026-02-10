@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 /* Geimur – Rafíþróttafélag Design System
-   Dark space esports theme with Geimur red accents
+   Dark space esports theme with planet-based color system.
+   Each section is a "planet" with its own color identity.
    All colors MUST be HSL.
 */
 
@@ -73,6 +74,39 @@
     --arena-green: 145 80% 42%;
     --arena-green-glow: 145 70% 50%;
     --arena-green-deep: 145 85% 32%;
+
+    /* ========== PLANET COLOR TOKENS ========== */
+    /* Each "planet" / section has its own color identity */
+
+    /* Tournament Planet – Red/Orange fire */
+    --planet-tournament: 15 85% 50%;
+    --planet-tournament-deep: 10 90% 38%;
+    --planet-tournament-glow: 15 80% 55%;
+
+    /* Training Planet – Vibrant green growth */
+    --planet-training: 145 75% 42%;
+    --planet-training-deep: 145 80% 30%;
+    --planet-training-glow: 145 70% 50%;
+
+    /* Knowledge Planet – Deep purple wisdom */
+    --planet-knowledge: 265 60% 55%;
+    --planet-knowledge-deep: 265 70% 40%;
+    --planet-knowledge-glow: 265 55% 62%;
+
+    /* Settings Planet – Cool blue precision */
+    --planet-settings: 210 80% 55%;
+    --planet-settings-deep: 210 85% 40%;
+    --planet-settings-glow: 210 75% 62%;
+
+    /* Community Planet – Warm orange/yellow belonging */
+    --planet-community: 35 95% 55%;
+    --planet-community-deep: 30 90% 42%;
+    --planet-community-glow: 35 90% 62%;
+
+    /* About/Mission Planet – Subtle deep red + space */
+    --planet-about: 350 50% 45%;
+    --planet-about-deep: 350 60% 32%;
+    --planet-about-glow: 350 45% 52%;
   }
 
   .dark {
@@ -119,7 +153,7 @@
 }
 
 @layer utilities {
-  /* Starfield background – denser, warmer */
+  /* ========== STARFIELD & GRID ========== */
   .bg-starfield {
     background-image: 
       radial-gradient(1px 1px at 20px 30px, hsl(var(--foreground) / 0.25), transparent),
@@ -138,7 +172,6 @@
     background-color: hsl(var(--background));
   }
 
-  /* Grid overlay – softer */
   .bg-grid {
     background-image: 
       linear-gradient(hsl(var(--border) / 0.15) 1px, transparent 1px),
@@ -146,7 +179,7 @@
     background-size: 60px 60px;
   }
 
-  /* Nebula background layer – warm, atmospheric */
+  /* ========== GENERAL NEBULA BACKGROUNDS ========== */
   .nebula-bg {
     background:
       radial-gradient(ellipse 120% 80% at 20% 80%, hsl(var(--geimur-red) / 0.06) 0%, transparent 50%),
@@ -154,17 +187,93 @@
       radial-gradient(ellipse 80% 100% at 50% 100%, hsl(var(--geimur-red-deep) / 0.05) 0%, transparent 40%);
   }
 
-  /* Nebula variant for alternate sections */
   .nebula-bg-alt {
     background:
       radial-gradient(ellipse 100% 80% at 80% 80%, hsl(var(--geimur-red) / 0.05) 0%, transparent 50%),
       radial-gradient(ellipse 80% 60% at 10% 30%, hsl(260 50% 40% / 0.03) 0%, transparent 50%);
   }
 
-  /* Glow effects */
+  /* ========== PLANET-SPECIFIC NEBULA BACKGROUNDS ========== */
+  .nebula-tournament {
+    background:
+      radial-gradient(ellipse 100% 80% at 20% 80%, hsl(var(--planet-tournament) / 0.07) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 80% 20%, hsl(var(--arena-green) / 0.04) 0%, transparent 50%);
+  }
+
+  .nebula-training {
+    background:
+      radial-gradient(ellipse 120% 80% at 30% 70%, hsl(var(--planet-training) / 0.07) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 70% 30%, hsl(var(--planet-training-deep) / 0.04) 0%, transparent 50%);
+  }
+
+  .nebula-knowledge {
+    background:
+      radial-gradient(ellipse 100% 80% at 20% 80%, hsl(var(--planet-knowledge) / 0.07) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 80% 20%, hsl(var(--planet-knowledge-deep) / 0.04) 0%, transparent 50%);
+  }
+
+  .nebula-settings {
+    background:
+      radial-gradient(ellipse 100% 80% at 70% 80%, hsl(var(--planet-settings) / 0.07) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 20% 30%, hsl(var(--planet-settings-deep) / 0.04) 0%, transparent 50%);
+  }
+
+  .nebula-community {
+    background:
+      radial-gradient(ellipse 120% 80% at 50% 70%, hsl(var(--planet-community) / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 30% 20%, hsl(var(--planet-community-deep) / 0.04) 0%, transparent 50%);
+  }
+
+  .nebula-about {
+    background:
+      radial-gradient(ellipse 100% 80% at 50% 80%, hsl(var(--planet-about) / 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 80% 60% at 80% 20%, hsl(var(--geimur-red) / 0.03) 0%, transparent 50%);
+  }
+
+  /* ========== PLANET HERO GLOWS ========== */
+  .hero-glow {
+    background: radial-gradient(
+      ellipse 80% 50% at 50% 50%,
+      hsl(var(--geimur-red) / 0.15) 0%,
+      hsl(var(--geimur-red) / 0.05) 40%,
+      transparent 70%
+    );
+  }
+
+  .hero-glow-tournament {
+    background: 
+      radial-gradient(ellipse 60% 80% at 25% 50%, hsl(var(--geimur-red) / 0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 75% 50%, hsl(var(--arena-green) / 0.2) 0%, transparent 60%);
+  }
+
+  .hero-glow-fortnite {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, hsl(var(--planet-knowledge) / 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 30% 70%, hsl(var(--geimur-red) / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 80% at 70% 70%, hsl(var(--planet-knowledge-deep) / 0.06) 0%, transparent 50%);
+  }
+
+  .hero-glow-training {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, hsl(var(--planet-training) / 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 70% 70%, hsl(var(--planet-training-deep) / 0.06) 0%, transparent 50%);
+  }
+
+  .hero-glow-community {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, hsl(var(--planet-community) / 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 30% 70%, hsl(var(--planet-community-deep) / 0.06) 0%, transparent 50%);
+  }
+
+  .hero-glow-about {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 40%, hsl(var(--planet-about) / 0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 80% at 70% 70%, hsl(var(--geimur-red) / 0.05) 0%, transparent 50%);
+  }
+
+  /* ========== GLOW EFFECTS ========== */
   .glow-red {
-    box-shadow: 0 0 40px hsl(var(--geimur-red) / 0.3), 
-                0 0 80px hsl(var(--geimur-red) / 0.15);
+    box-shadow: 0 0 40px hsl(var(--geimur-red) / 0.3), 0 0 80px hsl(var(--geimur-red) / 0.15);
   }
 
   .glow-red-sm {
@@ -172,8 +281,7 @@
   }
 
   .glow-green {
-    box-shadow: 0 0 40px hsl(var(--arena-green) / 0.3), 
-                0 0 80px hsl(var(--arena-green) / 0.15);
+    box-shadow: 0 0 40px hsl(var(--arena-green) / 0.3), 0 0 80px hsl(var(--arena-green) / 0.15);
   }
 
   .glow-green-sm {
@@ -188,54 +296,19 @@
     text-shadow: 0 0 40px hsl(var(--arena-green) / 0.5);
   }
 
-  /* Hero glow background */
-  .hero-glow {
-    background: radial-gradient(
-      ellipse 80% 50% at 50% 50%,
-      hsl(var(--geimur-red) / 0.15) 0%,
-      hsl(var(--geimur-red) / 0.05) 40%,
-      transparent 70%
-    );
-  }
-
-  /* Tournament hero with red/green split glow */
-  .hero-glow-tournament {
-    background: 
-      radial-gradient(
-        ellipse 60% 80% at 25% 50%,
-        hsl(var(--geimur-red) / 0.2) 0%,
-        transparent 60%
-      ),
-      radial-gradient(
-        ellipse 60% 80% at 75% 50%,
-        hsl(var(--arena-green) / 0.2) 0%,
-        transparent 60%
-      );
-  }
-
-  /* Fortnite hub hero – warm centered nebula */
-  .hero-glow-fortnite {
-    background:
-      radial-gradient(ellipse 70% 60% at 50% 40%, hsl(var(--geimur-red) / 0.18) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 80% at 30% 70%, hsl(260 50% 40% / 0.08) 0%, transparent 50%),
-      radial-gradient(ellipse 50% 80% at 70% 70%, hsl(var(--geimur-red-deep) / 0.06) 0%, transparent 50%);
-  }
-
-  /* Glassmorphism card */
+  /* ========== CARDS ========== */
   .glass-card {
     background: hsl(var(--card) / 0.6);
     backdrop-filter: blur(12px);
     border: 1px solid hsl(var(--border) / 0.5);
   }
 
-  /* Warm glass card – slightly brighter, for path/destination cards */
   .glass-card-warm {
     background: hsl(var(--card) / 0.7);
     backdrop-filter: blur(16px);
     border: 1px solid hsl(var(--geimur-red) / 0.12);
   }
 
-  /* Card hover effect */
   .card-hover {
     @apply transition-all duration-300;
   }
@@ -246,13 +319,12 @@
     transform: translateY(-2px);
   }
 
-  /* Arena/Tournament card hover */
   .card-hover-arena:hover {
     border-color: hsl(var(--arena-green) / 0.5);
     box-shadow: 0 0 30px hsl(var(--arena-green) / 0.15);
   }
 
-  /* Path card – destination-style with inner glow on hover */
+  /* Planet card – each planet card has colored border glow on hover */
   .path-card {
     @apply transition-all duration-300;
     background: hsl(var(--card) / 0.5);
@@ -268,42 +340,86 @@
     transform: translateY(-4px);
   }
 
-  /* Button gradient */
+  /* Planet-colored card variants */
+  .planet-card-tournament {
+    @apply transition-all duration-300;
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--planet-tournament) / 0.15);
+  }
+  .planet-card-tournament:hover {
+    border-color: hsl(var(--planet-tournament) / 0.5);
+    box-shadow: 0 0 40px hsl(var(--planet-tournament) / 0.15), inset 0 0 20px hsl(var(--planet-tournament) / 0.04);
+    transform: translateY(-4px);
+  }
+
+  .planet-card-training {
+    @apply transition-all duration-300;
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--planet-training) / 0.15);
+  }
+  .planet-card-training:hover {
+    border-color: hsl(var(--planet-training) / 0.5);
+    box-shadow: 0 0 40px hsl(var(--planet-training) / 0.15), inset 0 0 20px hsl(var(--planet-training) / 0.04);
+    transform: translateY(-4px);
+  }
+
+  .planet-card-knowledge {
+    @apply transition-all duration-300;
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--planet-knowledge) / 0.15);
+  }
+  .planet-card-knowledge:hover {
+    border-color: hsl(var(--planet-knowledge) / 0.5);
+    box-shadow: 0 0 40px hsl(var(--planet-knowledge) / 0.15), inset 0 0 20px hsl(var(--planet-knowledge) / 0.04);
+    transform: translateY(-4px);
+  }
+
+  .planet-card-community {
+    @apply transition-all duration-300;
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--planet-community) / 0.15);
+  }
+  .planet-card-community:hover {
+    border-color: hsl(var(--planet-community) / 0.5);
+    box-shadow: 0 0 40px hsl(var(--planet-community) / 0.15), inset 0 0 20px hsl(var(--planet-community) / 0.04);
+    transform: translateY(-4px);
+  }
+
+  .planet-card-about {
+    @apply transition-all duration-300;
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--planet-about) / 0.15);
+  }
+  .planet-card-about:hover {
+    border-color: hsl(var(--planet-about) / 0.5);
+    box-shadow: 0 0 40px hsl(var(--planet-about) / 0.15), inset 0 0 20px hsl(var(--planet-about) / 0.04);
+    transform: translateY(-4px);
+  }
+
+  /* ========== BUTTONS ========== */
   .btn-primary-gradient {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--geimur-red)) 0%,
-      hsl(var(--geimur-red-deep)) 100%
-    );
+    background: linear-gradient(135deg, hsl(var(--geimur-red)) 0%, hsl(var(--geimur-red-deep)) 100%);
   }
 
   .btn-primary-gradient:hover {
-    background: linear-gradient(
-      135deg,
-      hsl(5 70% 58%) 0%,
-      hsl(var(--geimur-red)) 100%
-    );
+    background: linear-gradient(135deg, hsl(5 70% 58%) 0%, hsl(var(--geimur-red)) 100%);
   }
 
-  /* Arena green button */
   .btn-arena-gradient {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--arena-green)) 0%,
-      hsl(var(--arena-green-deep)) 100%
-    );
+    background: linear-gradient(135deg, hsl(var(--arena-green)) 0%, hsl(var(--arena-green-deep)) 100%);
     color: white;
   }
 
   .btn-arena-gradient:hover {
-    background: linear-gradient(
-      135deg,
-      hsl(var(--arena-green-glow)) 0%,
-      hsl(var(--arena-green)) 100%
-    );
+    background: linear-gradient(135deg, hsl(var(--arena-green-glow)) 0%, hsl(var(--arena-green)) 100%);
   }
 
-  /* Section spacing */
+  /* ========== SPACING ========== */
   .section-spacing {
     @apply py-10 lg:py-16;
   }
@@ -316,7 +432,6 @@
     @apply mb-8 lg:mb-12;
   }
 
-  /* Hero sections */
   .hero-section {
     @apply pt-20 pb-14 lg:pt-32 lg:pb-24;
   }
@@ -325,7 +440,7 @@
     @apply pt-24 pb-16 lg:pt-36 lg:pb-28;
   }
 
-  /* Warm section divider – subtle gradient line */
+  /* ========== DIVIDERS ========== */
   .section-divider {
     height: 1px;
     background: linear-gradient(
@@ -336,5 +451,21 @@
       hsl(var(--geimur-red) / 0.2) 70%,
       transparent 100%
     );
+  }
+
+  /* ========== NEXT PLANET NAVIGATION ========== */
+  .next-planet {
+    @apply relative py-12 lg:py-16;
+  }
+
+  .next-planet::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, hsl(var(--border) / 0.5), transparent);
   }
 }

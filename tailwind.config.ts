@@ -72,6 +72,21 @@ export default {
           surface: "hsl(var(--space-surface))",
           border: "hsl(var(--space-border))",
         },
+        // Planet colors
+        planet: {
+          tournament: "hsl(var(--planet-tournament))",
+          "tournament-deep": "hsl(var(--planet-tournament-deep))",
+          training: "hsl(var(--planet-training))",
+          "training-deep": "hsl(var(--planet-training-deep))",
+          knowledge: "hsl(var(--planet-knowledge))",
+          "knowledge-deep": "hsl(var(--planet-knowledge-deep))",
+          settings: "hsl(var(--planet-settings))",
+          "settings-deep": "hsl(var(--planet-settings-deep))",
+          community: "hsl(var(--planet-community))",
+          "community-deep": "hsl(var(--planet-community-deep))",
+          about: "hsl(var(--planet-about))",
+          "about-deep": "hsl(var(--planet-about-deep))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
