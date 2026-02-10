@@ -263,8 +263,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { type, data: rawData } = await req.json();
-    console.log(`v6 Processing ${type} notification`);
+    const { type, data: rawData, _hp } = await req.json();
+    console.log(`v7 Processing ${type} notification`);
+
+    // Honeypot check — bots fill hidden fields, humans don't
+    if (_hp) {
+      console.warn("Honeypot triggered, rejecting submission");
+      // Return success to not tip off the bot
+      return new Response(
+        JSON.stringify({ success: true }),
+        { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
 
     if (!type || !rawData) {
       return new Response(

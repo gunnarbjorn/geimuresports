@@ -36,6 +36,7 @@ interface TournamentFormProps {
 export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>(
     preselectedTournament?.category || ""
   );
@@ -78,6 +79,7 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
             category: data.category,
             teammates: data.teammates || "",
           },
+          _hp: honeypot,
         },
       });
 
@@ -115,6 +117,17 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Honeypot - hidden from humans */}
+      <div className="absolute opacity-0 -z-10" aria-hidden="true" tabIndex={-1}>
+        <input
+          type="text"
+          name="website_url"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="fullName">Fullt nafn *</Label>
