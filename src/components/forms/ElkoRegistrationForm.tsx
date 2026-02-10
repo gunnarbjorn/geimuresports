@@ -97,6 +97,7 @@ export function ElkoRegistrationForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   const {
     register,
@@ -122,6 +123,7 @@ export function ElkoRegistrationForm() {
             tournamentDate: TOURNAMENT_DATE,
             tournamentName: TOURNAMENT_NAME,
           },
+          _hp: honeypot,
         },
       });
 
@@ -251,6 +253,17 @@ export function ElkoRegistrationForm() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Honeypot - hidden from humans */}
+            <div className="absolute opacity-0 -z-10" aria-hidden="true" tabIndex={-1}>
+              <input
+                type="text"
+                name="website_url"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
             {/* Team Name */}
             <div className="space-y-2">
               <Label htmlFor="teamName">Nafn á liði *</Label>

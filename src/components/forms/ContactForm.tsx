@@ -23,6 +23,8 @@ export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const [honeypot, setHoneypot] = useState("");
+
   const {
     register,
     handleSubmit,
@@ -44,6 +46,7 @@ export function ContactForm() {
             subject: data.subject,
             message: data.message,
           },
+          _hp: honeypot,
         },
       });
 
@@ -81,6 +84,17 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Honeypot - hidden from humans */}
+      <div className="absolute opacity-0 -z-10" aria-hidden="true" tabIndex={-1}>
+        <input
+          type="text"
+          name="website_url"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="name">Nafn *</Label>
