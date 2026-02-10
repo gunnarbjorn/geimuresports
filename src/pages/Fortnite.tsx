@@ -1,60 +1,98 @@
 import { Link } from "react-router-dom";
+import { useCallback } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { 
-  Crosshair, Swords, Gamepad2, Trophy, Users, ArrowRight, 
+  Crosshair, Swords, Gamepad2, Trophy, Users, ArrowRight, ArrowDown,
   Settings, Gauge, Wifi, TrendingUp, Video, Send, Map
 } from "lucide-react";
 
+const userPaths = [
+  {
+    title: "ÆFA ÞIG",
+    description: "Maps, warm-up og aim æfingar",
+    href: "/fortnite/maps",
+    icon: Crosshair,
+  },
+  {
+    title: "KEPPA",
+    description: "Ranked, mót og keppni",
+    href: "/fortnite/ranked",
+    icon: Trophy,
+  },
+  {
+    title: "LÆRA",
+    description: "Tips, stillingar og strategy",
+    href: "/fortnite/tips",
+    icon: Settings,
+  },
+  {
+    title: "COMMUNITY",
+    description: "Clips, highlights og samfélag",
+    href: "/fortnite/community",
+    icon: Users,
+  },
+];
+
 const mapCards = [
-  { title: "Bestu 1v1 Maps", description: "Æfðu þig í einvígi og bættu close-combat leikni.", href: "/fortnite/maps/1v1", icon: Swords },
-  { title: "Aim æfingar", description: "Skerptu skotfimi þína með sérhönnuðum aim-kortum.", href: "/fortnite/maps/aim", icon: Crosshair },
-  { title: "Edit æfingar", description: "Lærðu hraðar og nákvæmari edits til að ná yfirhöndinni.", href: "/fortnite/maps/edit", icon: Gamepad2 },
-  { title: "Warm-up Maps", description: "Hituðu upp rétt áður en þú ferð í ranked eða mót.", href: "/fortnite/maps/warmup", icon: Gauge },
-  { title: "Boxfight Maps", description: "Harðneskjulegar boxfight æfingar til að þjálfa pressure-play.", href: "/fortnite/maps/boxfight", icon: Swords },
+  { title: "1v1 Maps", href: "/fortnite/maps/1v1", icon: Swords },
+  { title: "Aim æfingar", href: "/fortnite/maps/aim", icon: Crosshair },
+  { title: "Edit æfingar", href: "/fortnite/maps/edit", icon: Gamepad2 },
+  { title: "Warm-up", href: "/fortnite/maps/warmup", icon: Gauge },
+  { title: "Boxfight", href: "/fortnite/maps/boxfight", icon: Swords },
 ];
 
 const tipsCards = [
-  { title: "Fortnite stillingar", description: "Bestu stillingar fyrir PS, PC og Xbox á Íslandi.", href: "/fortnite/tips/settings", icon: Settings },
-  { title: "Fortnite næmni", description: "Finndu sensitivity sem hentar þér – controller og mouse.", href: "/fortnite/tips/sensitivity", icon: Crosshair },
-  { title: "Performance mode", description: "Fáðu meiri FPS og betri upplifun á veikari tölvum.", href: "/fortnite/tips/performance", icon: Gauge },
-  { title: "Fortnite laggar", description: "Ráð til að minnka lag og ping á Íslandi.", href: "/fortnite/tips/lag", icon: Wifi },
-  { title: "Ranked tips", description: "Hvernig klífur þú upp ranked stigann á skilvirkan hátt.", href: "/fortnite/tips/ranked", icon: TrendingUp },
+  { title: "Stillingar", href: "/fortnite/tips/settings", icon: Settings },
+  { title: "Næmni", href: "/fortnite/tips/sensitivity", icon: Crosshair },
+  { title: "Performance", href: "/fortnite/tips/performance", icon: Gauge },
+  { title: "Laggar & ping", href: "/fortnite/tips/lag", icon: Wifi },
+  { title: "Ranked tips", href: "/fortnite/tips/ranked", icon: TrendingUp },
 ];
 
 const Fortnite = () => {
+  const scrollToContent = useCallback(() => {
+    const el = document.getElementById("fortnite-paths");
+    if (el) {
+      const offset = el.getBoundingClientRect().top + window.scrollY - 88;
+      window.scrollTo({ top: offset, behavior: "smooth" });
+    }
+  }, []);
+
   return (
     <Layout>
-      {/* Hero */}
-      <section className="relative hero-section-lg overflow-hidden">
-        <div className="absolute inset-0 hero-glow opacity-60" />
+      {/* Hero – full height, emotional */}
+      <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 hero-glow-tournament" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/60" />
+
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold mb-4">
-              <span className="text-glow">Fortnite á Íslandi</span>
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-4 tracking-tight">
+              <span className="text-glow">FORTNITE</span>{" "}
+              <span className="block md:inline text-primary">Á ÍSLANDI</span>
             </h1>
-            <p className="text-lg text-muted-foreground mb-3 font-medium">
-              Æfingar • Kort • Tips • Mót • Community
+            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto">
+              Miðstöð æfinga, keppna og community
             </p>
-            <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto mb-8">
-              Geimur Esports er miðstöð Fortnite á Íslandi – hér finnur þú bestu æfingakortin,
-              ráð fyrir keppni, íslenskt community og leiðina í mót og þjálfun.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button asChild size="lg" className="btn-primary-gradient">
-                <Link to="/fortnite/maps">
-                  <Map className="mr-2 h-5 w-5" />
-                  Skoða Maps
-                </Link>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12">
+              <Button
+                size="lg"
+                className="btn-primary-gradient text-lg px-10 py-7 font-bold"
+                onClick={scrollToContent}
+              >
+                Byrja hér
+                <ArrowDown className="ml-2 h-5 w-5" />
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary/50">
-                <Link to="/aefingar">Skoða Æfingar</Link>
+              <Button asChild size="lg" variant="outline" className="border-border">
+                <Link to="/aefingar">Æfingar</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary/50">
+              <Button asChild size="lg" variant="outline" className="border-border">
                 <Link to="/mot">
-                  <Trophy className="mr-2 h-5 w-5" />
-                  Skoða Mót
+                  <Trophy className="mr-2 h-4 w-4" />
+                  Mót
                 </Link>
               </Button>
             </div>
@@ -62,157 +100,171 @@ const Fortnite = () => {
         </div>
       </section>
 
-      {/* Maps Section */}
+      {/* User Paths */}
+      <section id="fortnite-paths" className="section-spacing-lg scroll-mt-20">
+        <div className="container mx-auto px-4">
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-center mb-10">
+            Hvað viltu gera í Fortnite?
+          </h2>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
+            {userPaths.map((path) => (
+              <Link key={path.href} to={path.href} className="group">
+                <Card className="glass-card border-border card-hover h-full text-center py-8 md:py-10">
+                  <CardContent className="p-4 md:p-6 flex flex-col items-center gap-4">
+                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                      <path.icon className="h-7 w-7 md:h-8 md:w-8 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-base md:text-lg font-bold mb-1">{path.title}</h3>
+                      <p className="text-xs md:text-sm text-muted-foreground">{path.description}</p>
+                    </div>
+                    <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Maps – compact grid */}
       <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="text-center section-heading-spacing">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Fortnite Maps</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Handvalin æfingakort til að bæta hvern þátt leiksins.
-            </p>
+          <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
+            <div>
+              <h2 className="font-display text-2xl md:text-3xl font-bold">Fortnite Maps</h2>
+              <p className="text-muted-foreground text-sm mt-1">Handvalin æfingakort</p>
+            </div>
+            <Button asChild variant="ghost" className="text-primary">
+              <Link to="/fortnite/maps">Sjá öll <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {mapCards.map((card) => (
               <Link key={card.href} to={card.href} className="group">
-                <Card className="glass-card border-border card-hover h-full">
-                  <CardHeader className="pb-2">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                <Card className="glass-card border-border card-hover text-center py-6">
+                  <CardContent className="p-3 flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       <card.icon className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle className="font-display text-lg">{card.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0 flex flex-col justify-between">
-                    <CardDescription className="text-muted-foreground text-sm mb-4">{card.description}</CardDescription>
-                    <span className="text-primary text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Skoða <ArrowRight className="h-4 w-4" />
-                    </span>
+                    <span className="font-display text-sm font-bold">{card.title}</span>
                   </CardContent>
                 </Card>
               </Link>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <Button asChild variant="outline" className="border-primary/50">
-              <Link to="/fortnite/maps">Öll kort <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
-          </div>
         </div>
       </section>
 
-      {/* Tips Section */}
+      {/* Tips – problem-based */}
       <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
-          <div className="text-center section-heading-spacing">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Tips & Stillingar</h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Hagnýt ráð fyrir íslenska Fortnite-spilara – ping, stillingar og performance.
-            </p>
+          <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
+            <div>
+              <h2 className="font-display text-2xl md:text-3xl font-bold">Tips & Stillingar</h2>
+              <p className="text-muted-foreground text-sm mt-1">Hagnýt ráð fyrir íslenska spilara</p>
+            </div>
+            <Button asChild variant="ghost" className="text-primary">
+              <Link to="/fortnite/tips">Sjá öll <ArrowRight className="ml-1 h-4 w-4" /></Link>
+            </Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {tipsCards.map((card) => (
               <Link key={card.href} to={card.href} className="group">
-                <Card className="glass-card border-border card-hover h-full">
-                  <CardHeader className="pb-2">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                <Card className="glass-card border-border card-hover text-center py-6">
+                  <CardContent className="p-3 flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                       <card.icon className="h-5 w-5 text-primary" />
                     </div>
-                    <CardTitle className="font-display text-lg">{card.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0 flex flex-col justify-between">
-                    <CardDescription className="text-muted-foreground text-sm mb-4">{card.description}</CardDescription>
-                    <span className="text-primary text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Skoða <ArrowRight className="h-4 w-4" />
-                    </span>
+                    <span className="font-display text-sm font-bold">{card.title}</span>
                   </CardContent>
                 </Card>
               </Link>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <Button asChild variant="outline" className="border-primary/50">
-              <Link to="/fortnite/tips">Öll ráð <ArrowRight className="ml-2 h-4 w-4" /></Link>
-            </Button>
-          </div>
         </div>
       </section>
 
-      {/* Ranked Section */}
+      {/* Ranked – tight block */}
       <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-              <TrendingUp className="h-7 w-7 text-primary" />
+          <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="h-10 w-10 text-primary" />
             </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Ranked & Competitive</h2>
-            <p className="text-muted-foreground text-lg mb-6">
-              Lærðu hvernig ranked kerfið virkar, hvað þarf til að klífa og hvernig Geimur undirbýr 
-              spilara fyrir keppni á Íslandi og erlendis.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button asChild size="lg" className="btn-primary-gradient">
-                <Link to="/fortnite/ranked">
-                  Lesa meira <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary/50">
-                <Link to="/mot">Skoða næsta mót hjá Geimi</Link>
-              </Button>
+            <div className="text-center md:text-left flex-1">
+              <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Ranked & Competitive</h2>
+              <p className="text-muted-foreground mb-4">
+                Lærðu hvernig ranked kerfið virkar og hvernig Geimur undirbýr spilara fyrir keppni.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                <Button asChild className="btn-primary-gradient">
+                  <Link to="/fortnite/ranked">Lesa meira <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                </Button>
+                <Button asChild variant="outline" className="border-border">
+                  <Link to="/mot">Næsta mót</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Community Section */}
+      {/* Community – higher on page */}
       <section className="section-spacing-lg">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
-              <Video className="h-7 w-7 text-primary" />
+          <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Video className="h-10 w-10 text-primary" />
             </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">Community</h2>
-            <p className="text-muted-foreground text-lg mb-6">
-              Vertu hluti af íslenska Fortnite samfélaginu. Sendu inn klipp, fylgdu vikulegum highlights 
-              og tengdu við aðra spilara.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Button asChild size="lg" className="btn-primary-gradient">
-                <Link to="/fortnite/community">
-                  <Video className="mr-2 h-5 w-5" />
-                  Clip vikunnar
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary/50">
-                <Link to="/fortnite/community#senda-clip">
-                  <Send className="mr-2 h-5 w-5" />
-                  Senda inn klipp
-                </Link>
-              </Button>
+            <div className="text-center md:text-left flex-1">
+              <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Community</h2>
+              <p className="text-muted-foreground mb-4">
+                Clip vikunnar, highlights og tenging við íslenska Fortnite spilara.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                <Button asChild className="btn-primary-gradient">
+                  <Link to="/fortnite/community">
+                    <Video className="mr-2 h-4 w-4" />
+                    Sjá clips
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="border-border">
+                  <Link to="/fortnite/community#senda-clip">
+                    <Send className="mr-2 h-4 w-4" />
+                    Senda klipp
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Conversion CTA */}
       <section className="section-spacing-lg bg-card/30">
         <div className="container mx-auto px-4">
           <Card className="glass-card border-primary/20 max-w-4xl mx-auto overflow-hidden relative">
             <div className="absolute inset-0 hero-glow opacity-50" />
-            <CardContent className="p-8 md:p-12 text-center relative z-10">
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-                Taktu næsta skref
+            <CardContent className="p-8 md:p-14 text-center relative z-10">
+              <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                Viltu taka næsta skref í Fortnite?
               </h2>
-              <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-                Skráðu þig í æfingar hjá Geimi eða taka þátt í næsta Fortnite-móti á Íslandi.
+              <p className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
+                Skráðu þig í æfingar eða taktu þátt í næsta Fortnite-móti á Íslandi.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button asChild size="lg" className="btn-primary-gradient text-lg px-8">
+                <Button asChild size="lg" className="btn-primary-gradient text-lg px-8 font-bold">
                   <Link to="/aefingar">
-                    Skoða æfingar
+                    Skráning í æfingar
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-primary/50">
-                  <Link to="/mot">Skoða mót</Link>
+                  <Link to="/mot">
+                    <Trophy className="mr-2 h-5 w-5" />
+                    Næsta mót
+                  </Link>
                 </Button>
               </div>
             </CardContent>
