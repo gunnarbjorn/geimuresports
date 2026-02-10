@@ -12,6 +12,13 @@ import HafaSamband from "./pages/HafaSamband";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import Fortnite from "./pages/Fortnite";
+import Maps from "./pages/fortnite/Maps";
+import MapCategory from "./pages/fortnite/MapCategory";
+import Tips from "./pages/fortnite/Tips";
+import TipArticle from "./pages/fortnite/TipArticle";
+import Ranked from "./pages/fortnite/Ranked";
+import Community from "./pages/fortnite/Community";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +30,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/fortnite" element={<Fortnite />} />
+          <Route path="/fortnite/maps" element={<Maps />} />
+          <Route path="/fortnite/maps/:category" element={<MapCategory />} />
+          <Route path="/fortnite/tips" element={<Tips />} />
+          <Route path="/fortnite/tips/:topic" element={<TipArticle />} />
+          <Route path="/fortnite/ranked" element={<Ranked />} />
+          <Route path="/fortnite/community" element={<Community />} />
           <Route path="/aefingar" element={<Aefingar />} />
           <Route path="/mot" element={<Mot />} />
           <Route path="/skraning" element={<Skraning />} />

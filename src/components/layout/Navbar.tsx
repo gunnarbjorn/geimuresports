@@ -7,6 +7,9 @@ const navLinks = [{
   href: "/",
   label: "Heim"
 }, {
+  href: "/fortnite",
+  label: "Fortnite"
+}, {
   href: "/aefingar",
   label: "Æfingar"
 }, {
