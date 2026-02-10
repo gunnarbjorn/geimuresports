@@ -76,37 +76,37 @@ const Community = () => {
     <Layout>
       <section className="relative hero-section overflow-hidden">
         <div className="absolute inset-0 hero-glow opacity-50" />
+        <div className="absolute inset-0 nebula-bg pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <Button asChild variant="ghost" size="sm" className="mb-6 text-muted-foreground">
               <Link to="/fortnite"><ArrowLeft className="mr-2 h-4 w-4" /> Fortnite</Link>
             </Button>
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Community</h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Íslenska Fortnite samfélagið – klipp, highlights og tengsl við aðra spilara.
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">Community</h1>
+            <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+              Íslenska Fortnite samfélagið – klipp, highlights og samfélag.
             </p>
           </div>
         </div>
       </section>
 
       {/* Clip vikunnar */}
-      <section className="section-spacing-lg">
-        <div className="container mx-auto px-4">
+      <section className="section-spacing-lg relative">
+        <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="text-center section-heading-spacing">
-            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Video className="h-7 w-7 text-primary" />
-            </div>
-            <h2 className="font-display text-3xl font-bold mb-4">Clip vikunnar</h2>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Bestu klippin úr íslensku Fortnite community-inu í hverri viku.
+            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Vikulegt</span>
+            <h2 className="font-display text-3xl font-bold mb-3">Clip vikunnar</h2>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Bestu klippin úr íslensku Fortnite community-inu.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {placeholderClips.map((clip, i) => (
-              <Card key={i} className="glass-card border-border card-hover">
+              <Card key={i} className="glass-card-warm border-border/40 card-hover rounded-xl">
                 <CardContent className="p-6">
-                  <div className="aspect-video rounded-lg bg-muted/30 border border-border flex items-center justify-center mb-4">
-                    <Video className="h-10 w-10 text-muted-foreground/50" />
+                  <div className="aspect-video rounded-lg bg-muted/20 border border-border/40 flex items-center justify-center mb-4">
+                    <Video className="h-10 w-10 text-muted-foreground/30" />
                   </div>
                   <span className="text-xs text-primary font-medium">{clip.week}</span>
                   <h3 className="font-display font-bold mt-1">{clip.title}</h3>
@@ -118,18 +118,19 @@ const Community = () => {
         </div>
       </section>
 
+      <div className="section-divider max-w-3xl mx-auto" />
+
       {/* Submit clip form */}
-      <section id="senda-clip" className="section-spacing-lg bg-card/30 scroll-mt-28">
-        <div className="container mx-auto px-4">
+      <section id="senda-clip" className="section-spacing-lg scroll-mt-28 relative">
+        <div className="absolute inset-0 nebula-bg pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-lg mx-auto">
             <div className="text-center mb-8">
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Send className="h-7 w-7 text-primary" />
-              </div>
+              <span className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Deildu</span>
               <h2 className="font-display text-3xl font-bold mb-2">Sendu inn klipp</h2>
-              <p className="text-muted-foreground">Ertu með klipp sem á skilið spotlight? Sendu það inn!</p>
+              <p className="text-muted-foreground">Ertu með klipp sem á skilið spotlight?</p>
             </div>
-            <Card className="glass-card border-border">
+            <Card className="glass-card-warm border-border/40 rounded-xl">
               <CardContent className="p-6">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Honeypot */}
@@ -168,17 +169,19 @@ const Community = () => {
         </div>
       </section>
 
+      <div className="section-divider max-w-3xl mx-auto" />
+
       {/* CTA */}
-      <section className="section-spacing-lg">
-        <div className="container mx-auto px-4 text-center">
+      <section className="section-spacing-lg relative">
+        <div className="container mx-auto px-4 text-center relative z-10">
           <p className="text-muted-foreground text-lg mb-6">
-            Viltu verða betri? Skoðaðu æfingar eða taka þátt í næsta móti.
+            Viltu verða betri? Skoðaðu æfingar eða taktu þátt í næsta móti.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button asChild size="lg" className="btn-primary-gradient">
               <Link to="/aefingar">Skoða æfingar <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary/50">
+            <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-primary/40">
               <Link to="/mot">Skoða mót</Link>
             </Button>
           </div>

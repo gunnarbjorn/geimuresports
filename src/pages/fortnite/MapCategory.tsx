@@ -95,22 +95,24 @@ const MapCategory = () => {
     <Layout>
       <section className="relative hero-section overflow-hidden">
         <div className="absolute inset-0 hero-glow opacity-50" />
+        <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <Button asChild variant="ghost" size="sm" className="mb-6 text-muted-foreground">
               <Link to="/fortnite/maps"><ArrowLeft className="mr-2 h-4 w-4" /> Fortnite Maps</Link>
             </Button>
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">{data.title}</h1>
-            <p className="text-muted-foreground text-lg">{data.description}</p>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">{data.title}</h1>
+            <p className="text-muted-foreground text-lg max-w-lg mx-auto">{data.description}</p>
           </div>
         </div>
       </section>
 
-      <section className="section-spacing-lg">
-        <div className="container mx-auto px-4">
+      <section className="section-spacing-lg relative">
+        <div className="absolute inset-0 nebula-bg pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto space-y-6">
             {data.maps.map((map, i) => (
-              <Card key={i} className="glass-card border-border card-hover">
+              <Card key={i} className="glass-card-warm border-border/40 card-hover rounded-xl">
                 <CardHeader className="pb-2">
                   <CardTitle className="font-display text-xl">{map.name}</CardTitle>
                 </CardHeader>
@@ -130,17 +132,18 @@ const MapCategory = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="section-spacing-lg bg-card/30">
-        <div className="container mx-auto px-4 text-center">
+      <div className="section-divider max-w-3xl mx-auto" />
+
+      <section className="section-spacing-lg relative">
+        <div className="container mx-auto px-4 text-center relative z-10">
           <p className="text-muted-foreground text-lg mb-6">
-            Viltu fá markvissa þjálfun á þessum kortum? Geimur þjálfarar nota þessi kort í æfingum.
+            Viltu markvissa þjálfun á þessum kortum? Geimur þjálfarar nota þau í æfingum.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button asChild size="lg" className="btn-primary-gradient">
               <Link to="/aefingar">Skoða æfingar <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary/50">
+            <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-primary/40">
               <Link to="/mot">Skoða mót</Link>
             </Button>
           </div>
