@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,6 +52,8 @@ const tipsCards = [
 ];
 
 const Fortnite = () => {
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, []);
+
   const scrollToContent = useCallback(() => {
     const el = document.getElementById("fortnite-paths");
     if (el) {

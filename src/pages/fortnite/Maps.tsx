@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,8 @@ const categories = [
 ];
 
 const Maps = () => {
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, []);
+
   return (
     <Layout>
       <section className="relative hero-section overflow-hidden">

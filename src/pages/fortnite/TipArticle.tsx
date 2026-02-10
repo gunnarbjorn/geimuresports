@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,8 @@ const tipsData: Record<string, TipData> = {
 const TipArticle = () => {
   const { topic } = useParams<{ topic: string }>();
   const data = tipsData[topic || ""];
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [topic]);
 
   if (!data) {
     return (
