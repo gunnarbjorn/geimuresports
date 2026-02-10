@@ -52,10 +52,17 @@ const contactSchema = z.object({
   message: z.string().trim().min(10).max(500),
 });
 
+const clipSubmissionSchema = z.object({
+  name: z.string().trim().min(2).max(100),
+  epic_username: z.string().trim().min(1).max(120),
+  clip_link: z.string().trim().url().max(500),
+});
+
 type TrainingData = z.infer<typeof trainingSchema>;
 type TournamentData = z.infer<typeof tournamentSchema>;
 type ElkoTournamentData = z.infer<typeof elkoTournamentSchema>;
 type ContactData = z.infer<typeof contactSchema>;
+type ClipSubmissionData = z.infer<typeof clipSubmissionSchema>;
 
 function escapeHtml(str: unknown): string {
   const map: Record<string, string> = {
@@ -69,7 +76,7 @@ function escapeHtml(str: unknown): string {
 }
 
 interface NotificationRequest {
-  type: "training" | "tournament" | "elko-tournament" | "contact";
+  type: "training" | "tournament" | "elko-tournament" | "contact" | "clip-submission";
   data: Record<string, unknown>;
 }
 
@@ -196,6 +203,15 @@ function formatElkoTournamentConfirmation(data: ElkoTournamentData): string {
   `;
 }
 
+function formatClipSubmissionEmail(data: ClipSubmissionData): string {
+  return `
+    <h1>Nýtt klipp sent inn</h1>
+    <p><strong>Nafn:</strong> ${escapeHtml(data.name)}</p>
+    <p><strong>Epic username:</strong> ${escapeHtml(data.epic_username)}</p>
+    <p><strong>Clip tengill:</strong> <a href="${escapeHtml(data.clip_link)}">${escapeHtml(data.clip_link)}</a></p>
+  `;
+}
+
 function formatContactConfirmation(data: ContactData): string {
   return `
     <h1>Takk fyrir fyrirspurnina!</h1>
@@ -208,18 +224,20 @@ function formatContactConfirmation(data: ContactData): string {
 }
 
 function getSubject(type: string, data: TrainingData | TournamentData | ElkoTournamentData | ContactData): string {
-  switch (type) {
-    case "training":
-      return `Ný æfingaskráning: ${(data as TrainingData).fullName}`;
-    case "tournament":
-      return `Ný mótsskráning: ${(data as TournamentData).fullName} - ${(data as TournamentData).tournament}`;
-    case "elko-tournament":
-      return `🎮 ${(data as ElkoTournamentData).tournamentName}: ${(data as ElkoTournamentData).teamName}`;
-    case "contact":
-      return `Fyrirspurn: ${(data as ContactData).subject}`;
-    default:
-      return "Ný skráning";
-  }
+    switch (type) {
+      case "training":
+        return `Ný æfingaskráning: ${(data as TrainingData).fullName}`;
+      case "tournament":
+        return `Ný mótsskráning: ${(data as TournamentData).fullName} - ${(data as TournamentData).tournament}`;
+      case "elko-tournament":
+        return `🎮 ${(data as ElkoTournamentData).tournamentName}: ${(data as ElkoTournamentData).teamName}`;
+      case "contact":
+        return `Fyrirspurn: ${(data as ContactData).subject}`;
+      case "clip-submission":
+        return `🎬 Nýtt klipp: ${(data as ClipSubmissionData).epic_username}`;
+      default:
+        return "Ný skráning";
+    }
 }
 
 function getConfirmationSubject(type: string, data: TrainingData | TournamentData | ElkoTournamentData | ContactData): string {
@@ -249,6 +267,8 @@ function validateAndSanitizeData(type: string, data: Record<string, unknown>): T
       return elkoTournamentSchema.parse(data);
     case "contact":
       return contactSchema.parse(data);
+    case "clip-submission":
+      return clipSubmissionSchema.parse(data);
     default:
       throw new Error("Ógild tegund skráningar");
   }
@@ -283,7 +303,7 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    if (!["training", "tournament", "elko-tournament", "contact"].includes(type)) {
+    if (!["training", "tournament", "elko-tournament", "contact", "clip-submission"].includes(type)) {
       return new Response(
         JSON.stringify({ error: "Ógild tegund skráningar" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -381,6 +401,10 @@ const handler = async (req: Request): Promise<Response> => {
       case "contact":
         html = formatContactEmail(validatedData as ContactData);
         confirmationHtml = formatContactConfirmation(validatedData as ContactData);
+        break;
+      case "clip-submission":
+        html = formatClipSubmissionEmail(validatedData as ClipSubmissionData);
+        confirmationHtml = "";
         break;
       default:
         html = `<pre>${escapeHtml(JSON.stringify(validatedData, null, 2))}</pre>`;
