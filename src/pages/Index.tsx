@@ -6,69 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
-  Target, Users, Heart, Trophy, Calendar, Gamepad2, ArrowRight, ArrowDown,
-  Swords, MapPin, ShieldCheck, ExternalLink, BookOpen, Zap, MessageCircle,
-  Star, Rocket, Globe
+  Target, Users, Trophy, Calendar, ArrowRight, ArrowDown,
+  MapPin, ShieldCheck, BookOpen, Zap, Star, Globe, Gamepad2, Clock
 } from "lucide-react";
 import heroDesktop from "@/assets/hero-desktop.png";
 import heroMobile from "@/assets/hero-mobile.jpeg";
 import { tournaments } from "@/data/tournaments";
 
-/* ========== PLANET DATA ========== */
-const planetCards = [
-  {
-    id: "tournaments",
-    title: "MÓT & KEPPNIR",
-    subtitle: "Keppa á Íslandi",
-    description: "Fortnite mót, LAN-viðburðir og keppnir. Skráðu þig og mættu á völlinn.",
-    href: "/mot",
-    icon: Trophy,
-    color: "var(--planet-tournament)",
-    deepColor: "var(--planet-tournament-deep)",
-    glowColor: "var(--planet-tournament-glow)",
-    cta: "Sjá mót",
-    cardClass: "planet-card-tournament",
-  },
-  {
-    id: "training",
-    title: "ÆFINGAR",
-    subtitle: "Þróaðu leikni þína",
-    description: "Skipulagðar æfingar, þjálfun og coaching fyrir alla aldurshópa.",
-    href: "/aefingar",
-    icon: Target,
-    color: "var(--planet-training)",
-    deepColor: "var(--planet-training-deep)",
-    glowColor: "var(--planet-training-glow)",
-    cta: "Sjá æfingar",
-    cardClass: "planet-card-training",
-  },
-  {
-    id: "fortnite",
-    title: "FORTNITE MIÐSTÖÐ",
-    subtitle: "Maps, tips & stillingar",
-    description: "1v1 maps, aim training, edit courses, stillingar og ráðleggingar.",
-    href: "/fortnite",
-    icon: BookOpen,
-    color: "var(--planet-knowledge)",
-    deepColor: "var(--planet-knowledge-deep)",
-    glowColor: "var(--planet-knowledge-glow)",
-    cta: "Opna miðstöð",
-    cardClass: "planet-card-knowledge",
-  },
-  {
-    id: "community",
-    title: "SAMFÉLAG",
-    subtitle: "Clips, scrims & highlights",
-    description: "Sendu inn klipp, fylgstu með highlights og tengdu við samfélagið.",
-    href: "/fortnite/community",
-    icon: MessageCircle,
-    color: "var(--planet-community)",
-    deepColor: "var(--planet-community-deep)",
-    glowColor: "var(--planet-community-glow)",
-    cta: "Sjá samfélag",
-    cardClass: "planet-card-community",
-  },
-];
+const lanTournament = tournaments.find(t => t.id === "arena-lan-coming-soon")!;
 
 const benefits = [
   { title: "Markviss þjálfun", description: "Mechanics, game sense og strategy frá reyndum þjálfurum.", icon: Target },
@@ -108,148 +53,78 @@ const faqs = [
   { question: "Hvað með foreldra – mega þeir vera með?", answer: "Já! Við bjóðum upp á sérstakan 'Foreldri + barn' pakka þar sem foreldri og barn spila og læra saman í æfingum í gegnum netið." },
 ];
 
-/* ========== SECTION TRANSITION COMPONENT ========== */
-function SectionTransition({ fromColor, toColor }: { fromColor: string; toColor: string }) {
-  return (
-    <div className="relative h-32 md:h-48 overflow-hidden">
-      {/* Gradient blend */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(180deg, 
-            hsl(${fromColor} / 0.08) 0%, 
-            transparent 30%,
-            transparent 70%,
-            hsl(${toColor} / 0.08) 100%)`,
-        }}
-      />
-      {/* Center flare */}
-      <div
-        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-1 rounded-full"
-        style={{
-          background: `linear-gradient(90deg, transparent, hsl(${toColor} / 0.3), transparent)`,
-          boxShadow: `0 0 40px hsl(${toColor} / 0.15)`,
-        }}
-      />
-      {/* Floating particles */}
-      <div
-        className="absolute top-1/4 left-1/3 w-1 h-1 rounded-full animate-float"
-        style={{ background: `hsl(${fromColor} / 0.4)` }}
-      />
-      <div
-        className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 rounded-full animate-float"
-        style={{ background: `hsl(${toColor} / 0.3)`, animationDelay: "2s" }}
-      />
-    </div>
-  );
-}
-
-/* ========== PLANET SECTION WRAPPER ========== */
-function PlanetSection({
-  id,
-  color,
-  children,
-}: {
-  id: string;
-  color: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section id={`planet-${id}`} className="relative scroll-mt-32">
-      {/* Ambient nebula glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse 100% 60% at 50% 20%, hsl(${color} / 0.06) 0%, transparent 60%)`,
-        }}
-      />
-      <div className="relative z-10">{children}</div>
-    </section>
-  );
-}
-
-/* ========== MAIN PAGE ========== */
 const Index = () => {
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, []);
 
-  const scrollToGalaxy = () => {
-    const el = document.getElementById("planet-tournaments");
-    if (el) {
-      const offset = el.getBoundingClientRect().top + window.scrollY - 120;
-      window.scrollTo({ top: offset, behavior: "smooth" });
-    }
-  };
-
   return (
     <Layout>
-      {/* ===== HERO PLANET ===== */}
-      <section id="planet-hero" className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background */}
+      {/* ===== HERO: LAN DUO TOURNAMENT ===== */}
+      <section className="relative min-h-[85vh] md:min-h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block" style={{ backgroundImage: `url(${heroDesktop})` }} />
         <div className="absolute inset-0 bg-cover bg-no-repeat md:hidden" style={{ backgroundImage: `url(${heroMobile})`, backgroundPosition: "center 38%" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
         <div className="absolute inset-0 hero-glow-tournament" />
 
-        {/* Floating orbs */}
-        <div className="absolute top-1/4 left-[15%] w-48 h-48 rounded-full bg-[hsl(var(--planet-tournament)/0.06)] blur-3xl animate-pulse-glow" />
-        <div className="absolute bottom-1/3 right-1/4 w-64 h-64 rounded-full bg-[hsl(var(--arena-green)/0.04)] blur-3xl animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
-        <div className="absolute top-1/2 right-[10%] w-32 h-32 rounded-full bg-[hsl(var(--planet-knowledge)/0.04)] blur-3xl animate-float" style={{ animationDelay: "3s" }} />
-
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            {/* Active event badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/60 border border-[hsl(var(--arena-green)/0.4)] backdrop-blur-sm mb-6 animate-fade-in">
               <span className="w-2 h-2 rounded-full bg-[hsl(var(--arena-green))] animate-pulse" />
-              <span className="text-sm font-medium">Elko-deildin Vor 2026 – Skráning opin</span>
+              <span className="text-sm font-medium">Fortnite Duos LAN – Arena Gaming</span>
             </div>
 
             <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-5 tracking-tight animate-fade-in">
               <span className="text-glow">FORTNITE</span>{" "}
-              <span className="text-[hsl(var(--arena-green))] text-glow-green">Á ÍSLANDI</span>
+              <span className="text-[hsl(var(--arena-green))] text-glow-green">DUOS LAN</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-xl mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
-              Keppnir, æfingar, maps og samfélag — allt á einum stað.
+            <p className="text-lg md:text-xl text-muted-foreground mb-4 max-w-xl mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
+              100 keppendur · 5 leikir · Verðlaun · Streymi á staðnum
             </p>
+
+            <div className="flex flex-wrap justify-center gap-3 mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4 text-[hsl(var(--arena-green))]" /> Arena Gaming
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> Lau 28. feb
+              </span>
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 11:00 – 14:00
+              </span>
+            </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
               <Button asChild size="lg" className="btn-arena-gradient text-lg px-10 py-7 glow-green-sm font-bold">
-                <Link to="/mot">
-                  <Rocket className="mr-2.5 h-5 w-5" />
-                  Skrá mig í mót
+                <Link to="/mot#arena-lan-coming-soon">
+                  <Trophy className="mr-2.5 h-5 w-5" />
+                  Sjá mótið & skrá lið
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-border/60 hover:border-primary/40" onClick={scrollToGalaxy}>
-                Byrja ferðalagið
+              <Button size="lg" variant="outline" className="border-border/60 hover:border-[hsl(var(--planet-tournament)/0.4)]" onClick={() => {
+                const el = document.getElementById("section-tournaments");
+                if (el) window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+              }}>
+                Skoða öll mót
                 <ArrowDown className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Bottom fade into journey */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
-      {/* ===== TRANSITION: Hero → Tournaments ===== */}
-      <SectionTransition fromColor="var(--geimur-red)" toColor="var(--planet-tournament)" />
-
-      {/* ===== PLANET: TOURNAMENTS (RED/ORANGE) ===== */}
-      <PlanetSection id="tournaments" color="var(--planet-tournament)">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
+      {/* ===== ALL TOURNAMENTS ===== */}
+      <section id="section-tournaments" className="relative py-16 lg:py-24 scroll-mt-20">
+        <div className="absolute inset-0 nebula-tournament pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto">
             <FadeInView>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-tournament))", boxShadow: "0 0 12px hsl(var(--planet-tournament) / 0.5)" }} />
-                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-tournament))" }}>
-                  Pláneta 1
-                </span>
-              </div>
               <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
                 Mót & Keppnir
               </h2>
               <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
-                Fortnite mót á Íslandi — frá netmótum til LAN-viðburða. Skráðu lið þitt og kepptu við bestu.
+                Fortnite mót á Íslandi — frá netmótum til LAN-viðburða.
               </p>
             </FadeInView>
 
@@ -260,18 +135,13 @@ const Index = () => {
                     <CardHeader>
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         {t.isComingSoon ? (
-                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.1)] text-muted-foreground border border-border">
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-muted text-muted-foreground border border-border">
                             Bráðum
                           </span>
                         ) : (
-                          <>
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))]">
-                              Virkt mót
-                            </span>
-                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))]">
-                              Skráning opin
-                            </span>
-                          </>
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))]">
+                            Skráning opin
+                          </span>
                         )}
                         {t.tags?.map(tag => (
                           <span key={tag} className="px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
@@ -280,14 +150,14 @@ const Index = () => {
                         ))}
                       </div>
                       <CardTitle className="font-display text-2xl">{t.name}</CardTitle>
-                      <CardDescription>{t.format ? `${t.format} – ` : ""}{t.description.slice(0, 80)}…</CardDescription>
+                      <CardDescription>{t.description}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col">
                       <ul className="space-y-2 text-sm text-muted-foreground mb-6">
                         {t.dates.length > 0 && (
                           <li className="flex items-center gap-2">
                             <Calendar className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-                            {t.dates[0]} – {t.dates[t.dates.length - 1]}
+                            {t.dates[0]}{t.dates.length > 1 ? ` – ${t.dates[t.dates.length - 1]}` : ""}
                           </li>
                         )}
                         <li className="flex items-center gap-2">
@@ -296,57 +166,33 @@ const Index = () => {
                         </li>
                         {t.entryFee && (
                           <li className="flex items-center gap-2">
-                            <Swords className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+                            <Gamepad2 className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
                             {t.entryFee}
                           </li>
                         )}
                       </ul>
                       <div className="mt-auto">
-                        {t.isComingSoon ? (
-                          <Button variant="outline" className="w-full border-[hsl(var(--planet-tournament)/0.3)]" disabled>
-                            {t.ctaText || "Tilkynnt síðar"}
-                          </Button>
-                        ) : (
-                          <Button asChild className="btn-primary-gradient w-full font-bold">
-                            <Link to={t.ctaUrl || "/mot"}>
-                              {t.ctaText || "Skrá mitt lið"} <ArrowRight className="ml-2 h-4 w-4" />
-                            </Link>
-                          </Button>
-                        )}
+                        <Button asChild className="w-full font-bold bg-[hsl(var(--planet-tournament))] hover:bg-[hsl(var(--planet-tournament-deep))] text-primary-foreground">
+                          <Link to={`/mot#${t.id}`}>
+                            {t.isComingSoon ? "Sjá nánar" : (t.ctaText || "Sjá mót")} <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
                 </FadeInView>
               ))}
             </div>
-
-            {/* Next planet CTA */}
-            <div className="text-center pt-4">
-              <Button variant="ghost" className="text-muted-foreground hover:text-[hsl(var(--planet-training))]" onClick={() => {
-                const el = document.getElementById("planet-training");
-                if (el) window.scrollTo({ top: el.offsetTop - 120, behavior: "smooth" });
-              }}>
-                Næsta pláneta: Æfingar <ArrowDown className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
-      </PlanetSection>
+      </section>
 
-      {/* ===== TRANSITION: Tournaments → Training ===== */}
-      <SectionTransition fromColor="var(--planet-tournament)" toColor="var(--planet-training)" />
-
-      {/* ===== PLANET: TRAINING (GREEN) ===== */}
-      <PlanetSection id="training" color="var(--planet-training)">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
+      {/* ===== TRAINING ===== */}
+      <section id="section-training" className="relative py-16 lg:py-24 scroll-mt-20">
+        <div className="absolute inset-0 nebula-training pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto">
             <FadeInView>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-training))", boxShadow: "0 0 12px hsl(var(--planet-training) / 0.5)" }} />
-                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-training))" }}>
-                  Pláneta 2
-                </span>
-              </div>
               <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
                 Æfingar & Þjálfun
               </h2>
@@ -355,7 +201,6 @@ const Index = () => {
               </p>
             </FadeInView>
 
-            {/* Benefits */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
               {benefits.map((b, i) => (
                 <FadeInView key={i} delay={i * 80}>
@@ -372,7 +217,6 @@ const Index = () => {
               ))}
             </div>
 
-            {/* Packages */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               {packages.map((pkg, index) => (
                 <Card key={index} className={`glass-card border-border card-hover relative ${pkg.featured ? "border-[hsl(var(--planet-training))] glow-green-sm" : ""}`}>
@@ -409,46 +253,29 @@ const Index = () => {
                         </li>
                       ))}
                     </ul>
-                    <Button asChild className={`w-full ${pkg.featured ? "btn-arena-gradient" : ""}`} variant={pkg.featured ? "default" : "outline"}>
+                    <Button asChild className={`w-full ${pkg.featured ? "bg-[hsl(var(--planet-training))] hover:bg-[hsl(var(--planet-training-deep))] text-primary-foreground" : ""}`} variant={pkg.featured ? "default" : "outline"}>
                       <Link to={`/aefingar?group=${pkg.value}#skraning`}>Skrá mig</Link>
                     </Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
-
-            <div className="text-center pt-4">
-              <Button variant="ghost" className="text-muted-foreground hover:text-[hsl(var(--planet-knowledge))]" onClick={() => {
-                const el = document.getElementById("planet-fortnite");
-                if (el) window.scrollTo({ top: el.offsetTop - 120, behavior: "smooth" });
-              }}>
-                Næsta pláneta: Fortnite Miðstöð <ArrowDown className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
-      </PlanetSection>
+      </section>
 
-      {/* ===== TRANSITION: Training → Fortnite ===== */}
-      <SectionTransition fromColor="var(--planet-training)" toColor="var(--planet-knowledge)" />
-
-      {/* ===== PLANET: FORTNITE HUB (PURPLE) ===== */}
-      <PlanetSection id="fortnite" color="var(--planet-knowledge)">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
+      {/* ===== FORTNITE HUB ===== */}
+      <section id="section-fortnite" className="relative py-16 lg:py-24 scroll-mt-20">
+        <div className="absolute inset-0 nebula-knowledge pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-5xl mx-auto">
             <FadeInView>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-knowledge))", boxShadow: "0 0 12px hsl(var(--planet-knowledge) / 0.5)" }} />
-                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-knowledge))" }}>
-                  Pláneta 3
-                </span>
-              </div>
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-              Fortnite Miðstöð
-            </h2>
-            <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
-              Allt sem þú þarft til að bæta leikni þína — maps, tips, stillingar og leiðbeiningar.
-            </p>
+              <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
+                Fortnite Miðstöð
+              </h2>
+              <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
+                Allt sem þú þarft til að bæta leikni þína — maps, tips, stillingar og samfélag.
+              </p>
             </FadeInView>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -456,7 +283,7 @@ const Index = () => {
                 { title: "Maps", desc: "1v1, aim, edit courses", href: "/fortnite/maps", icon: Globe },
                 { title: "Tips & ráð", desc: "Stillingar, strategy", href: "/fortnite/tips", icon: Zap },
                 { title: "Ranked", desc: "Ranked leiðbeiningar", href: "/fortnite/ranked", icon: Star },
-                { title: "Samfélag", desc: "Clips & highlights", href: "/fortnite/community", icon: MessageCircle },
+                { title: "Samfélag", desc: "Clips & highlights", href: "/fortnite/community", icon: Users },
               ].map((item) => (
                 <Link key={item.href} to={item.href} className="group">
                   <Card className="planet-card-knowledge rounded-2xl h-full text-center py-8">
@@ -476,90 +303,15 @@ const Index = () => {
             </div>
 
             <div className="text-center">
-              <Button asChild variant="outline" className="border-[hsl(var(--planet-knowledge)/0.3)] hover:border-[hsl(var(--planet-knowledge)/0.6)]">
+              <Button asChild className="bg-[hsl(var(--planet-knowledge))] hover:bg-[hsl(var(--planet-knowledge-deep))] text-primary-foreground font-bold">
                 <Link to="/fortnite">
                   Opna Fortnite Miðstöð <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
-
-            <div className="text-center pt-8">
-              <Button variant="ghost" className="text-muted-foreground hover:text-[hsl(var(--planet-community))]" onClick={() => {
-                const el = document.getElementById("planet-community");
-                if (el) window.scrollTo({ top: el.offsetTop - 120, behavior: "smooth" });
-              }}>
-                Næsta pláneta: Samfélag <ArrowDown className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
-      </PlanetSection>
-
-      {/* ===== TRANSITION: Fortnite → Community ===== */}
-      <SectionTransition fromColor="var(--planet-knowledge)" toColor="var(--planet-community)" />
-
-      {/* ===== PLANET: COMMUNITY (ORANGE/YELLOW) ===== */}
-      <PlanetSection id="community" color="var(--planet-community)">
-        <div className="container mx-auto px-4 py-16 lg:py-24">
-          <div className="max-w-5xl mx-auto">
-            <FadeInView>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-community))", boxShadow: "0 0 12px hsl(var(--planet-community) / 0.5)" }} />
-                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-community))" }}>
-                  Pláneta 4
-                </span>
-              </div>
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-              Samfélagið
-            </h2>
-            <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
-              Vertu hluti af íslenska Fortnite samfélaginu. Sendu inn klipp, deildu highlights og tengdu.
-            </p>
-            </FadeInView>
-
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <Card className="planet-card-community rounded-2xl">
-                <CardContent className="p-6 text-center">
-                  <div className="w-14 h-14 rounded-full mx-auto mb-4 bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
-                    <Zap className="h-7 w-7 text-[hsl(var(--planet-community))]" />
-                  </div>
-                  <h3 className="font-display text-lg font-bold mb-2">Klipp vikunnar</h3>
-                  <p className="text-sm text-muted-foreground">Sendu inn bestu klippen þín og líttu á highlight reel vikunnar.</p>
-                </CardContent>
-              </Card>
-              <Card className="planet-card-community rounded-2xl">
-                <CardContent className="p-6 text-center">
-                  <div className="w-14 h-14 rounded-full mx-auto mb-4 bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
-                    <Users className="h-7 w-7 text-[hsl(var(--planet-community))]" />
-                  </div>
-                  <h3 className="font-display text-lg font-bold mb-2">Discord</h3>
-                  <p className="text-sm text-muted-foreground">Tengdu við aðra Fortnite spilara á Íslandi á Discord.</p>
-                </CardContent>
-              </Card>
-              <Card className="planet-card-community rounded-2xl">
-                <CardContent className="p-6 text-center">
-                  <div className="w-14 h-14 rounded-full mx-auto mb-4 bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
-                    <Swords className="h-7 w-7 text-[hsl(var(--planet-community))]" />
-                  </div>
-                  <h3 className="font-display text-lg font-bold mb-2">Scrims</h3>
-                  <p className="text-sm text-muted-foreground">Skipulagðir æfingaleikir í hálfopnum lobbíum.</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="text-center">
-              <Button asChild className="bg-[hsl(var(--planet-community))] hover:bg-[hsl(var(--planet-community-deep))] text-background font-bold">
-                <Link to="/fortnite/community">
-                  Sjá samfélagið <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </PlanetSection>
-
-      {/* ===== TRANSITION: Community → FAQ ===== */}
-      <SectionTransition fromColor="var(--planet-community)" toColor="var(--geimur-red)" />
+      </section>
 
       {/* ===== FAQ ===== */}
       <section className="relative py-16 lg:py-24">
@@ -606,8 +358,8 @@ const Index = () => {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button asChild size="lg" className="btn-primary-gradient text-lg px-8 font-bold glow-red-sm">
-                  <Link to="/skraning">
-                    Skrá mig núna
+                  <Link to="/mot">
+                    Sjá mót
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
