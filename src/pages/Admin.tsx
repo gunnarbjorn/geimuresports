@@ -4,9 +4,11 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { AdminAddRegistrationDialog } from "@/components/admin/AdminAddRegistrationDialog";
 import {
   Table,
   TableBody,
@@ -36,6 +38,10 @@ import {
   Calendar,
   Loader2,
   ShieldAlert,
+  Trophy,
+  GraduationCap,
+  Phone,
+  User,
 } from "lucide-react";
 
 interface RegistrationData {
@@ -48,6 +54,9 @@ interface RegistrationData {
   teammateName?: string;
   fortniteName?: string;
   phone?: string;
+  group?: string;
+  age?: number;
+  parentName?: string;
 }
 
 interface Registration {
@@ -60,7 +69,8 @@ interface Registration {
 const AdminPage = () => {
   const navigate = useNavigate();
   const { user, isAdmin, isLoading: authLoading, signOut } = useAdminAuth();
-  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [tournamentRegs, setTournamentRegs] = useState<Registration[]>([]);
+  const [trainingRegs, setTrainingRegs] = useState<Registration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -73,25 +83,46 @@ const AdminPage = () => {
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("registrations")
-        .select("*")
-        .eq("type", "elko-tournament")
-        .order("created_at", { ascending: false });
+      const [tournamentRes, trainingRes] = await Promise.all([
+        supabase
+          .from("registrations")
+          .select("*")
+          .eq("type", "elko-tournament")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("registrations")
+          .select("*")
+          .eq("type", "training")
+          .order("created_at", { ascending: false }),
+      ]);
 
-      if (error) {
-        console.error("Error fetching registrations:", error);
-        toast.error("Villa við að sækja skráningar");
-        return;
+      if (tournamentRes.error) {
+        console.error("Error fetching tournament registrations:", tournamentRes.error);
+        toast.error("Villa við að sækja mótskráningar");
+      } else {
+        setTournamentRegs(
+          (tournamentRes.data || []).map((item: any) => ({
+            id: item.id,
+            created_at: item.created_at,
+            type: item.type,
+            data: item.data as RegistrationData,
+          }))
+        );
       }
 
-      const typedData: Registration[] = (data || []).map((item: any) => ({
-        id: item.id,
-        created_at: item.created_at,
-        type: item.type,
-        data: item.data as RegistrationData,
-      }));
-      setRegistrations(typedData);
+      if (trainingRes.error) {
+        console.error("Error fetching training registrations:", trainingRes.error);
+        toast.error("Villa við að sækja æfingaskráningar");
+      } else {
+        setTrainingRegs(
+          (trainingRes.data || []).map((item: any) => ({
+            id: item.id,
+            created_at: item.created_at,
+            type: item.type,
+            data: item.data as RegistrationData,
+          }))
+        );
+      }
     } catch (err) {
       console.error("Error:", err);
       toast.error("Villa kom upp");
@@ -169,6 +200,40 @@ const AdminPage = () => {
 
   if (!user) return null;
 
+  const DeleteButton = ({ reg }: { reg: Registration }) => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+          disabled={deletingId === reg.id}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Eyða skráningu?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Ertu viss um að þú viljir eyða skráningu{" "}
+            <strong>{reg.data.teamName || reg.data.fullName || "Óþekkt"}</strong>?
+            Þetta er ekki hægt að afturkalla.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Hætta við</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => handleDelete(reg.id)}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            Eyða
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
   return (
     <Layout>
       <div className="min-h-screen pt-24 pb-12">
@@ -185,6 +250,7 @@ const AdminPage = () => {
                 </p>
               </div>
               <div className="flex gap-2">
+                <AdminAddRegistrationDialog onAdded={fetchRegistrations} />
                 <Button
                   variant="outline"
                   onClick={fetchRegistrations}
@@ -201,163 +267,228 @@ const AdminPage = () => {
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                      <Users className="h-5 w-5 text-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {registrations.length}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Skráð lið</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <Hash className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">
-                        {50 - registrations.length}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Laus pláss</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {/* Tabs */}
+            <Tabs defaultValue="tournament" className="space-y-6">
+              <TabsList>
+                <TabsTrigger value="tournament" className="gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Mót ({tournamentRegs.length})
+                </TabsTrigger>
+                <TabsTrigger value="training" className="gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  Æfingar ({trainingRegs.length})
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Registrations Table */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5" />
-                  Allar skráningar
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
-                    Hleður skráningum...
-                  </div>
-                ) : registrations.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Engar skráningar ennþá
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-12">#</TableHead>
-                          <TableHead>Lið</TableHead>
-                          <TableHead>Spilari 1</TableHead>
-                          <TableHead>Spilari 2</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Order ID</TableHead>
-                          <TableHead>Skráð</TableHead>
-                          <TableHead className="w-20">Eyða</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {registrations.map((reg, index) => (
-                          <TableRow key={reg.id}>
-                            <TableCell className="font-mono text-muted-foreground">
-                              {index + 1}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {reg.data.teamName || "Óþekkt lið"}
-                            </TableCell>
-                            <TableCell>
-                              {reg.data.player1Name ||
-                                reg.data.fullName ||
-                                reg.data.fortniteName ||
-                                "—"}
-                            </TableCell>
-                            <TableCell>
-                              {reg.data.player2Name ||
-                                reg.data.teammateName ||
-                                "—"}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-1 text-sm">
-                                <Mail className="h-3 w-3 text-muted-foreground" />
-                                {reg.data.email || "—"}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className="font-mono text-xs"
-                              >
-                                {reg.data.orderId || "—"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {new Date(reg.created_at).toLocaleDateString(
-                                  "is-IS"
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                    disabled={deletingId === reg.id}
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Eyða skráningu?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Ertu viss um að þú viljir eyða skráningu
-                                      liðsins{" "}
-                                      <strong>
-                                        {reg.data.teamName || "Óþekkt"}
-                                      </strong>
-                                      ? Þetta er ekki hægt að afturkalla.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Hætta við
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDelete(reg.id)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                      Eyða
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+              {/* Tournament Tab */}
+              <TabsContent value="tournament" className="space-y-6">
+                {/* Stats */}
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                          <Users className="h-5 w-5 text-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{tournamentRegs.length}</p>
+                          <p className="text-xs text-muted-foreground">Skráð lið</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                          <Hash className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{50 - tournamentRegs.length}</p>
+                          <p className="text-xs text-muted-foreground">Laus pláss</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Tournament Table */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Shield className="h-5 w-5" />
+                      Elko-deildin – Skráningar
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                        Hleður skráningum...
+                      </div>
+                    ) : tournamentRegs.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Engar skráningar ennþá
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-12">#</TableHead>
+                              <TableHead>Lið</TableHead>
+                              <TableHead>Spilari 1</TableHead>
+                              <TableHead>Spilari 2</TableHead>
+                              <TableHead>Email</TableHead>
+                              <TableHead>Order ID</TableHead>
+                              <TableHead>Skráð</TableHead>
+                              <TableHead className="w-20">Eyða</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {tournamentRegs.map((reg, index) => (
+                              <TableRow key={reg.id}>
+                                <TableCell className="font-mono text-muted-foreground">
+                                  {index + 1}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                  {reg.data.teamName || "Óþekkt lið"}
+                                </TableCell>
+                                <TableCell>
+                                  {reg.data.player1Name || reg.data.fullName || reg.data.fortniteName || "—"}
+                                </TableCell>
+                                <TableCell>
+                                  {reg.data.player2Name || reg.data.teammateName || "—"}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1 text-sm">
+                                    <Mail className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.email || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="font-mono text-xs">
+                                    {reg.data.orderId || "—"}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {new Date(reg.created_at).toLocaleDateString("is-IS")}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <DeleteButton reg={reg} />
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Training Tab */}
+              <TabsContent value="training" className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                          <Users className="h-5 w-5 text-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{trainingRegs.length}</p>
+                          <p className="text-xs text-muted-foreground">Skráðir í æfingar</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5" />
+                      Æfingaskráningar
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                        Hleður skráningum...
+                      </div>
+                    ) : trainingRegs.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Engar æfingaskráningar ennþá
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-12">#</TableHead>
+                              <TableHead>Nafn</TableHead>
+                              <TableHead>Hópur</TableHead>
+                              <TableHead>Aldur</TableHead>
+                              <TableHead>Email</TableHead>
+                              <TableHead>Sími</TableHead>
+                              <TableHead>Skráð</TableHead>
+                              <TableHead className="w-20">Eyða</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {trainingRegs.map((reg, index) => (
+                              <TableRow key={reg.id}>
+                                <TableCell className="font-mono text-muted-foreground">
+                                  {index + 1}
+                                </TableCell>
+                                <TableCell className="font-medium">
+                                  <div className="flex items-center gap-1">
+                                    <User className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.fullName || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="secondary">
+                                    {reg.data.group || "—"}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{reg.data.age || "—"}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1 text-sm">
+                                    <Mail className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.email || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1 text-sm">
+                                    <Phone className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.phone || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {new Date(reg.created_at).toLocaleDateString("is-IS")}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <DeleteButton reg={reg} />
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </div>
