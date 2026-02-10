@@ -92,22 +92,24 @@ const TipArticle = () => {
     <Layout>
       <section className="relative hero-section overflow-hidden">
         <div className="absolute inset-0 hero-glow opacity-50" />
+        <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <Button asChild variant="ghost" size="sm" className="mb-6 text-muted-foreground">
               <Link to="/fortnite/tips"><ArrowLeft className="mr-2 h-4 w-4" /> Tips & Stillingar</Link>
             </Button>
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">{data.title}</h1>
-            <p className="text-muted-foreground text-lg">{data.intro}</p>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">{data.title}</h1>
+            <p className="text-muted-foreground text-lg max-w-lg mx-auto">{data.intro}</p>
           </div>
         </div>
       </section>
 
-      <section className="section-spacing-lg">
-        <div className="container mx-auto px-4">
+      <section className="section-spacing-lg relative">
+        <div className="absolute inset-0 nebula-bg pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto space-y-6">
             {data.sections.map((section, i) => (
-              <Card key={i} className="glass-card border-border">
+              <Card key={i} className="glass-card-warm border-border/40 rounded-xl">
                 <CardContent className="p-6">
                   <h2 className="font-display text-xl font-bold mb-3">{section.heading}</h2>
                   <p className="text-muted-foreground leading-relaxed">{section.content}</p>
@@ -118,16 +120,18 @@ const TipArticle = () => {
         </div>
       </section>
 
-      <section className="section-spacing-lg bg-card/30">
-        <div className="container mx-auto px-4 text-center">
+      <div className="section-divider max-w-3xl mx-auto" />
+
+      <section className="section-spacing-lg relative">
+        <div className="container mx-auto px-4 text-center relative z-10">
           <p className="text-muted-foreground text-lg mb-6">
-            Viltu persónulega ráðgjöf frá þjálfara? Geimur fer yfir stillingar og strategy í æfingum.
+            Viltu persónulega ráðgjöf? Geimur fer yfir stillingar og strategy í æfingum.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button asChild size="lg" className="btn-primary-gradient">
               <Link to="/aefingar">Skoða æfingar <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-primary/50">
+            <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-primary/40">
               <Link to="/mot">Skoða mót</Link>
             </Button>
           </div>
