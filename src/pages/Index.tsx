@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { FadeInView } from "@/components/layout/FadeInView";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -236,68 +237,74 @@ const Index = () => {
       <PlanetSection id="tournaments" color="var(--planet-tournament)">
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-tournament))", boxShadow: "0 0 12px hsl(var(--planet-tournament) / 0.5)" }} />
-              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-tournament))" }}>
-                Pláneta 1
-              </span>
-            </div>
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-              Mót & Keppnir
-            </h2>
-            <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
-              Fortnite mót á Íslandi — frá netmótum til LAN-viðburða. Skráðu lið þitt og kepptu við bestu.
-            </p>
+            <FadeInView>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-tournament))", boxShadow: "0 0 12px hsl(var(--planet-tournament) / 0.5)" }} />
+                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-tournament))" }}>
+                  Pláneta 1
+                </span>
+              </div>
+              <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
+                Mót & Keppnir
+              </h2>
+              <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
+                Fortnite mót á Íslandi — frá netmótum til LAN-viðburða. Skráðu lið þitt og kepptu við bestu.
+              </p>
+            </FadeInView>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              {/* Featured tournament card */}
-              <Card className="planet-card-tournament rounded-2xl overflow-hidden">
-                <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))]">
-                      Virkt mót
-                    </span>
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))]">
-                      Skráning opin
+              <FadeInView delay={100}>
+                {/* Featured tournament card */}
+                <Card className="planet-card-tournament rounded-2xl overflow-hidden">
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))]">
+                        Virkt mót
+                      </span>
+                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))]">
+                        Skráning opin
+                      </span>
+                    </div>
+                    <CardTitle className="font-display text-2xl">Elko-deildin Vor 2026</CardTitle>
+                    <CardDescription>Duos Build – 4 mótakvöld yfir febrúar & mars</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                      <li className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 11. feb – 4. mars 2026</li>
+                      <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> Online</li>
+                      <li className="flex items-center gap-2"><Swords className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 2.000 kr á einstakling</li>
+                    </ul>
+                    <Button asChild className="btn-primary-gradient w-full font-bold">
+                      <Link to="/mot">
+                        Skrá mitt lið <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </FadeInView>
+
+              <FadeInView delay={200}>
+                {/* Coming soon LAN */}
+                <Card className="planet-card-tournament rounded-2xl overflow-hidden relative">
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.1)] text-muted-foreground border border-border">
+                      Bráðum
                     </span>
                   </div>
-                  <CardTitle className="font-display text-2xl">Elko-deildin Vor 2026</CardTitle>
-                  <CardDescription>Duos Build – 4 mótakvöld yfir febrúar & mars</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-                    <li className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 11. feb – 4. mars 2026</li>
-                    <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> Online</li>
-                    <li className="flex items-center gap-2"><Swords className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 2.000 kr á einstakling</li>
-                  </ul>
-                  <Button asChild className="btn-primary-gradient w-full font-bold">
-                    <Link to="/mot">
-                      Skrá mitt lið <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Coming soon LAN */}
-              <Card className="planet-card-tournament rounded-2xl overflow-hidden relative">
-                <div className="absolute top-4 right-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.1)] text-muted-foreground border border-border">
-                    Bráðum
-                  </span>
-                </div>
-                <CardHeader>
-                  <CardTitle className="font-display text-2xl">LAN í Arena Gaming</CardTitle>
-                  <CardDescription>100 manna lobby – á staðnum</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    Stórt Fortnite staðarmót í Arena Gaming. 100 keppendur í sama lobby, 5 leikir, streymi og verðlaun. Dagsetning tilkynnt fljótlega.
-                  </p>
-                  <Button variant="outline" className="w-full border-[hsl(var(--planet-tournament)/0.3)] hover:border-[hsl(var(--planet-tournament)/0.6)]" disabled>
-                    Tilkynnt síðar
-                  </Button>
-                </CardContent>
-              </Card>
+                  <CardHeader>
+                    <CardTitle className="font-display text-2xl">LAN í Arena Gaming</CardTitle>
+                    <CardDescription>100 manna lobby – á staðnum</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      Stórt Fortnite staðarmót í Arena Gaming. 100 keppendur í sama lobby, 5 leikir, streymi og verðlaun. Dagsetning tilkynnt fljótlega.
+                    </p>
+                    <Button variant="outline" className="w-full border-[hsl(var(--planet-tournament)/0.3)] hover:border-[hsl(var(--planet-tournament)/0.6)]" disabled>
+                      Tilkynnt síðar
+                    </Button>
+                  </CardContent>
+                </Card>
+              </FadeInView>
             </div>
 
             {/* Next planet CTA */}
@@ -320,31 +327,35 @@ const Index = () => {
       <PlanetSection id="training" color="var(--planet-training)">
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-training))", boxShadow: "0 0 12px hsl(var(--planet-training) / 0.5)" }} />
-              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-training))" }}>
-                Pláneta 2
-              </span>
-            </div>
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-              Æfingar & Þjálfun
-            </h2>
-            <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
-              Skipulagðar Fortnite-æfingar í gegnum netið. Engin binding.
-            </p>
+            <FadeInView>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-training))", boxShadow: "0 0 12px hsl(var(--planet-training) / 0.5)" }} />
+                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-training))" }}>
+                  Pláneta 2
+                </span>
+              </div>
+              <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
+                Æfingar & Þjálfun
+              </h2>
+              <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
+                Skipulagðar Fortnite-æfingar í gegnum netið. Engin binding.
+              </p>
+            </FadeInView>
 
             {/* Benefits */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
               {benefits.map((b, i) => (
-                <Card key={i} className="glass-card border-border card-hover text-center py-6">
-                  <CardContent className="p-4 flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[hsl(var(--planet-training)/0.1)] flex items-center justify-center">
-                      <b.icon className="h-5 w-5 text-[hsl(var(--planet-training))]" />
-                    </div>
-                    <h3 className="font-display text-sm font-bold">{b.title}</h3>
-                    <p className="text-xs text-muted-foreground">{b.description}</p>
-                  </CardContent>
-                </Card>
+                <FadeInView key={i} delay={i * 80}>
+                  <Card className="glass-card border-border card-hover text-center py-6">
+                    <CardContent className="p-4 flex flex-col items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-[hsl(var(--planet-training)/0.1)] flex items-center justify-center">
+                        <b.icon className="h-5 w-5 text-[hsl(var(--planet-training))]" />
+                      </div>
+                      <h3 className="font-display text-sm font-bold">{b.title}</h3>
+                      <p className="text-xs text-muted-foreground">{b.description}</p>
+                    </CardContent>
+                  </Card>
+                </FadeInView>
               ))}
             </div>
 
@@ -412,18 +423,20 @@ const Index = () => {
       <PlanetSection id="fortnite" color="var(--planet-knowledge)">
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-knowledge))", boxShadow: "0 0 12px hsl(var(--planet-knowledge) / 0.5)" }} />
-              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-knowledge))" }}>
-                Pláneta 3
-              </span>
-            </div>
+            <FadeInView>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-knowledge))", boxShadow: "0 0 12px hsl(var(--planet-knowledge) / 0.5)" }} />
+                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-knowledge))" }}>
+                  Pláneta 3
+                </span>
+              </div>
             <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
               Fortnite Miðstöð
             </h2>
             <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
               Allt sem þú þarft til að bæta leikni þína — maps, tips, stillingar og leiðbeiningar.
             </p>
+            </FadeInView>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {[
@@ -476,18 +489,20 @@ const Index = () => {
       <PlanetSection id="community" color="var(--planet-community)">
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-community))", boxShadow: "0 0 12px hsl(var(--planet-community) / 0.5)" }} />
-              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-community))" }}>
-                Pláneta 4
-              </span>
-            </div>
+            <FadeInView>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-3 h-3 rounded-full" style={{ background: "hsl(var(--planet-community))", boxShadow: "0 0 12px hsl(var(--planet-community) / 0.5)" }} />
+                <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: "hsl(var(--planet-community))" }}>
+                  Pláneta 4
+                </span>
+              </div>
             <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
               Samfélagið
             </h2>
             <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
               Vertu hluti af íslenska Fortnite samfélaginu. Sendu inn klipp, deildu highlights og tengdu.
             </p>
+            </FadeInView>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <Card className="planet-card-community rounded-2xl">

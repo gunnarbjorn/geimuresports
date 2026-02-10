@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { FadeInView } from "@/components/layout/FadeInView";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrainingForm } from "@/components/forms/TrainingForm";
@@ -101,18 +102,20 @@ const Aefingar = () => {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {schedule.map((slot, index) => (
-              <Card key={index} className="planet-card-training rounded-xl text-center">
-                <CardHeader className="pb-3">
-                  <Calendar className="h-8 w-8 text-[hsl(var(--planet-training))] mx-auto mb-2" />
-                  <CardTitle className="font-display text-lg">{slot.day}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-2xl font-bold text-foreground mb-2">{slot.time}</p>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-[hsl(var(--planet-training)/0.1)] text-[hsl(var(--planet-training))]">
-                    {slot.group}
-                  </span>
-                </CardContent>
-              </Card>
+              <FadeInView key={index} delay={index * 80}>
+                <Card className="planet-card-training rounded-xl text-center">
+                  <CardHeader className="pb-3">
+                    <Calendar className="h-8 w-8 text-[hsl(var(--planet-training))] mx-auto mb-2" />
+                    <CardTitle className="font-display text-lg">{slot.day}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-2xl font-bold text-foreground mb-2">{slot.time}</p>
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[hsl(var(--planet-training)/0.1)] text-[hsl(var(--planet-training))]">
+                      {slot.group}
+                    </span>
+                  </CardContent>
+                </Card>
+              </FadeInView>
             ))}
           </div>
         </div>
@@ -131,27 +134,29 @@ const Aefingar = () => {
           
           <div className="max-w-4xl mx-auto space-y-6">
             {sessionSteps.map((item, index) => (
-              <Card key={index} className="glass-card border-border card-hover">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 rounded-xl bg-[hsl(var(--planet-training)/0.1)] flex items-center justify-center">
-                        <item.icon className="h-6 w-6 text-[hsl(var(--planet-training))]" />
+              <FadeInView key={index} delay={index * 100}>
+                <Card className="glass-card border-border card-hover">
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-6">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 rounded-xl bg-[hsl(var(--planet-training)/0.1)] flex items-center justify-center">
+                          <item.icon className="h-6 w-6 text-[hsl(var(--planet-training))]" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-4 mb-2">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[hsl(var(--planet-training))] text-primary-foreground">
+                            Skref {item.step}
+                          </span>
+                          <span className="text-sm text-muted-foreground">{item.duration}</span>
+                        </div>
+                        <h3 className="font-display text-xl font-bold mb-2">{item.title}</h3>
+                        <p className="text-muted-foreground">{item.description}</p>
                       </div>
                     </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-2">
-                        <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[hsl(var(--planet-training))] text-primary-foreground">
-                          Skref {item.step}
-                        </span>
-                        <span className="text-sm text-muted-foreground">{item.duration}</span>
-                      </div>
-                      <h3 className="font-display text-xl font-bold mb-2">{item.title}</h3>
-                      <p className="text-muted-foreground">{item.description}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </FadeInView>
             ))}
           </div>
         </div>
