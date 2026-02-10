@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   Crosshair, Swords, Gamepad2, Trophy, Users, ArrowRight, ArrowDown,
-  Settings, Gauge, Wifi, TrendingUp, Video, Send
+  Settings, Gauge, Wifi, TrendingUp, Video, Send, BookOpen
 } from "lucide-react";
 
 const userPaths = [
@@ -14,24 +14,40 @@ const userPaths = [
     description: "Maps, warm-up og aim",
     href: "/fortnite/maps",
     icon: Crosshair,
+    cardClass: "planet-card-training",
+    iconBg: "bg-[hsl(var(--planet-training)/0.12)]",
+    iconColor: "text-[hsl(var(--planet-training))]",
+    accentColor: "text-[hsl(var(--planet-training))]",
   },
   {
     title: "LÆRA",
     description: "Tips og stillingar",
     href: "/fortnite/tips",
-    icon: Settings,
+    icon: BookOpen,
+    cardClass: "planet-card-knowledge",
+    iconBg: "bg-[hsl(var(--planet-knowledge)/0.12)]",
+    iconColor: "text-[hsl(var(--planet-knowledge))]",
+    accentColor: "text-[hsl(var(--planet-knowledge))]",
   },
   {
     title: "KEPPA",
     description: "Ranked og mót",
     href: "/fortnite/ranked",
     icon: Trophy,
+    cardClass: "planet-card-tournament",
+    iconBg: "bg-[hsl(var(--planet-tournament)/0.12)]",
+    iconColor: "text-[hsl(var(--planet-tournament))]",
+    accentColor: "text-[hsl(var(--planet-tournament))]",
   },
   {
     title: "COMMUNITY",
     description: "Clips og samfélag",
     href: "/fortnite/community",
     icon: Users,
+    cardClass: "planet-card-community",
+    iconBg: "bg-[hsl(var(--planet-community)/0.12)]",
+    iconColor: "text-[hsl(var(--planet-community))]",
+    accentColor: "text-[hsl(var(--planet-community))]",
   },
 ];
 
@@ -64,20 +80,23 @@ const Fortnite = () => {
 
   return (
     <Layout>
-      {/* Hero – immersive, warm nebula */}
+      {/* Hero – Knowledge planet purple atmosphere */}
       <section className="relative min-h-[88vh] md:min-h-[92vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 hero-glow-fortnite" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-background/50" />
         
-        {/* Floating orbs for depth */}
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/5 blur-3xl animate-pulse-glow" />
-        <div className="absolute bottom-1/3 right-1/5 w-48 h-48 rounded-full bg-primary/3 blur-3xl animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
+        {/* Floating orbs */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-[hsl(var(--planet-knowledge)/0.06)] blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-1/3 right-1/5 w-48 h-48 rounded-full bg-[hsl(var(--geimur-red)/0.04)] blur-3xl animate-pulse-glow" style={{ animationDelay: "1.5s" }} />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
+            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--planet-knowledge)/0.1)] text-[hsl(var(--planet-knowledge))] text-xs font-bold uppercase tracking-widest mb-5 animate-fade-in">
+              <BookOpen className="h-3.5 w-3.5" /> Fortnite Hub
+            </span>
             <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-5 tracking-tight animate-fade-in">
               <span className="text-glow">FORTNITE</span>{" "}
-              <span className="block md:inline text-primary">Á ÍSLANDI</span>
+              <span className="block md:inline text-[hsl(var(--planet-knowledge))]">Á ÍSLANDI</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-lg mx-auto animate-fade-in" style={{ animationDelay: "0.15s" }}>
               Æfingar • Keppni • Community
@@ -92,10 +111,10 @@ const Fortnite = () => {
                 Byrja hér
                 <ArrowDown className="ml-2 h-5 w-5" />
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-primary/40">
+              <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-[hsl(var(--planet-training)/0.5)]">
                 <Link to="/aefingar">Æfingar</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-primary/40">
+              <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-[hsl(var(--planet-tournament)/0.5)]">
                 <Link to="/mot">
                   <Trophy className="mr-2 h-4 w-4" />
                   Mót
@@ -106,9 +125,9 @@ const Fortnite = () => {
         </div>
       </section>
 
-      {/* User Paths – clear destinations */}
+      {/* User Paths – planet-colored cards */}
       <section id="fortnite-paths" className="section-spacing-lg scroll-mt-20 relative">
-        <div className="absolute inset-0 nebula-bg pointer-events-none" />
+        <div className="absolute inset-0 nebula-knowledge pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-10">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">
@@ -119,18 +138,18 @@ const Fortnite = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
-            {userPaths.map((path, i) => (
+            {userPaths.map((path) => (
               <Link key={path.href} to={path.href} className="group">
-                <Card className="path-card rounded-2xl h-full text-center py-8 md:py-12">
+                <Card className={`${path.cardClass} rounded-2xl h-full text-center py-8 md:py-12`}>
                   <CardContent className="p-4 md:p-6 flex flex-col items-center gap-5">
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-primary/8 flex items-center justify-center group-hover:bg-primary/15 transition-all duration-300 group-hover:scale-105">
-                      <path.icon className="h-8 w-8 md:h-9 md:w-9 text-primary transition-transform duration-300 group-hover:scale-110" />
+                    <div className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl ${path.iconBg} flex items-center justify-center group-hover:scale-105 transition-all duration-300`}>
+                      <path.icon className={`h-8 w-8 md:h-9 md:w-9 ${path.iconColor} transition-transform duration-300 group-hover:scale-110`} />
                     </div>
                     <div>
                       <h3 className="font-display text-base md:text-lg font-bold mb-1 tracking-wide">{path.title}</h3>
                       <p className="text-xs md:text-sm text-muted-foreground">{path.description}</p>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0" />
+                    <ArrowRight className={`h-4 w-4 ${path.accentColor} opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0`} />
                   </CardContent>
                 </Card>
               </Link>
@@ -141,26 +160,26 @@ const Fortnite = () => {
 
       <div className="section-divider max-w-3xl mx-auto" />
 
-      {/* Maps – Æfingar label */}
+      {/* Maps – Training color */}
       <section className="section-spacing-lg relative">
-        <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
+        <div className="absolute inset-0 nebula-training pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1 block">Æfingar</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-training))] mb-1 block">Æfingar</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold">Fortnite Maps</h2>
             </div>
-            <Button asChild variant="ghost" className="text-primary">
+            <Button asChild variant="ghost" className="text-[hsl(var(--planet-training))]">
               <Link to="/fortnite/maps">Sjá öll <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {mapCards.map((card) => (
               <Link key={card.href} to={card.href} className="group">
-                <Card className="glass-card border-border card-hover text-center py-6 rounded-xl">
+                <Card className="planet-card-training text-center py-6 rounded-xl">
                   <CardContent className="p-3 flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <card.icon className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-xl bg-[hsl(var(--planet-training)/0.1)] flex items-center justify-center group-hover:bg-[hsl(var(--planet-training)/0.2)] transition-colors">
+                      <card.icon className="h-5 w-5 text-[hsl(var(--planet-training))]" />
                     </div>
                     <span className="font-display text-sm font-bold">{card.title}</span>
                   </CardContent>
@@ -173,25 +192,26 @@ const Fortnite = () => {
 
       <div className="section-divider max-w-3xl mx-auto" />
 
-      {/* Tips – Þekking label */}
+      {/* Tips – Knowledge color */}
       <section className="section-spacing-lg relative">
+        <div className="absolute inset-0 nebula-knowledge pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
             <div>
-              <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1 block">Þekking</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-knowledge))] mb-1 block">Þekking</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold">Tips & Stillingar</h2>
             </div>
-            <Button asChild variant="ghost" className="text-primary">
+            <Button asChild variant="ghost" className="text-[hsl(var(--planet-knowledge))]">
               <Link to="/fortnite/tips">Sjá öll <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {tipsCards.map((card) => (
               <Link key={card.href} to={card.href} className="group">
-                <Card className="glass-card border-border card-hover text-center py-6 rounded-xl">
+                <Card className="planet-card-knowledge text-center py-6 rounded-xl">
                   <CardContent className="p-3 flex flex-col items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                      <card.icon className="h-5 w-5 text-primary" />
+                    <div className="w-10 h-10 rounded-xl bg-[hsl(var(--planet-knowledge)/0.1)] flex items-center justify-center group-hover:bg-[hsl(var(--planet-knowledge)/0.2)] transition-colors">
+                      <card.icon className="h-5 w-5 text-[hsl(var(--planet-knowledge))]" />
                     </div>
                     <span className="font-display text-sm font-bold">{card.title}</span>
                   </CardContent>
@@ -204,13 +224,13 @@ const Fortnite = () => {
 
       <div className="section-divider max-w-3xl mx-auto" />
 
-      {/* Community – warm, alive */}
+      {/* Community – warm community color */}
       <section className="section-spacing-lg relative overflow-hidden">
-        <div className="absolute inset-0 nebula-bg pointer-events-none" />
+        <div className="absolute inset-0 nebula-community pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
-              <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1 block">Samfélag</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-community))] mb-1 block">Samfélag</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Community</h2>
               <p className="text-muted-foreground max-w-md mx-auto">
                 Klipp, highlights og tenging við íslenska Fortnite spilara
@@ -219,16 +239,16 @@ const Fortnite = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
               <Link to="/fortnite/community" className="group">
-                <Card className="glass-card-warm path-card rounded-2xl h-full">
+                <Card className="planet-card-community rounded-2xl h-full">
                   <CardContent className="p-6 md:p-8 flex flex-col items-center text-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-                      <Video className="h-7 w-7 text-primary" />
+                    <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.1)] flex items-center justify-center group-hover:bg-[hsl(var(--planet-community)/0.15)] transition-colors">
+                      <Video className="h-7 w-7 text-[hsl(var(--planet-community))]" />
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-bold mb-1">Clip vikunnar</h3>
                       <p className="text-sm text-muted-foreground">Bestu klippin úr íslensku community-inu</p>
                     </div>
-                    <span className="text-primary text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <span className="text-[hsl(var(--planet-community))] text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                       Sjá clips <ArrowRight className="h-4 w-4" />
                     </span>
                   </CardContent>
@@ -236,16 +256,16 @@ const Fortnite = () => {
               </Link>
 
               <Link to="/fortnite/community#senda-clip" className="group">
-                <Card className="glass-card-warm path-card rounded-2xl h-full">
+                <Card className="planet-card-community rounded-2xl h-full">
                   <CardContent className="p-6 md:p-8 flex flex-col items-center text-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
-                      <Send className="h-7 w-7 text-primary" />
+                    <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.1)] flex items-center justify-center group-hover:bg-[hsl(var(--planet-community)/0.15)] transition-colors">
+                      <Send className="h-7 w-7 text-[hsl(var(--planet-community))]" />
                     </div>
                     <div>
                       <h3 className="font-display text-lg font-bold mb-1">Senda klipp</h3>
                       <p className="text-sm text-muted-foreground">Deildu þínum besta augnabliki</p>
                     </div>
-                    <span className="text-primary text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <span className="text-[hsl(var(--planet-community))] text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
                       Senda inn <ArrowRight className="h-4 w-4" />
                     </span>
                   </CardContent>
@@ -258,16 +278,16 @@ const Fortnite = () => {
 
       <div className="section-divider max-w-3xl mx-auto" />
 
-      {/* Ranked – Keppni label */}
+      {/* Ranked – Tournament color */}
       <section className="section-spacing-lg relative">
-        <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
+        <div className="absolute inset-0 nebula-tournament pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
-            <div className="w-20 h-20 rounded-2xl bg-primary/8 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="h-10 w-10 text-primary" />
+            <div className="w-20 h-20 rounded-2xl bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="h-10 w-10 text-[hsl(var(--planet-tournament))]" />
             </div>
             <div className="text-center md:text-left flex-1">
-              <span className="text-xs font-bold uppercase tracking-widest text-primary mb-1 block">Keppni</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-tournament))] mb-1 block">Keppni</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">Ranked & Competitive</h2>
               <p className="text-muted-foreground mb-5">
                 Lærðu hvernig ranked kerfið virkar og hvernig Geimur undirbýr þig fyrir keppni.
@@ -276,7 +296,7 @@ const Fortnite = () => {
                 <Button asChild className="btn-primary-gradient">
                   <Link to="/fortnite/ranked">Lesa meira <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <Button asChild variant="outline" className="border-border/60 hover:border-primary/40">
+                <Button asChild variant="outline" className="border-border/60 hover:border-[hsl(var(--planet-tournament)/0.5)]">
                   <Link to="/mot">Næsta mót</Link>
                 </Button>
               </div>
@@ -285,7 +305,7 @@ const Fortnite = () => {
         </div>
       </section>
 
-      {/* Conversion CTA – warm */}
+      {/* Conversion CTA */}
       <section className="section-spacing-lg relative overflow-hidden">
         <div className="absolute inset-0 nebula-bg pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
@@ -301,14 +321,12 @@ const Fortnite = () => {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button asChild size="lg" className="btn-primary-gradient text-lg px-8 font-bold glow-red-sm">
                   <Link to="/aefingar">
-                    Skráning í æfingar
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    Skráning í æfingar <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="border-primary/30 hover:border-primary/50">
+                <Button asChild size="lg" variant="outline" className="border-[hsl(var(--planet-tournament)/0.3)] hover:border-[hsl(var(--planet-tournament)/0.5)]">
                   <Link to="/mot">
-                    <Trophy className="mr-2 h-5 w-5" />
-                    Næsta mót
+                    <Trophy className="mr-2 h-5 w-5" /> Næsta mót
                   </Link>
                 </Button>
               </div>

@@ -224,9 +224,11 @@ const Mot = () => {
 
   return (
     <Layout>
-      {/* 1. HERO – Minimal, Mobile-First */}
-      <section id="top" className="pt-24 pb-6 md:pt-28 md:pb-8">
-        <div className="container mx-auto px-4">
+      {/* 1. HERO – Tournament planet atmosphere */}
+      <section id="top" className="relative pt-24 pb-6 md:pt-28 md:pb-8 overflow-hidden">
+        <div className="absolute inset-0 nebula-tournament pointer-events-none" />
+        <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-[hsl(var(--planet-tournament)/0.05)] blur-3xl animate-pulse-glow" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
             {/* Location badge */}
             <div className="flex justify-center mb-4">
@@ -249,11 +251,11 @@ const Mot = () => {
             {/* Date & Time badges */}
             <div className="flex flex-wrap justify-center gap-2 mb-6">
               <Badge variant="secondary" className="text-sm px-4 py-2">
-                <Calendar className="h-4 w-4 mr-2 text-primary" />
+                <Calendar className="h-4 w-4 mr-2 text-[hsl(var(--planet-tournament))]" />
                 {TOURNAMENT_CONFIG.date}
               </Badge>
               <Badge variant="secondary" className="text-sm px-4 py-2">
-                <Clock className="h-4 w-4 mr-2 text-primary" />
+                <Clock className="h-4 w-4 mr-2 text-[hsl(var(--planet-tournament))]" />
                 {TOURNAMENT_CONFIG.time}
               </Badge>
             </div>
