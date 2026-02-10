@@ -7,14 +7,14 @@ const navLinks = [{
   href: "/",
   label: "Heim"
 }, {
-  href: "/fortnite",
-  label: "Fortnite"
+  href: "/mot",
+  label: "Mót"
 }, {
   href: "/aefingar",
   label: "Æfingar"
 }, {
-  href: "/mot",
-  label: "Mót"
+  href: "/fortnite",
+  label: "Fortnite"
 }, {
   href: "/um",
   label: "Um okkur"
