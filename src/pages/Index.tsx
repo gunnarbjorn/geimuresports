@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import heroDesktop from "@/assets/hero-desktop.png";
 import heroMobile from "@/assets/hero-mobile.jpeg";
+import { tournaments } from "@/data/tournaments";
 
 /* ========== PLANET DATA ========== */
 const planetCards = [
@@ -253,58 +254,70 @@ const Index = () => {
             </FadeInView>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <FadeInView delay={100}>
-                {/* Featured tournament card */}
-                <Card className="planet-card-tournament rounded-2xl overflow-hidden">
-                  <CardHeader>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))]">
-                        Virkt mót
-                      </span>
-                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))]">
-                        Skráning opin
-                      </span>
-                    </div>
-                    <CardTitle className="font-display text-2xl">Elko-deildin Vor 2026</CardTitle>
-                    <CardDescription>Duos Build – 4 mótakvöld yfir febrúar & mars</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-muted-foreground mb-6">
-                      <li className="flex items-center gap-2"><Calendar className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 11. feb – 4. mars 2026</li>
-                      <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> Online</li>
-                      <li className="flex items-center gap-2"><Swords className="h-4 w-4 text-[hsl(var(--planet-tournament))]" /> 2.000 kr á einstakling</li>
-                    </ul>
-                    <Button asChild className="btn-primary-gradient w-full font-bold">
-                      <Link to="/mot">
-                        Skrá mitt lið <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </FadeInView>
-
-              <FadeInView delay={200}>
-                {/* Coming soon LAN */}
-                <Card className="planet-card-tournament rounded-2xl overflow-hidden relative">
-                  <div className="absolute top-4 right-4">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.1)] text-muted-foreground border border-border">
-                      Bráðum
-                    </span>
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="font-display text-2xl">LAN í Arena Gaming</CardTitle>
-                    <CardDescription>100 manna lobby – á staðnum</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      Stórt Fortnite staðarmót í Arena Gaming. 100 keppendur í sama lobby, 5 leikir, streymi og verðlaun. Dagsetning tilkynnt fljótlega.
-                    </p>
-                    <Button variant="outline" className="w-full border-[hsl(var(--planet-tournament)/0.3)] hover:border-[hsl(var(--planet-tournament)/0.6)]" disabled>
-                      Tilkynnt síðar
-                    </Button>
-                  </CardContent>
-                </Card>
-              </FadeInView>
+              {tournaments.map((t, i) => (
+                <FadeInView key={t.id} delay={100 + i * 100}>
+                  <Card className="planet-card-tournament rounded-2xl overflow-hidden h-full flex flex-col">
+                    <CardHeader>
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        {t.isComingSoon ? (
+                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.1)] text-muted-foreground border border-border">
+                            Bráðum
+                          </span>
+                        ) : (
+                          <>
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))]">
+                              Virkt mót
+                            </span>
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))]">
+                              Skráning opin
+                            </span>
+                          </>
+                        )}
+                        {t.tags?.map(tag => (
+                          <span key={tag} className="px-2 py-0.5 rounded-full text-xs bg-muted text-muted-foreground">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <CardTitle className="font-display text-2xl">{t.name}</CardTitle>
+                      <CardDescription>{t.format ? `${t.format} – ` : ""}{t.description.slice(0, 80)}…</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1 flex flex-col">
+                      <ul className="space-y-2 text-sm text-muted-foreground mb-6">
+                        {t.dates.length > 0 && (
+                          <li className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+                            {t.dates[0]} – {t.dates[t.dates.length - 1]}
+                          </li>
+                        )}
+                        <li className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+                          {t.location}
+                        </li>
+                        {t.entryFee && (
+                          <li className="flex items-center gap-2">
+                            <Swords className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+                            {t.entryFee}
+                          </li>
+                        )}
+                      </ul>
+                      <div className="mt-auto">
+                        {t.isComingSoon ? (
+                          <Button variant="outline" className="w-full border-[hsl(var(--planet-tournament)/0.3)]" disabled>
+                            {t.ctaText || "Tilkynnt síðar"}
+                          </Button>
+                        ) : (
+                          <Button asChild className="btn-primary-gradient w-full font-bold">
+                            <Link to={t.ctaUrl || "/mot"}>
+                              {t.ctaText || "Skrá mitt lið"} <ArrowRight className="ml-2 h-4 w-4" />
+                            </Link>
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </FadeInView>
+              ))}
             </div>
 
             {/* Next planet CTA */}
