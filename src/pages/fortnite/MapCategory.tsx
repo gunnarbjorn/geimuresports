@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,8 @@ const MapCategory = () => {
   const { category } = useParams<{ category: string }>();
   const { toast } = useToast();
   const data = categoriesData[category || ""];
+
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [category]);
 
   if (!data) {
     return (
