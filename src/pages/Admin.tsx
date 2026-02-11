@@ -42,6 +42,8 @@ import {
   GraduationCap,
   Phone,
   User,
+  Gamepad2,
+  CreditCard,
 } from "lucide-react";
 
 interface RegistrationData {
@@ -66,11 +68,27 @@ interface Registration {
   data: RegistrationData;
 }
 
+interface LanOrder {
+  id: string;
+  order_id: string;
+  team_name: string;
+  player1: string;
+  player2: string;
+  email: string;
+  amount: number;
+  status: string;
+  paid_at: string | null;
+  authorization_code: string | null;
+  masked_card: string | null;
+  created_at: string;
+}
+
 const AdminPage = () => {
   const navigate = useNavigate();
   const { user, isAdmin, isLoading: authLoading, signOut } = useAdminAuth();
   const [tournamentRegs, setTournamentRegs] = useState<Registration[]>([]);
   const [trainingRegs, setTrainingRegs] = useState<Registration[]>([]);
+  const [lanOrders, setLanOrders] = useState<LanOrder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -83,7 +101,7 @@ const AdminPage = () => {
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      const [tournamentRes, trainingRes] = await Promise.all([
+      const [tournamentRes, trainingRes, lanRes] = await Promise.all([
         supabase
           .from("registrations")
           .select("*")
@@ -93,6 +111,10 @@ const AdminPage = () => {
           .from("registrations")
           .select("*")
           .eq("type", "training")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("lan_tournament_orders")
+          .select("*")
           .order("created_at", { ascending: false }),
       ]);
 
@@ -123,6 +145,13 @@ const AdminPage = () => {
           }))
         );
       }
+
+      if (lanRes.error) {
+        console.error("Error fetching LAN orders:", lanRes.error);
+        toast.error("Villa við að sækja LAN skráningar");
+      } else {
+        setLanOrders(lanRes.data as LanOrder[] || []);
+      }
     } catch (err) {
       console.error("Error:", err);
       toast.error("Villa kom upp");
@@ -146,6 +175,30 @@ const AdminPage = () => {
       }
 
       toast.success("Skráningu eytt!");
+      fetchRegistrations();
+    } catch (err) {
+      console.error("Error deleting:", err);
+      toast.error("Villa við eyðingu");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleDeleteLanOrder = async (id: string) => {
+    setDeletingId(id);
+    try {
+      const { error } = await supabase
+        .from("lan_tournament_orders")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        console.error("Delete error:", error);
+        toast.error("Villa við eyðingu LAN skráningar");
+        return;
+      }
+
+      toast.success("LAN skráningu eytt!");
       fetchRegistrations();
     } catch (err) {
       console.error("Error deleting:", err);
@@ -268,17 +321,151 @@ const AdminPage = () => {
             </div>
 
             {/* Tabs */}
-            <Tabs defaultValue="tournament" className="space-y-6">
+            <Tabs defaultValue="lan" className="space-y-6">
               <TabsList>
+                <TabsTrigger value="lan" className="gap-2">
+                  <Gamepad2 className="h-4 w-4" />
+                  LAN ({lanOrders.length})
+                </TabsTrigger>
                 <TabsTrigger value="tournament" className="gap-2">
                   <Trophy className="h-4 w-4" />
-                  Mót ({tournamentRegs.length})
+                  Elko ({tournamentRegs.length})
                 </TabsTrigger>
                 <TabsTrigger value="training" className="gap-2">
                   <GraduationCap className="h-4 w-4" />
                   Æfingar ({trainingRegs.length})
                 </TabsTrigger>
               </TabsList>
+
+              {/* LAN Tab */}
+              <TabsContent value="lan" className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
+                          <Users className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{lanOrders.filter(o => o.status === "PAID").length}</p>
+                          <p className="text-xs text-muted-foreground">Greidd lið</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                          <CreditCard className="h-5 w-5 text-accent" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{lanOrders.filter(o => o.status === "PENDING_PAYMENT").length}</p>
+                          <p className="text-xs text-muted-foreground">Ógreitt</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Gamepad2 className="h-5 w-5" />
+                      Fortnite Duos LAN – Skráningar
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                        Hleður...
+                      </div>
+                    ) : lanOrders.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Engar LAN skráningar ennþá
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-12">#</TableHead>
+                              <TableHead>Lið</TableHead>
+                              <TableHead>Spilari 1</TableHead>
+                              <TableHead>Spilari 2</TableHead>
+                              <TableHead>Email</TableHead>
+                              <TableHead>Order ID</TableHead>
+                              <TableHead>Staða</TableHead>
+                              <TableHead>Skráð</TableHead>
+                              <TableHead className="w-20">Eyða</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {lanOrders.map((order, index) => (
+                              <TableRow key={order.id}>
+                                <TableCell className="font-mono text-muted-foreground">{index + 1}</TableCell>
+                                <TableCell className="font-medium">{order.team_name}</TableCell>
+                                <TableCell>{order.player1}</TableCell>
+                                <TableCell>{order.player2}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1 text-sm">
+                                    <Mail className="h-3 w-3 text-muted-foreground" />
+                                    {order.email}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="font-mono text-xs">{order.order_id}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className={
+                                    order.status === "PAID"
+                                      ? "bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]"
+                                      : order.status === "PENDING_PAYMENT"
+                                      ? "bg-accent/10 text-accent border-accent/30"
+                                      : "bg-destructive/10 text-destructive border-destructive/30"
+                                  }>
+                                    {order.status === "PAID" ? "Greitt" : order.status === "PENDING_PAYMENT" ? "Ógreitt" : order.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {new Date(order.created_at).toLocaleDateString("is-IS")}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" disabled={deletingId === order.id}>
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>Eyða LAN skráningu?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Ertu viss um að þú viljir eyða skráningu <strong>{order.team_name}</strong>? Þetta er ekki hægt að afturkalla.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Hætta við</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDeleteLanOrder(order.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                          Eyða
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
 
               {/* Tournament Tab */}
               <TabsContent value="tournament" className="space-y-6">
