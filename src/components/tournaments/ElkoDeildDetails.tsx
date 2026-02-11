@@ -158,7 +158,7 @@ export function ElkoDeildDetails() {
     }, 100);
   };
 
-  const accent = "planet-tournament";
+  const accent = "arena-green";
 
   return (
     <div className="space-y-6">
