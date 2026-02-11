@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
 import elkoCampaignBg from "@/assets/elko-campaign-bg.jpeg";
+import elkoCampaignBgMobile from "@/assets/elko-campaign-bg-mobile.png";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -165,11 +166,15 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
   return (
     <div className="relative">
-      {/* Full-page campaign background - breaks out of container */}
+      {/* Full-page campaign background - mobile uses portrait, desktop uses landscape */}
       <div className="absolute inset-0 -left-[50vw] -right-[50vw] ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen z-0 pointer-events-none">
         <div 
-          className="absolute inset-0 opacity-[0.25] bg-cover bg-top bg-no-repeat"
+          className="absolute inset-0 opacity-[0.4] bg-cover bg-top bg-no-repeat hidden md:block"
           style={{ backgroundImage: `url(${elkoCampaignBg})` }}
+        />
+        <div 
+          className="absolute inset-0 opacity-[0.4] bg-cover bg-top bg-no-repeat md:hidden"
+          style={{ backgroundImage: `url(${elkoCampaignBgMobile})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
       </div>
