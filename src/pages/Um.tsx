@@ -153,7 +153,7 @@ const Um = () => {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button asChild size="lg" className="btn-primary-gradient text-lg px-8">
-                  <Link to="/skraning">
+                  <Link to="/aefingar#skraning">
                     Skrá mig <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
