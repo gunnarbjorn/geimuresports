@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -24,7 +25,7 @@ interface AdminAddRegistrationDialogProps {
   onAdded: () => void;
 }
 
-type RegType = "elko-tournament" | "training";
+type RegType = "elko-tournament" | "training" | "lan-tournament";
 
 export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDialogProps) {
   const [open, setOpen] = useState(false);
@@ -37,6 +38,13 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
   const [player2Name, setPlayer2Name] = useState("");
   const [email, setEmail] = useState("");
   const [orderId, setOrderId] = useState("");
+
+  // LAN fields
+  const [lanTeamName, setLanTeamName] = useState("");
+  const [lanPlayer1, setLanPlayer1] = useState("");
+  const [lanPlayer2, setLanPlayer2] = useState("");
+  const [lanEmail, setLanEmail] = useState("");
+  const [lanPizza, setLanPizza] = useState(false);
 
   // Training fields
   const [fullName, setFullName] = useState("");
@@ -51,6 +59,11 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
     setPlayer2Name("");
     setEmail("");
     setOrderId("");
+    setLanTeamName("");
+    setLanPlayer1("");
+    setLanPlayer2("");
+    setLanEmail("");
+    setLanPizza(false);
     setFullName("");
     setAge("");
     setGroup("");
@@ -63,6 +76,38 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
     setIsSubmitting(true);
 
     try {
+      if (regType === "lan-tournament") {
+        if (!lanTeamName || !lanPlayer1 || !lanPlayer2 || !lanEmail) {
+          toast.error("Fylltu út alla nauðsynlega reiti");
+          setIsSubmitting(false);
+          return;
+        }
+        const amount = 8880 + (lanPizza ? 2000 : 0);
+        const { error } = await supabase.from("lan_tournament_orders").insert({
+          team_name: lanTeamName,
+          player1: lanPlayer1,
+          player2: lanPlayer2,
+          email: lanEmail,
+          pizza: lanPizza,
+          amount,
+          order_id: `ADMIN-${Date.now()}`,
+          status: "PAID" as const,
+          paid_at: new Date().toISOString(),
+        });
+        if (error) {
+          console.error("Insert error:", error);
+          toast.error("Villa við skráningu");
+          setIsSubmitting(false);
+          return;
+        }
+        toast.success("LAN skráning bætt við!");
+        resetForm();
+        setOpen(false);
+        onAdded();
+        setIsSubmitting(false);
+        return;
+      }
+
       let data: Record<string, unknown>;
 
       if (regType === "elko-tournament") {
@@ -99,6 +144,8 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
       }
 
       toast.success("Skráning bætt við!");
+
+      toast.success("Skráning bætt við!");
       resetForm();
       setOpen(false);
       onAdded();
@@ -132,12 +179,38 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="elko-tournament">Mót (Elko-deildin)</SelectItem>
+                <SelectItem value="lan-tournament">LAN mót</SelectItem>
                 <SelectItem value="training">Æfingar</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {regType === "elko-tournament" ? (
+          {regType === "lan-tournament" ? (
+            <>
+              <div className="space-y-2">
+                <Label>Nafn liðs *</Label>
+                <Input value={lanTeamName} onChange={(e) => setLanTeamName(e.target.value)} placeholder="Team Geimur" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Spilari 1 *</Label>
+                  <Input value={lanPlayer1} onChange={(e) => setLanPlayer1(e.target.value)} placeholder="Fortnite nafn" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Spilari 2 *</Label>
+                  <Input value={lanPlayer2} onChange={(e) => setLanPlayer2(e.target.value)} placeholder="Fortnite nafn" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Email *</Label>
+                <Input type="email" value={lanEmail} onChange={(e) => setLanEmail(e.target.value)} placeholder="email@example.is" />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="lan-pizza" checked={lanPizza} onCheckedChange={(v) => setLanPizza(v === true)} />
+                <Label htmlFor="lan-pizza">Pizza (+2.000 kr)</Label>
+              </div>
+            </>
+          ) : regType === "elko-tournament" ? (
             <>
               <div className="space-y-2">
                 <Label>Nafn liðs *</Label>
