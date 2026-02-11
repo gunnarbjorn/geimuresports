@@ -320,43 +320,39 @@ const Index = () => {
           <div className="max-w-5xl mx-auto">
             <FadeInView>
               <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
-                Samfélag
+                Samfélagið
               </h2>
               <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
-                Íslenska Fortnite samfélagið — klipp, highlights og streymi.
+                Vertu hluti af íslenska Fortnite samfélaginu. Sendu inn klipp, deildu highlights og tengdu.
               </p>
             </FadeInView>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
               {[
-                { player: "ÍslandGamer99", title: "Insane clutch í ranked", week: "Vika 6" },
-                { player: "FortniteFreyr", title: "No-scope sniper elimination", week: "Vika 5" },
-                { player: "ArcticAim", title: "1v4 endgame squad wipe", week: "Vika 4" },
-              ].map((clip, i) => (
+                { title: "Klipp vikunnar", desc: "Sendu inn bestu klippin þín og littu á highlight reel vikunnar.", icon: Zap },
+                { title: "Discord", desc: "Tengdu við aðra Fortnite spilara á Íslandi á Discord.", icon: Users },
+                { title: "Scrims", desc: "Skipulagðir æfingaleikir í hálfopnum lobbíum.", icon: Gamepad2 },
+              ].map((item, i) => (
                 <FadeInView key={i} delay={i * 100}>
-                  <Card className="planet-card-community rounded-xl">
-                    <CardContent className="p-6">
-                      <div className="aspect-video rounded-lg bg-muted/20 border border-border/40 flex items-center justify-center mb-4">
-                        <BookOpen className="h-10 w-10 text-muted-foreground/30" />
+                  <Card className="planet-card-community rounded-xl text-center py-8">
+                    <CardContent className="p-6 flex flex-col items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
+                        <item.icon className="h-7 w-7 text-[hsl(var(--planet-community))]" />
                       </div>
-                      <span className="text-xs text-[hsl(var(--planet-community))] font-medium">{clip.week}</span>
-                      <h3 className="font-display font-bold mt-1">{clip.title}</h3>
-                      <p className="text-sm text-muted-foreground">{clip.player}</p>
+                      <div>
+                        <h3 className="font-display text-base font-bold mb-1">{item.title}</h3>
+                        <p className="text-sm text-muted-foreground">{item.desc}</p>
+                      </div>
                     </CardContent>
                   </Card>
                 </FadeInView>
               ))}
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="text-center">
               <Button asChild size="lg" className="bg-[hsl(var(--planet-community))] hover:bg-[hsl(var(--planet-community-deep))] text-primary-foreground font-bold">
-                <Link to="/fortnite/community#senda-clip">
-                  Sendu inn klipp <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-[hsl(var(--planet-community)/0.4)] hover:border-[hsl(var(--planet-community)/0.7)]">
                 <Link to="/fortnite/community">
-                  Skoða samfélagið
+                  Sjá samfélagið <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
