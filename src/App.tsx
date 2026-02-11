@@ -39,9 +39,10 @@ const App = () => (
           <Route path="/fortnite/community" element={<Samfelag />} />
           <Route path="/fortnite/ranked" element={<Keppa />} />
           {/* Sub-pages */}
-          <Route path="/fortnite/maps" element={<Maps />} />
+          <Route path="/fortnite/maps" element={<Fraedast />} />
           <Route path="/fortnite/maps/:category" element={<MapCategory />} />
-          <Route path="/fortnite/tips" element={<Tips />} />
+          <Route path="/fortnite/tips" element={<Fraedast />} />
+          <Route path="/fortnite/tips/:topic" element={<TipArticle />} />
           <Route path="/fortnite/tips/:topic" element={<TipArticle />} />
           {/* Utility pages */}
           <Route path="/skraning" element={<Skraning />} />

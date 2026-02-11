@@ -79,7 +79,7 @@ const MapCategory = () => {
         <section className="hero-section">
           <div className="container mx-auto px-4 text-center">
             <h1 className="font-display text-4xl font-bold mb-4">Kort fannst ekki</h1>
-            <Button asChild variant="outline"><Link to="/fortnite/maps">Til baka</Link></Button>
+            <Button asChild variant="outline"><Link to="/fraedast">Til baka</Link></Button>
           </div>
         </section>
       </Layout>
@@ -99,7 +99,7 @@ const MapCategory = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <Button asChild variant="ghost" size="sm" className="mb-6 text-muted-foreground">
-              <Link to="/fortnite/maps"><ArrowLeft className="mr-2 h-4 w-4" /> Fortnite Maps</Link>
+              <Link to="/fraedast"><ArrowLeft className="mr-2 h-4 w-4" /> Fræðsla</Link>
             </Button>
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">{data.title}</h1>
             <p className="text-muted-foreground text-lg max-w-lg mx-auto">{data.description}</p>
