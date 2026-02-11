@@ -46,7 +46,7 @@ const TOURNAMENT_CONFIG = {
   time: "18:30 – 21:00",
   entryFeePerPlayer: 2000,
   entryFeePerTeam: 4000,
-  maxTeams: 32,
+  maxTeams: 50,
   prizePool: "100.000 kr.",
 };
 

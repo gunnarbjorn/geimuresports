@@ -57,11 +57,23 @@ const Keppa = () => {
 
             {/* Back button */}
             <FadeInView>
-              <Button asChild variant="ghost" size="sm" className="mb-4 text-muted-foreground hover:text-foreground">
-                <Link to={selectedId ? "/keppa" : "/"}>
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  {selectedId ? "Öll mót" : "Til baka"}
-                </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mb-4 text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  if (selectedId) {
+                    setSelectedId(null);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+                asChild={!selectedId}
+              >
+                {selectedId ? (
+                  <span><ArrowLeft className="mr-2 h-4 w-4" /> Öll mót</span>
+                ) : (
+                  <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Til baka</Link>
+                )}
               </Button>
             </FadeInView>
 
