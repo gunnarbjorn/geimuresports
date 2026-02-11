@@ -167,7 +167,7 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
   return (
     <div className="relative">
       {/* Full-page campaign background */}
-      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-screen h-[calc(100%+8rem)] z-0 pointer-events-none overflow-hidden">
+      <div className="fixed top-0 left-0 w-screen h-screen z-0 pointer-events-none overflow-hidden">
         <div 
           className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat hidden md:block"
           style={{ backgroundImage: `url(${elkoCampaignBg})` }}
