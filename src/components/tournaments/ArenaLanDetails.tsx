@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Accordion,
   AccordionContent,
@@ -39,6 +41,9 @@ import {
   Eye,
   Heart,
   Pizza,
+  Loader2,
+  AlertCircle,
+  XCircle,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
@@ -105,6 +110,117 @@ const DiscordSupportActions = () => {
         Beinn hlekkur: <span className="text-foreground">{DISCORD_INVITE_URL}</span>
       </p>
     </div>
+  );
+};
+
+const LanPaymentForm = () => {
+  const [searchParams] = useSearchParams();
+  const statusParam = searchParams.get("status");
+  const [teamName, setTeamName] = useState("");
+  const [player1, setPlayer1] = useState("");
+  const [player2, setPlayer2] = useState("");
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("lan-securepay-create", {
+        body: { teamName: teamName.trim(), player1: player1.trim(), player2: player2.trim(), email: email.trim() },
+      });
+      if (fnError || !data?.paymentUrl || !data?.fields) {
+        setError(data?.error || "Villa við skráningu — reyndu aftur");
+        setIsSubmitting(false);
+        return;
+      }
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.paymentUrl;
+      form.style.display = "none";
+      for (const [key, value] of Object.entries(data.fields)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      }
+      document.body.appendChild(form);
+      form.submit();
+    } catch (err) {
+      console.error("Payment error:", err);
+      setError("Villa — reyndu aftur");
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <>
+      {statusParam === "cancelled" && (
+        <Alert variant="destructive" className="mb-4">
+          <XCircle className="h-4 w-4" />
+          <AlertDescription>Greiðsla hætt við — skráning var ekki kláruð.</AlertDescription>
+        </Alert>
+      )}
+      {statusParam === "error" && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Villa í greiðslu — prófaðu aftur.</AlertDescription>
+        </Alert>
+      )}
+      <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
+        <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+              <Trophy className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+            </div>
+            <div>
+              <CardTitle className="font-display text-lg">Skrá lið & greiða</CardTitle>
+              <p className="text-sm text-muted-foreground">Skráning er fyrir lið (2 keppendur)</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5 md:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="teamName">Liðsheiti</Label>
+              <Input id="teamName" value={teamName} onChange={(e) => setTeamName(e.target.value)} placeholder="Nafn liðsins" required maxLength={50} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="player1"><Gamepad2 className="inline h-3.5 w-3.5 mr-1" />Leikmaður 1</Label>
+                <Input id="player1" value={player1} onChange={(e) => setPlayer1(e.target.value)} placeholder="Nafn" required maxLength={50} />
+              </div>
+              <div>
+                <Label htmlFor="player2"><Gamepad2 className="inline h-3.5 w-3.5 mr-1" />Leikmaður 2</Label>
+                <Input id="player2" value={player2} onChange={(e) => setPlayer2(e.target.value)} placeholder="Nafn" required maxLength={50} />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="email">Netfang</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="netfang@dæmi.is" required maxLength={100} />
+              <p className="text-xs text-muted-foreground mt-1">Staðfesting send á þetta netfang</p>
+            </div>
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <Button type="submit" size="lg" className="w-full btn-arena-gradient text-base" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Vinnsla...</>
+              ) : (
+                <>Skrá og greiða — {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString("is-IS")} kr</>
+              )}
+            </Button>
+            <p className="text-xs text-center text-muted-foreground">Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 
@@ -359,24 +475,9 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
         </Accordion>
       </div>
 
-      {/* Registration form */}
+      {/* Registration + Payment form */}
       <div id="skraning-arena" className="scroll-mt-24">
-        <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
-          <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-                <Trophy className="h-4 w-4 text-[hsl(var(--arena-green))]" />
-              </div>
-              <div>
-                <CardTitle className="font-display text-lg">Skráning liðs</CardTitle>
-                <p className="text-sm text-muted-foreground">Skráning er fyrir lið (2 keppendur)</p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-5 md:p-6">
-            <ElkoRegistrationForm />
-          </CardContent>
-        </Card>
+        <LanPaymentForm />
       </div>
 
       {/* Rules */}
