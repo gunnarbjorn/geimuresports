@@ -74,18 +74,18 @@ const Index = () => {
               Veldu leið og byrjaðu ferðalagið
             </p>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-4xl lg:max-w-5xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
               {paths.map((path, i) => (
                 <FadeInView key={path.href} delay={i * 80}>
                   <Link to={path.href} className="group">
-                    <Card className={`${path.cardClass} text-center py-6 rounded-xl`}>
-                      <CardContent className="p-3 flex flex-col items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl ${path.iconBg} flex items-center justify-center group-hover:scale-105 transition-all duration-300`}>
-                          <path.icon className={`h-5 w-5 ${path.iconColor} transition-transform duration-300 group-hover:scale-110`} />
+                    <Card className={`${path.cardClass} text-center py-6 md:py-12 rounded-xl md:rounded-2xl h-full`}>
+                      <CardContent className="p-3 md:p-6 flex flex-col items-center gap-3 md:gap-5">
+                        <div className={`w-10 h-10 md:w-20 md:h-20 rounded-xl md:rounded-2xl ${path.iconBg} flex items-center justify-center group-hover:scale-105 transition-all duration-300`}>
+                          <path.icon className={`h-5 w-5 md:h-9 md:w-9 ${path.iconColor} transition-transform duration-300 group-hover:scale-110`} />
                         </div>
                         <div>
-                          <h2 className="font-display text-sm font-bold mb-0.5 tracking-wide">{path.title}</h2>
-                          <p className="text-xs text-muted-foreground">{path.description}</p>
+                          <h2 className="font-display text-sm md:text-lg font-bold mb-0.5 md:mb-1 tracking-wide">{path.title}</h2>
+                          <p className="text-xs md:text-sm text-muted-foreground">{path.description}</p>
                         </div>
                         <ArrowRight className={`h-4 w-4 ${path.accentColor} opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0`} />
                       </CardContent>
