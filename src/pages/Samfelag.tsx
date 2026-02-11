@@ -91,11 +91,11 @@ const Samfelag = () => {
       <section className="section-spacing-lg relative">
         <div className="absolute inset-0 nebula-community pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-4xl mx-auto">
             {communityCards.map((item, i) => (
               <FadeInView key={i} delay={i * 80}>
-                <Card className="planet-card-community rounded-xl text-center py-8">
-                  <CardContent className="p-6 flex flex-col items-center gap-4">
+                <Card className="planet-card-community rounded-xl text-center py-6">
+                  <CardContent className="p-3 flex flex-col items-center gap-3">
                     <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
                       <item.icon className="h-7 w-7 text-[hsl(var(--planet-community))]" />
                     </div>
