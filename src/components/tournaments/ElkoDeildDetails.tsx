@@ -169,11 +169,11 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
       {/* Full-page campaign background */}
       <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-screen h-[calc(100%+8rem)] z-0 pointer-events-none overflow-hidden">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat hidden md:block"
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat hidden md:block"
           style={{ backgroundImage: `url(${elkoCampaignBg})` }}
         />
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat md:hidden"
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat md:hidden"
           style={{ backgroundImage: `url(${elkoCampaignBgMobile})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
