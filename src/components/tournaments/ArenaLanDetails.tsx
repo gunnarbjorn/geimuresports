@@ -162,20 +162,20 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
     <div className="space-y-6">
       {/* Hero info */}
       <div className="text-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mb-4 text-muted-foreground"
-          onClick={onBack}
-          asChild={!onBack}
-        >
-          {onBack ? (
-            <span><ArrowLeft className="mr-2 h-4 w-4" /> Öll mót</span>
-          ) : (
-            <Link to="/keppa"><ArrowLeft className="mr-2 h-4 w-4" /> Öll mót</Link>
-          )}
-        </Button>
-        <div className="flex justify-center mb-4">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground"
+            onClick={onBack}
+            asChild={!onBack}
+          >
+            {onBack ? (
+              <span><ArrowLeft className="mr-2 h-4 w-4" /> Öll mót</span>
+            ) : (
+              <Link to="/keppa"><ArrowLeft className="mr-2 h-4 w-4" /> Öll mót</Link>
+            )}
+          </Button>
           <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card border-[hsl(var(--arena-green)/0.5)]">
             <MapPin className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--arena-green))]" />
             {TOURNAMENT_CONFIG.location}
