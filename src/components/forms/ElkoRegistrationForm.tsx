@@ -337,7 +337,7 @@ export function ElkoRegistrationForm() {
               </div>
             </div>
 
-            {/* Row: Discord 1 + Epic 1 */}
+            {/* Discord notandanöfn */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
@@ -350,13 +350,29 @@ export function ElkoRegistrationForm() {
                   placeholder="t.d. gunnzib"
                   className="bg-secondary border-border"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Þetta er notað til að tengja skráningu þína við Discord.
-                </p>
                 {errors.player1DiscordId && (
                   <p className="text-sm text-destructive">{errors.player1DiscordId.message}</p>
                 )}
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="player2DiscordId">Discord notandanafn 2 *</Label>
+                <Input
+                  id="player2DiscordId"
+                  {...register("player2DiscordId")}
+                  placeholder="t.d. username123"
+                  className="bg-secondary border-border"
+                />
+                {errors.player2DiscordId && (
+                  <p className="text-sm text-destructive">{errors.player2DiscordId.message}</p>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground -mt-4">
+              Þetta er notað til að tengja skráningu ykkar við Discord.
+            </p>
+
+            {/* Epic IDs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <Label htmlFor="player1EpicId">Epic ID 1 *</Label>
@@ -376,37 +392,8 @@ export function ElkoRegistrationForm() {
                   <p className="text-sm text-destructive">{errors.player1EpicId.message}</p>
                 )}
               </div>
-            </div>
-
-            {/* Row: Discord 2 + Epic 2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <div className="flex items-center gap-1.5">
-                  <Label htmlFor="player2DiscordId">Discord notandanafn 2 *</Label>
-                  <DiscordTooltip />
-                </div>
-                <Input
-                  id="player2DiscordId"
-                  {...register("player2DiscordId")}
-                  placeholder="t.d. username123"
-                  className="bg-secondary border-border"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Þetta er notað til að tengja skráningu þína við Discord.
-                </p>
-                {errors.player2DiscordId && (
-                  <p className="text-sm text-destructive">{errors.player2DiscordId.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <Label htmlFor="player2EpicId">Epic ID 2 *</Label>
-                  <span className="flex items-center gap-1.5 text-xs">
-                    <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] hover:underline">Finna Epic ID</a>
-                    <span className="text-muted-foreground">·</span>
-                    <a href="https://www.epicgames.com/help/en-US/c-Category_EpicAccount/c-AccountSecurity/what-is-an-epic-account-id-and-where-can-i-find-it-a000084674" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] hover:underline">Hjálp</a>
-                  </span>
-                </div>
+                <Label htmlFor="player2EpicId">Epic ID 2 *</Label>
                 <Input
                   id="player2EpicId"
                   {...register("player2EpicId")}
