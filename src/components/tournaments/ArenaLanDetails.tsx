@@ -18,6 +18,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
+import arenaLanBg from "@/assets/arena-lan-bg.jpeg";
+import arenaLanBgMobile from "@/assets/arena-lan-bg-mobile.jpeg";
 import {
   Calendar,
   MapPin,
@@ -159,7 +161,21 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="relative">
+      {/* Full-page campaign background */}
+      <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-screen h-screen z-0 pointer-events-none overflow-hidden">
+        <div 
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat hidden md:block"
+          style={{ backgroundImage: `url(${arenaLanBg})` }}
+        />
+        <div 
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat md:hidden"
+          style={{ backgroundImage: `url(${arenaLanBgMobile})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
+      </div>
+
+      <div className="relative z-10 space-y-6">
       {/* Hero info */}
       <div className="text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
@@ -413,6 +429,7 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      </div>
     </div>
   );
 }
