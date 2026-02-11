@@ -177,19 +177,17 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
             {/* Selected tournament detail */}
             {selectedId && SelectedComponent && (
               <FadeInView>
-                <div className="text-center mb-6">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="mb-4 text-muted-foreground"
-                    onClick={() => {
-                      setSelectedId(null);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Öll mót
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mb-4 text-muted-foreground"
+                  onClick={() => {
+                    setSelectedId(null);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Öll mót
+                </Button>
                 <SelectedComponent />
               </FadeInView>
             )}
