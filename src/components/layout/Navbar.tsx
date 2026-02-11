@@ -7,20 +7,17 @@ const navLinks = [{
   href: "/",
   label: "Heim"
 }, {
-  href: "/mot",
-  label: "Mót"
+  href: "/keppa",
+  label: "Keppa"
 }, {
   href: "/aefingar",
-  label: "Æfingar"
+  label: "Æfa"
 }, {
-  href: "/fortnite",
-  label: "Fortnite"
+  href: "/samfelag",
+  label: "Samfélag"
 }, {
-  href: "/um",
-  label: "Um okkur"
-}, {
-  href: "/hafa-samband",
-  label: "Hafðu samband"
+  href: "/fraedast",
+  label: "Fræðast"
 }];
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +47,7 @@ export function Navbar() {
           {/* CTA Button - Desktop */}
           <div className="hidden lg:block">
             <Button asChild className="btn-primary-gradient">
-              <Link to="/skraning">Skrá mig</Link>
+              <Link to="/keppa">Keppa</Link>
             </Button>
           </div>
 
@@ -68,8 +65,8 @@ export function Navbar() {
                 </Link>)}
               <div className="pt-4 px-2">
                 <Button asChild className="w-full btn-primary-gradient">
-                  <Link to="/skraning" onClick={() => { setIsOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-                    Skrá mig
+                  <Link to="/keppa" onClick={() => { setIsOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                    Keppa
                   </Link>
                 </Button>
               </div>
