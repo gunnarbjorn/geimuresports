@@ -5,6 +5,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { 
   Loader2, 
@@ -13,12 +14,14 @@ import {
   ClipboardList,
   PartyPopper,
   ExternalLink,
-  Users
+  Users,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
-// Tournament date - hardcoded for this specific tournament
 const TOURNAMENT_DATE = "28. febrúar 2026";
 const TOURNAMENT_NAME = "Fortnite Duos LAN";
 
@@ -26,8 +29,13 @@ const elkoFormSchema = z.object({
   teamName: z.string().trim().min(2, "Nafn liðs verður að vera að minnsta kosti 2 stafir").max(50),
   player1Name: z.string().trim().min(2, "Fortnite nafn verður að vera að minnsta kosti 2 stafir").max(50),
   player2Name: z.string().trim().min(2, "Fortnite nafn verður að vera að minnsta kosti 2 stafir").max(50),
+  player1EpicId: z.string().trim().min(5, "Epic ID verður að vera að minnsta kosti 5 stafir").max(100),
+  player2EpicId: z.string().trim().min(5, "Epic ID verður að vera að minnsta kosti 5 stafir").max(100),
+  player1DiscordId: z.string().trim().min(2, "Discord user ID verður að vera að minnsta kosti 2 stafir").max(100),
+  player2DiscordId: z.string().trim().min(2, "Discord user ID verður að vera að minnsta kosti 2 stafir").max(100),
   email: z.string().trim().email("Ógilt netfang").max(255),
   orderId: z.string().trim().min(5, "Order ID verður að vera að minnsta kosti 5 stafir").max(50),
+  rulesAccepted: z.literal(true, { errorMap: () => ({ message: "Þú verður að samþykkja reglurnar" }) }),
 });
 
 type ElkoFormData = z.infer<typeof elkoFormSchema>;
@@ -93,6 +101,28 @@ const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) => {
   );
 };
 
+function FieldHelp({ children, defaultOpen = false }: { children: React.ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <HelpCircle className="h-3.5 w-3.5" />
+        <span>Hvernig finn ég þetta?</span>
+        {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+      </button>
+      {open && (
+        <div className="mt-2 text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 space-y-1.5">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ElkoRegistrationForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,10 +133,17 @@ export function ElkoRegistrationForm() {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<ElkoFormData>({
     resolver: zodResolver(elkoFormSchema),
+    defaultValues: {
+      rulesAccepted: undefined as any,
+    },
   });
+
+  const rulesAccepted = watch("rulesAccepted");
 
   const onSubmit = async (data: ElkoFormData) => {
     setIsSubmitting(true);
@@ -118,6 +155,10 @@ export function ElkoRegistrationForm() {
             teamName: data.teamName,
             player1Name: data.player1Name,
             player2Name: data.player2Name,
+            player1EpicId: data.player1EpicId,
+            player2EpicId: data.player2EpicId,
+            player1DiscordId: data.player1DiscordId,
+            player2DiscordId: data.player2DiscordId,
             email: data.email,
             orderId: data.orderId,
             tournamentDate: TOURNAMENT_DATE,
@@ -202,7 +243,7 @@ export function ElkoRegistrationForm() {
             
             <div className="bg-card/50 rounded-lg p-4 mb-6">
               <p className="text-sm font-medium text-[hsl(var(--arena-green))]">
-                💰 Þátttökugjald: 4.440 kr á keppanda (8.880 kr á lið)
+                💰 Þátttökugjald: 2.000 kr á keppanda (4.000 kr á lið)
               </p>
             </div>
             
@@ -253,7 +294,7 @@ export function ElkoRegistrationForm() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Honeypot - hidden from humans */}
+            {/* Honeypot */}
             <div className="absolute opacity-0 -z-10" aria-hidden="true" tabIndex={-1}>
               <input
                 type="text"
@@ -264,6 +305,7 @@ export function ElkoRegistrationForm() {
                 autoComplete="off"
               />
             </div>
+
             {/* Team Name */}
             <div className="space-y-2">
               <Label htmlFor="teamName">Nafn á liði *</Label>
@@ -278,10 +320,12 @@ export function ElkoRegistrationForm() {
               )}
             </div>
 
-            {/* Player Names */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Player 1 */}
+            <div className="space-y-4 p-4 bg-muted/20 rounded-xl border border-border">
+              <h4 className="text-sm font-semibold">Spilari 1</h4>
+              
               <div className="space-y-2">
-                <Label htmlFor="player1Name">Spilari 1 – Fortnite nafn *</Label>
+                <Label htmlFor="player1Name">Fortnite nafn *</Label>
                 <Input
                   id="player1Name"
                   {...register("player1Name")}
@@ -294,7 +338,47 @@ export function ElkoRegistrationForm() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="player2Name">Spilari 2 – Fortnite nafn *</Label>
+                <Label htmlFor="player1EpicId">Epic ID *</Label>
+                <Input
+                  id="player1EpicId"
+                  {...register("player1EpicId")}
+                  placeholder="Epic Account ID"
+                  className="bg-secondary border-border"
+                />
+                <FieldHelp>
+                  <p>Til þess að fá aðgang í mótið þurfum við Epic ID hjá þér.</p>
+                  <p>Þú getur fundið það hér: <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline hover:no-underline">epicgames.com/account/personal</a></p>
+                  <p className="mt-1">Nánari aðstoð: <a href="https://www.epicgames.com/help/en-US/c-Category_EpicAccount/c-AccountSecurity/what-is-an-epic-account-id-and-where-can-i-find-it-a000084674" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline hover:no-underline">Epic hjálparsíða</a></p>
+                </FieldHelp>
+                {errors.player1EpicId && (
+                  <p className="text-sm text-destructive">{errors.player1EpicId.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="player1DiscordId">Discord notandanafn *</Label>
+                <Input
+                  id="player1DiscordId"
+                  {...register("player1DiscordId")}
+                  placeholder="t.d. gunnzib"
+                  className="bg-secondary border-border"
+                />
+                <FieldHelp>
+                  <p>Hægri click á nafn inn á server og copy user ID.</p>
+                  <p>Eða skrifaðu Discord notandanafnið þitt (t.d. <span className="text-foreground font-medium">gunnzib</span>).</p>
+                </FieldHelp>
+                {errors.player1DiscordId && (
+                  <p className="text-sm text-destructive">{errors.player1DiscordId.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Player 2 */}
+            <div className="space-y-4 p-4 bg-muted/20 rounded-xl border border-border">
+              <h4 className="text-sm font-semibold">Spilari 2</h4>
+              
+              <div className="space-y-2">
+                <Label htmlFor="player2Name">Fortnite nafn *</Label>
                 <Input
                   id="player2Name"
                   {...register("player2Name")}
@@ -303,6 +387,40 @@ export function ElkoRegistrationForm() {
                 />
                 {errors.player2Name && (
                   <p className="text-sm text-destructive">{errors.player2Name.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="player2EpicId">Epic ID *</Label>
+                <Input
+                  id="player2EpicId"
+                  {...register("player2EpicId")}
+                  placeholder="Epic Account ID"
+                  className="bg-secondary border-border"
+                />
+                <FieldHelp>
+                  <p>Til þess að fá aðgang í mótið þurfum við Epic ID hjá þér.</p>
+                  <p>Þú getur fundið það hér: <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline hover:no-underline">epicgames.com/account/personal</a></p>
+                </FieldHelp>
+                {errors.player2EpicId && (
+                  <p className="text-sm text-destructive">{errors.player2EpicId.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="player2DiscordId">Discord notandanafn *</Label>
+                <Input
+                  id="player2DiscordId"
+                  {...register("player2DiscordId")}
+                  placeholder="t.d. username123"
+                  className="bg-secondary border-border"
+                />
+                <FieldHelp>
+                  <p>Hægri click á nafn inn á server og copy user ID.</p>
+                  <p>Eða skrifaðu Discord notandanafnið þitt.</p>
+                </FieldHelp>
+                {errors.player2DiscordId && (
+                  <p className="text-sm text-destructive">{errors.player2DiscordId.message}</p>
                 )}
               </div>
             </div>
@@ -336,6 +454,28 @@ export function ElkoRegistrationForm() {
               />
               {errors.orderId && (
                 <p className="text-sm text-destructive">{errors.orderId.message}</p>
+              )}
+            </div>
+
+            {/* Rules checkbox */}
+            <div className="space-y-2 p-4 bg-muted/20 rounded-xl border border-border">
+              <p className="text-sm text-muted-foreground mb-3">
+                Ekki er leyfilegt að skipta um nafn í Fortnite á meðan mótið er í gangi. <span className="text-destructive">*</span>
+              </p>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  id="rulesAccepted"
+                  checked={rulesAccepted === true}
+                  onCheckedChange={(checked) => {
+                    setValue("rulesAccepted", checked === true ? true : undefined as any, { shouldValidate: true });
+                  }}
+                />
+                <Label htmlFor="rulesAccepted" className="text-sm font-medium cursor-pointer">
+                  Ég skil
+                </Label>
+              </div>
+              {errors.rulesAccepted && (
+                <p className="text-sm text-destructive">{errors.rulesAccepted.message}</p>
               )}
             </div>
 
