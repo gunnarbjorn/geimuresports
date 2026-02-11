@@ -187,7 +187,7 @@ export function ElkoDeildDetails() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             size="lg"
-            className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent}-deep))] text-primary-foreground font-bold`}
+            className="btn-arena-gradient text-base"
             onClick={scrollToRegistration}
           >
             Skrá mitt lið <ChevronDown className="ml-2 h-4 w-4" />
