@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      lan_tournament_orders: {
+        Row: {
+          amount: number
+          authorization_code: string | null
+          created_at: string
+          currency: string
+          email: string
+          id: string
+          masked_card: string | null
+          order_id: string
+          paid_at: string | null
+          player1: string
+          player2: string
+          status: Database["public"]["Enums"]["lan_order_status"]
+          team_name: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          authorization_code?: string | null
+          created_at?: string
+          currency?: string
+          email: string
+          id?: string
+          masked_card?: string | null
+          order_id: string
+          paid_at?: string | null
+          player1: string
+          player2: string
+          status?: Database["public"]["Enums"]["lan_order_status"]
+          team_name: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          authorization_code?: string | null
+          created_at?: string
+          currency?: string
+          email?: string
+          id?: string
+          masked_card?: string | null
+          order_id?: string
+          paid_at?: string | null
+          player1?: string
+          player2?: string
+          status?: Database["public"]["Enums"]["lan_order_status"]
+          team_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           created_at: string
@@ -85,6 +136,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      lan_order_status: "PENDING_PAYMENT" | "PAID" | "CANCELED" | "ERROR"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -213,6 +265,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      lan_order_status: ["PENDING_PAYMENT", "PAID", "CANCELED", "ERROR"],
     },
   },
 } as const
