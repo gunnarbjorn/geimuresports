@@ -60,7 +60,7 @@ export default function LanMotStadfesting() {
               <p className="text-lg font-semibold">Pöntun fannst ekki</p>
               <p className="text-sm text-muted-foreground">Athugaðu pöntunarnúmerið og reyndu aftur.</p>
               <Button asChild variant="outline">
-                <Link to="/lan-mot"><ArrowLeft className="mr-2 h-4 w-4" />Til baka</Link>
+                <Link to="/keppa/arena-lan"><ArrowLeft className="mr-2 h-4 w-4" />Til baka</Link>
               </Button>
             </CardContent>
           </Card>
@@ -96,7 +96,10 @@ export default function LanMotStadfesting() {
                   <span>{order.amount.toLocaleString("is-IS")} kr</span>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">Staðfesting hefur verið send á {order.email}</p>
+              <p className="text-xs text-muted-foreground">Staðfesting hefur verið send á <strong>{order.email}</strong></p>
+              <Button asChild className="btn-arena-gradient mt-2">
+                <Link to="/keppa/arena-lan">Sjá skráð lið</Link>
+              </Button>
             </CardContent>
           </Card>
         ) : (

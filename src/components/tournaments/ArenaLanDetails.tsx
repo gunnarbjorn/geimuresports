@@ -238,17 +238,19 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
     const fetchRegisteredTeams = async () => {
       setIsLoading(true);
       try {
-        const { data, error } = await supabase.rpc('get_public_registrations');
-        if (error) { console.error('Error fetching registrations:', error); return; }
+        const { data, error } = await supabase
+          .from('lan_tournament_orders')
+          .select('id, team_name, player1, player2')
+          .eq('status', 'PAID')
+          .order('created_at', { ascending: true });
+        if (error) { console.error('Error fetching LAN teams:', error); return; }
         if (data) {
-          const teams: RegisteredTeam[] = (data as any[])
-            .filter((r: any) => r.type === 'elko-tournament')
-            .map((r: any) => ({
-              id: r.id,
-              teamName: r.team_name || r.full_name || 'Óþekkt lið',
-              player1Name: r.player1_name || r.full_name || 'Óþekkt',
-              player2Name: r.player2_name || r.teammate_name || 'Óþekkt',
-            }));
+          const teams: RegisteredTeam[] = data.map((r) => ({
+            id: r.id,
+            teamName: r.team_name,
+            player1Name: r.player1,
+            player2Name: r.player2,
+          }));
           setRegisteredTeams(teams);
         }
       } catch (err) { console.error('Error:', err); }
