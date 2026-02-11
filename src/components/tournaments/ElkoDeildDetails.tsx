@@ -165,12 +165,14 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
   return (
     <div className="relative">
-      {/* Full-page campaign background */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.12] bg-cover bg-top bg-no-repeat pointer-events-none"
-        style={{ backgroundImage: `url(${elkoCampaignBg})` }}
-      />
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-background/40 to-background pointer-events-none" />
+      {/* Full-page campaign background - breaks out of container */}
+      <div className="absolute inset-0 -left-[50vw] -right-[50vw] ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen z-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-[0.25] bg-cover bg-top bg-no-repeat"
+          style={{ backgroundImage: `url(${elkoCampaignBg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
+      </div>
 
       <div className="relative z-10 space-y-6">
       {/* Hero */}
