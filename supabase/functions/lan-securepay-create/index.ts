@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 const LAN_ENTRY_FEE_ISK = 8880; // per team (2 players)
+const PIZZA_FEE_ISK = 2000; // per team (2 players)
 
 function generateOrderId(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -45,7 +46,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { teamName, player1, player2, email, baseUrl } = await req.json();
+    const { teamName, player1, player2, email, baseUrl, pizza } = await req.json();
 
     // Validate
     if (!teamName?.trim() || !player1?.trim() || !player2?.trim() || !email?.trim()) {
@@ -100,8 +101,9 @@ Deno.serve(async (req) => {
       attempts++;
     }
 
-    const amount = LAN_ENTRY_FEE_ISK;
-    const amountFormatted = amount.toFixed(2); // "8880.00"
+    const wantsPizza = pizza === true;
+    const amount = LAN_ENTRY_FEE_ISK + (wantsPizza ? PIZZA_FEE_ISK : 0);
+    const amountFormatted = amount.toFixed(2);
 
     // Insert order
     const { error: insertError } = await supabase.from("lan_tournament_orders").insert({
@@ -113,6 +115,7 @@ Deno.serve(async (req) => {
       amount,
       currency: "ISK",
       status: "PENDING_PAYMENT",
+      pizza: wantsPizza,
     });
 
     if (insertError) {
@@ -150,8 +153,14 @@ Deno.serve(async (req) => {
       returnurlerror,
       itemdescription_0: "LAN mót - mótsgjald",
       itemcount_0: "1",
-      itemunitamount_0: amountFormatted,
-      itemamount_0: amountFormatted,
+      itemunitamount_0: LAN_ENTRY_FEE_ISK.toFixed(2),
+      itemamount_0: LAN_ENTRY_FEE_ISK.toFixed(2),
+      ...(wantsPizza ? {
+        itemdescription_1: "Pizza pakki (2 manns)",
+        itemcount_1: "1",
+        itemunitamount_1: PIZZA_FEE_ISK.toFixed(2),
+        itemamount_1: PIZZA_FEE_ISK.toFixed(2),
+      } : {}),
       skipreceiptpage: "1",
       pagetype: "0",
     };

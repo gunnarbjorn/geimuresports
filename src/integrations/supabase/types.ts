@@ -25,6 +25,7 @@ export type Database = {
           masked_card: string | null
           order_id: string
           paid_at: string | null
+          pizza: boolean
           player1: string
           player2: string
           status: Database["public"]["Enums"]["lan_order_status"]
@@ -41,6 +42,7 @@ export type Database = {
           masked_card?: string | null
           order_id: string
           paid_at?: string | null
+          pizza?: boolean
           player1: string
           player2: string
           status?: Database["public"]["Enums"]["lan_order_status"]
@@ -57,6 +59,7 @@ export type Database = {
           masked_card?: string | null
           order_id?: string
           paid_at?: string | null
+          pizza?: boolean
           player1?: string
           player2?: string
           status?: Database["public"]["Enums"]["lan_order_status"]
