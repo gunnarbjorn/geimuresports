@@ -25,9 +25,9 @@ const rankedSections = [
   { icon: Trophy, title: "Hvernig Geimur undirbýr spilara", content: "Við förum yfir VOD reviews, landing spots, rotation paths og endgame aðstæður. Í æfingum spiluðum við custom scrims sem líkja eftir ranked aðstæðum." },
 ];
 
-const Keppa = () => {
+const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(defaultTournament || null);
 
   useEffect(() => {
     if (location.hash) {
