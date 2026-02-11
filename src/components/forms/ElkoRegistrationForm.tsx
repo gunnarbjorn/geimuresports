@@ -16,11 +16,15 @@ import {
   ExternalLink,
   Users,
   HelpCircle,
-  ChevronDown,
-  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const TOURNAMENT_DATE = "28. febrúar 2026";
 const TOURNAMENT_NAME = "Fortnite Duos LAN";
@@ -101,25 +105,27 @@ const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) => {
   );
 };
 
-function FieldHelp({ children, defaultOpen = false }: { children: React.ReactNode; defaultOpen?: boolean }) {
-  const [open, setOpen] = useState(defaultOpen);
+function DiscordTooltip() {
   return (
-    <div>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-      >
-        <HelpCircle className="h-3.5 w-3.5" />
-        <span>Hvernig finn ég þetta?</span>
-        {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-      </button>
-      {open && (
-        <div className="mt-2 text-xs text-muted-foreground bg-muted/50 rounded-lg p-3 space-y-1.5">
-          {children}
-        </div>
-      )}
-    </div>
+    <TooltipProvider delayDuration={0}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors">
+            <HelpCircle className="h-4 w-4" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs p-4 space-y-2 text-sm">
+          <p className="font-semibold text-foreground">Hvernig finn ég Discord notandanafn?</p>
+          <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
+            <li>Opnaðu Discord</li>
+            <li>Smelltu á ⚙️ <strong className="text-foreground">Stillingar</strong></li>
+            <li>Undir <strong className="text-foreground">My Account</strong> sérðu notandanafnið þitt</li>
+          </ol>
+          <p className="text-muted-foreground">Eða hægri-smelltu á nafnið þitt og veldu <strong className="text-foreground">Copy Username</strong></p>
+          <p className="text-xs text-destructive">Ath: Ekki nota display name, heldur username (t.d. gunnzib)</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -281,19 +287,15 @@ export function ElkoRegistrationForm() {
       {currentStep === 2 && (
         <div className="space-y-6">
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--arena-green)/0.1)] text-[hsl(var(--arena-green))] text-sm font-medium mb-3">
-              <Users className="h-4 w-4" />
-              Liðsskráning
-            </div>
             <h3 className="font-display text-xl md:text-2xl font-bold mb-2">
-              {TOURNAMENT_NAME}
+              Skráning í {TOURNAMENT_NAME}
             </h3>
             <p className="text-muted-foreground">
-              {TOURNAMENT_DATE} · Skráning fyrir 2 manna lið
+              Fylltu út alla reiti til að ljúka skráningu
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Honeypot */}
             <div className="absolute opacity-0 -z-10" aria-hidden="true" tabIndex={-1}>
               <input
@@ -306,145 +308,150 @@ export function ElkoRegistrationForm() {
               />
             </div>
 
-            {/* Team Name */}
-            <div className="space-y-2">
-              <Label htmlFor="teamName">Nafn á liði *</Label>
-              <Input
-                id="teamName"
-                {...register("teamName")}
-                placeholder="t.d. Team Geimur"
-                className="bg-secondary border-border"
-              />
-              {errors.teamName && (
-                <p className="text-sm text-destructive">{errors.teamName.message}</p>
-              )}
+            {/* Row: Email + Team Name */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Netfang *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email")}
+                  placeholder="jon@example.is"
+                  className="bg-secondary border-border"
+                />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="teamName">Nafn á liði *</Label>
+                <Input
+                  id="teamName"
+                  {...register("teamName")}
+                  placeholder="t.d. Team Geimur"
+                  className="bg-secondary border-border"
+                />
+                {errors.teamName && (
+                  <p className="text-sm text-destructive">{errors.teamName.message}</p>
+                )}
+              </div>
             </div>
 
-            {/* Player 1 */}
-            <div className="space-y-4 p-4 bg-muted/20 rounded-xl border border-border">
-              <h4 className="text-sm font-semibold">Spilari 1</h4>
-              
+            {/* Row: Discord 1 + Epic 1 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="player1Name">Fortnite nafn *</Label>
-                <Input
-                  id="player1Name"
-                  {...register("player1Name")}
-                  placeholder="Fortnite nafn"
-                  className="bg-secondary border-border"
-                />
-                {errors.player1Name && (
-                  <p className="text-sm text-destructive">{errors.player1Name.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="player1EpicId">Epic ID *</Label>
-                <Input
-                  id="player1EpicId"
-                  {...register("player1EpicId")}
-                  placeholder="Epic Account ID"
-                  className="bg-secondary border-border"
-                />
-                <FieldHelp>
-                  <p>Til þess að fá aðgang í mótið þurfum við Epic ID hjá þér.</p>
-                  <p>Þú getur fundið það hér: <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline hover:no-underline">epicgames.com/account/personal</a></p>
-                  <p className="mt-1">Nánari aðstoð: <a href="https://www.epicgames.com/help/en-US/c-Category_EpicAccount/c-AccountSecurity/what-is-an-epic-account-id-and-where-can-i-find-it-a000084674" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline hover:no-underline">Epic hjálparsíða</a></p>
-                </FieldHelp>
-                {errors.player1EpicId && (
-                  <p className="text-sm text-destructive">{errors.player1EpicId.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="player1DiscordId">Discord notandanafn *</Label>
+                <div className="flex items-center gap-1.5">
+                  <Label htmlFor="player1DiscordId">Discord notandanafn 1 *</Label>
+                  <DiscordTooltip />
+                </div>
                 <Input
                   id="player1DiscordId"
                   {...register("player1DiscordId")}
                   placeholder="t.d. gunnzib"
                   className="bg-secondary border-border"
                 />
-                <FieldHelp>
-                  <p>Hægri click á nafn inn á server og copy user ID.</p>
-                  <p>Eða skrifaðu Discord notandanafnið þitt (t.d. <span className="text-foreground font-medium">gunnzib</span>).</p>
-                </FieldHelp>
+                <p className="text-xs text-muted-foreground">
+                  Þetta er notað til að tengja skráningu þína við Discord.
+                </p>
                 {errors.player1DiscordId && (
                   <p className="text-sm text-destructive">{errors.player1DiscordId.message}</p>
                 )}
               </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Label htmlFor="player1EpicId">Epic ID 1 *</Label>
+                  <span className="flex items-center gap-1.5 text-xs">
+                    <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] hover:underline">Finna Epic ID</a>
+                    <span className="text-muted-foreground">·</span>
+                    <a href="https://www.epicgames.com/help/en-US/c-Category_EpicAccount/c-AccountSecurity/what-is-an-epic-account-id-and-where-can-i-find-it-a000084674" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] hover:underline">Hjálp</a>
+                  </span>
+                </div>
+                <Input
+                  id="player1EpicId"
+                  {...register("player1EpicId")}
+                  placeholder="Epic Games ID"
+                  className="bg-secondary border-border"
+                />
+                {errors.player1EpicId && (
+                  <p className="text-sm text-destructive">{errors.player1EpicId.message}</p>
+                )}
+              </div>
             </div>
 
-            {/* Player 2 */}
-            <div className="space-y-4 p-4 bg-muted/20 rounded-xl border border-border">
-              <h4 className="text-sm font-semibold">Spilari 2</h4>
-              
+            {/* Row: Discord 2 + Epic 2 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="player2Name">Fortnite nafn *</Label>
-                <Input
-                  id="player2Name"
-                  {...register("player2Name")}
-                  placeholder="Fortnite nafn"
-                  className="bg-secondary border-border"
-                />
-                {errors.player2Name && (
-                  <p className="text-sm text-destructive">{errors.player2Name.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="player2EpicId">Epic ID *</Label>
-                <Input
-                  id="player2EpicId"
-                  {...register("player2EpicId")}
-                  placeholder="Epic Account ID"
-                  className="bg-secondary border-border"
-                />
-                <FieldHelp>
-                  <p>Til þess að fá aðgang í mótið þurfum við Epic ID hjá þér.</p>
-                  <p>Þú getur fundið það hér: <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline hover:no-underline">epicgames.com/account/personal</a></p>
-                </FieldHelp>
-                {errors.player2EpicId && (
-                  <p className="text-sm text-destructive">{errors.player2EpicId.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="player2DiscordId">Discord notandanafn *</Label>
+                <div className="flex items-center gap-1.5">
+                  <Label htmlFor="player2DiscordId">Discord notandanafn 2 *</Label>
+                  <DiscordTooltip />
+                </div>
                 <Input
                   id="player2DiscordId"
                   {...register("player2DiscordId")}
                   placeholder="t.d. username123"
                   className="bg-secondary border-border"
                 />
-                <FieldHelp>
-                  <p>Hægri click á nafn inn á server og copy user ID.</p>
-                  <p>Eða skrifaðu Discord notandanafnið þitt.</p>
-                </FieldHelp>
+                <p className="text-xs text-muted-foreground">
+                  Þetta er notað til að tengja skráningu þína við Discord.
+                </p>
                 {errors.player2DiscordId && (
                   <p className="text-sm text-destructive">{errors.player2DiscordId.message}</p>
                 )}
               </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Label htmlFor="player2EpicId">Epic ID 2 *</Label>
+                  <span className="flex items-center gap-1.5 text-xs">
+                    <a href="https://epicgames.com/account/personal" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] hover:underline">Finna Epic ID</a>
+                    <span className="text-muted-foreground">·</span>
+                    <a href="https://www.epicgames.com/help/en-US/c-Category_EpicAccount/c-AccountSecurity/what-is-an-epic-account-id-and-where-can-i-find-it-a000084674" target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] hover:underline">Hjálp</a>
+                  </span>
+                </div>
+                <Input
+                  id="player2EpicId"
+                  {...register("player2EpicId")}
+                  placeholder="Epic Games ID"
+                  className="bg-secondary border-border"
+                />
+                {errors.player2EpicId && (
+                  <p className="text-sm text-destructive">{errors.player2EpicId.message}</p>
+                )}
+              </div>
             </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Netfang tengiliðs *</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email")}
-                placeholder="email@example.is"
-                className="bg-secondary border-border"
-              />
-              <p className="text-xs text-muted-foreground">
-                Staðfesting og upplýsingar verða sendar á þetta netfang
-              </p>
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
+            {/* Row: Fortnite names */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="player1Name">Hvað heitir þú í Fortnite? *</Label>
+                <Input
+                  id="player1Name"
+                  {...register("player1Name")}
+                  placeholder="Fortnite nafnið þitt"
+                  className="bg-secondary border-border"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Ekki er leyfilegt að breyta nafni á meðan mót stendur
+                </p>
+                {errors.player1Name && (
+                  <p className="text-sm text-destructive">{errors.player1Name.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="player2Name">Hvað heitir liðsfélagi þinn í Fortnite? *</Label>
+                <Input
+                  id="player2Name"
+                  {...register("player2Name")}
+                  placeholder="Fortnite nafn liðsfélaga"
+                  className="bg-secondary border-border"
+                />
+                {errors.player2Name && (
+                  <p className="text-sm text-destructive">{errors.player2Name.message}</p>
+                )}
+              </div>
             </div>
 
             {/* Order ID */}
-            <div className="space-y-2">
+            <div className="space-y-2 max-w-sm">
               <Label htmlFor="orderId">Order ID (frá greiðslu) *</Label>
               <Input
                 id="orderId"
@@ -452,6 +459,9 @@ export function ElkoRegistrationForm() {
                 placeholder='t.d. "Order #30906571"'
                 className="bg-secondary border-border"
               />
+              <p className="text-xs text-muted-foreground">
+                Þú færð Order ID eftir greiðslu
+              </p>
               {errors.orderId && (
                 <p className="text-sm text-destructive">{errors.orderId.message}</p>
               )}
@@ -500,7 +510,7 @@ export function ElkoRegistrationForm() {
                   </>
                 ) : (
                   <>
-                    Skrá liðið
+                    Staðfesta skráningu
                     <CheckCircle className="ml-2 h-4 w-4" />
                   </>
                 )}
