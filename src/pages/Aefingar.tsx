@@ -12,7 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { 
-  Clock, Users, Target, MessageSquare, Calendar, ArrowRight, Trophy
+  Clock, Users, Target, MessageSquare, Calendar, ArrowRight, ArrowLeft, Trophy
 } from "lucide-react";
 
 const schedule = [
@@ -70,8 +70,11 @@ const Aefingar = () => {
         <div className="absolute top-1/3 right-1/4 w-48 h-48 rounded-full bg-[hsl(var(--planet-training)/0.06)] blur-3xl animate-pulse-glow" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
+            <Button asChild variant="ghost" size="sm" className="mb-4 text-muted-foreground">
+              <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Til baka</Link>
+            </Button>
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--planet-training)/0.1)] text-[hsl(var(--planet-training))] text-xs font-bold uppercase tracking-widest mb-5">
-              <Target className="h-3.5 w-3.5" /> Þjálfun
+              <Target className="h-3.5 w-3.5" /> Æfa
             </span>
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">
               Æfingar
@@ -207,12 +210,12 @@ const Aefingar = () => {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Button asChild size="lg" className="btn-primary-gradient">
-                  <Link to="/mot">
+                  <Link to="/keppa">
                     <Trophy className="mr-2 h-5 w-5" /> Næsta mót
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="border-border/60 hover:border-primary/40">
-                  <Link to="/fortnite">Fortnite Hub</Link>
+                  <Link to="/fraedast">Fræðast</Link>
                 </Button>
               </div>
             </CardContent>
