@@ -53,14 +53,11 @@ const Fraedast = () => {
       <section className="section-spacing-lg relative">
         <div className="absolute inset-0 nebula-training pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
+          <div className="max-w-4xl mx-auto mb-8">
             <div>
               <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-training))] mb-1 block">Æfingar</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold">Fortnite Maps</h2>
             </div>
-            <Button asChild variant="ghost" className="text-[hsl(var(--planet-training))]">
-              <Link to="/fortnite/maps">Sjá öll <ArrowRight className="ml-1 h-4 w-4" /></Link>
-            </Button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {mapCards.map((card) => (
@@ -85,14 +82,11 @@ const Fraedast = () => {
       <section className="section-spacing-lg relative">
         <div className="absolute inset-0 nebula-knowledge pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="flex items-center justify-between max-w-4xl mx-auto mb-8">
+          <div className="max-w-4xl mx-auto mb-8">
             <div>
               <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-knowledge))] mb-1 block">Þekking</span>
               <h2 className="font-display text-2xl md:text-3xl font-bold">Tips & Stillingar</h2>
             </div>
-            <Button asChild variant="ghost" className="text-[hsl(var(--planet-knowledge))]">
-              <Link to="/fortnite/tips">Sjá öll <ArrowRight className="ml-1 h-4 w-4" /></Link>
-            </Button>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {tipsCards.map((card) => (
