@@ -35,8 +35,8 @@ const elkoFormSchema = z.object({
   player2Name: z.string().trim().min(2, "Fortnite nafn verður að vera að minnsta kosti 2 stafir").max(50),
   player1EpicId: z.string().trim().min(5, "Epic ID verður að vera að minnsta kosti 5 stafir").max(100),
   player2EpicId: z.string().trim().min(5, "Epic ID verður að vera að minnsta kosti 5 stafir").max(100),
-  player1DiscordId: z.string().trim().min(2, "Discord user ID verður að vera að minnsta kosti 2 stafir").max(100),
-  player2DiscordId: z.string().trim().min(2, "Discord user ID verður að vera að minnsta kosti 2 stafir").max(100),
+  player1DiscordId: z.string().trim().regex(/^\d+$/, "Discord User ID eru eingöngu tölur").min(15, "Discord User ID verður að vera að minnsta kosti 15 tölustafir").max(25),
+  player2DiscordId: z.string().trim().regex(/^\d+$/, "Discord User ID eru eingöngu tölur").min(15, "Discord User ID verður að vera að minnsta kosti 15 tölustafir").max(25),
   email: z.string().trim().email("Ógilt netfang").max(255),
   orderId: z.string().trim().min(5, "Order ID verður að vera að minnsta kosti 5 stafir").max(50),
   rulesAccepted: z.literal(true, { errorMap: () => ({ message: "Þú verður að samþykkja reglurnar" }) }),
@@ -115,14 +115,19 @@ function DiscordTooltip() {
           </button>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-xs p-4 space-y-2 text-sm">
-          <p className="font-semibold text-foreground">Hvernig finn ég Discord notandanafn?</p>
+          <p className="font-semibold text-foreground">Hvernig finn ég Discord User ID?</p>
           <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
             <li>Opnaðu Discord</li>
             <li>Smelltu á ⚙️ <strong className="text-foreground">Stillingar</strong></li>
-            <li>Undir <strong className="text-foreground">My Account</strong> sérðu notandanafnið þitt</li>
+            <li>Veldu <strong className="text-foreground">Advanced</strong></li>
+            <li>Kveiktu á <strong className="text-foreground">Developer Mode</strong></li>
           </ol>
-          <p className="text-muted-foreground">Eða hægri-smelltu á nafnið þitt og veldu <strong className="text-foreground">Copy Username</strong></p>
-          <p className="text-xs text-destructive">Ath: Ekki nota display name, heldur username (t.d. gunnzib)</p>
+          <p className="text-muted-foreground">Þú getur nú afritað User ID á tvo vegu:</p>
+          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+            <li>Smellt á prófílmyndina þína og valið <strong className="text-foreground">Copy User ID</strong></li>
+            <li>EÐA hægri-smellt á nafnið þitt og valið <strong className="text-foreground">Copy User ID</strong></li>
+          </ul>
+          <p className="text-xs text-destructive">Ath: Discord User ID eru eingöngu tölur.</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -337,17 +342,17 @@ export function ElkoRegistrationForm() {
               </div>
             </div>
 
-            {/* Discord notandanöfn */}
+            {/* Discord User IDs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
-                  <Label htmlFor="player1DiscordId">Discord notandanafn 1 *</Label>
+                  <Label htmlFor="player1DiscordId">Discord User ID 1 *</Label>
                   <DiscordTooltip />
                 </div>
                 <Input
                   id="player1DiscordId"
                   {...register("player1DiscordId")}
-                  placeholder="t.d. gunnzib"
+                  placeholder="1234567890123456789"
                   className="bg-secondary border-border"
                 />
                 {errors.player1DiscordId && (
@@ -355,11 +360,11 @@ export function ElkoRegistrationForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="player2DiscordId">Discord notandanafn 2 *</Label>
+                <Label htmlFor="player2DiscordId">Discord User ID 2 *</Label>
                 <Input
                   id="player2DiscordId"
                   {...register("player2DiscordId")}
-                  placeholder="t.d. username123"
+                  placeholder="1234567890123456789"
                   className="bg-secondary border-border"
                 />
                 {errors.player2DiscordId && (
@@ -368,7 +373,7 @@ export function ElkoRegistrationForm() {
               </div>
             </div>
             <p className="text-xs text-muted-foreground -mt-4">
-              Þetta er notað til að tengja skráningu ykkar við Discord.
+              Þetta er aðeins notað til að tengja skráningu ykkar við Discord.
             </p>
 
             {/* Epic IDs */}
