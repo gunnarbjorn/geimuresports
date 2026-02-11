@@ -1,8 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Collapsible,
   CollapsibleContent,
@@ -16,28 +23,32 @@ import {
   ChevronDown,
   ChevronUp,
   Globe,
-  Swords,
   MessageCircle,
   Clock,
   Ticket,
   ShieldCheck,
   Gamepad2,
-  ExternalLink,
   Copy,
   Medal,
-  Mail,
   Tv,
-  Dumbbell,
-  Map,
-  Radio,
-  ArrowRight,
-  CheckCircle2,
-  CreditCard,
-  FileText,
-  Send,
+  Swords,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
+
+const TOURNAMENT_CONFIG = {
+  name: "Elko Deildin – Duos – Vor 2026",
+  game: "Fortnite",
+  format: "Duo",
+  formatLabel: "2 manna lið",
+  location: "Online",
+  dates: "25. feb – 4. mars",
+  time: "18:30 – 21:00",
+  entryFeePerPlayer: 2000,
+  entryFeePerTeam: 4000,
+  maxTeams: 32,
+  prizePool: "100.000 kr.",
+};
 
 const PRIZE_TIERS = [
   { place: "1. sæti", amount: "40.000 kr.", highlight: true },
@@ -47,37 +58,6 @@ const PRIZE_TIERS = [
   { place: "5. sæti", amount: "10.000 kr.", highlight: false },
 ];
 
-const REGISTRATION_STEPS = [
-  {
-    step: 1,
-    title: "Discord aðgangur",
-    description: "Vertu með Discord aðgang og skráður á Fortnite Ísland",
-    icon: MessageCircle,
-    cta: { label: "Opna Discord", url: "https://discord.gg/57P9SAy4Fq" },
-  },
-  {
-    step: 2,
-    title: "Greiða þátttökugjald",
-    description: "2.000 kr. á einstakling",
-    icon: CreditCard,
-    cta: { label: "Greiða", url: "https://linkar.rafithrottir.is/greida-elko-deildina" },
-  },
-  {
-    step: 3,
-    title: "Fylla út skráningarform",
-    description: "Fullt nafn, email, símanúmer, kennitala, Fortnite nafn, liðsfélagi, Discord User ID, Epic ID og Order ID",
-    icon: FileText,
-    cta: null,
-  },
-  {
-    step: 4,
-    title: "Staðfestingarpóstur",
-    description: "Sjálfvirkt email sent með nánari leiðbeiningum um þátttöku",
-    icon: Send,
-    cta: null,
-  },
-];
-
 interface RegisteredTeam {
   id: string;
   teamName: string;
@@ -85,7 +65,6 @@ interface RegisteredTeam {
   player2Name: string;
 }
 
-/* ── Discord support block ── */
 const DiscordSupportActions = () => {
   const [copied, setCopied] = useState(false);
 
@@ -127,18 +106,15 @@ const DiscordSupportActions = () => {
   );
 };
 
-/* ══════════════════════════════════════
-   MAIN COMPONENT
-   ══════════════════════════════════════ */
 export function ElkoDeildDetails() {
   const [registeredTeams, setRegisteredTeams] = useState<RegisteredTeam[]>([]);
   const [isTeamsListOpen, setIsTeamsListOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState<string | undefined>(undefined);
 
-  const maxTeams = 32;
   const registeredTeamsCount = registeredTeams.length;
-  const remainingSpots = maxTeams - registeredTeamsCount;
-  const progressPercentage = (registeredTeamsCount / maxTeams) * 100;
+  const remainingSpots = TOURNAMENT_CONFIG.maxTeams - registeredTeamsCount;
+  const progressPercentage = (registeredTeamsCount / TOURNAMENT_CONFIG.maxTeams) * 100;
 
   useEffect(() => {
     const fetchRegisteredTeams = async () => {
@@ -163,478 +139,337 @@ export function ElkoDeildDetails() {
     fetchRegisteredTeams();
   }, []);
 
-  const scrollTo = (id: string) => {
+  const scrollToRegistration = () => {
+    const element = document.getElementById("skraning-elko");
+    if (element) {
+      const offset = element.getBoundingClientRect().top + window.scrollY - 104;
+      window.scrollTo({ top: offset, behavior: "smooth" });
+    }
+  };
+
+  const scrollToSchedule = () => {
+    setScheduleOpen("dagskra");
     setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) {
-        const offset = el.getBoundingClientRect().top + window.scrollY - 104;
+      const element = document.getElementById("dagskra-elko");
+      if (element) {
+        const offset = element.getBoundingClientRect().top + window.scrollY - 104;
         window.scrollTo({ top: offset, behavior: "smooth" });
       }
-    }, 50);
+    }, 100);
   };
 
   const accent = "planet-tournament";
-  const accentHsl = `hsl(var(--${accent}))`;
-  const accentDeepHsl = `hsl(var(--${accent}-deep))`;
 
   return (
-    <div className="space-y-8">
-
-      {/* ═══ SECTION 1 – HERO ═══ */}
-      <section className="text-center">
+    <div className="space-y-6">
+      {/* Hero */}
+      <div className="text-center">
         <div className="flex justify-center mb-4">
-          <Badge variant="outline" className="text-xs px-3 py-1.5 bg-card border-[hsl(var(--planet-tournament)/0.5)]">
-            <Globe className="h-3.5 w-3.5 mr-1.5 text-[hsl(var(--planet-tournament))]" />
-            Online
+          <Badge variant="outline" className={`text-xs px-3 py-1.5 bg-card border-[hsl(var(--${accent})/0.5)]`}>
+            <Globe className={`h-3.5 w-3.5 mr-1.5 text-[hsl(var(--${accent}))]`} />
+            {TOURNAMENT_CONFIG.location}
           </Badge>
         </div>
-
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
-          Elko Deildin – Duos – Vor 2026
-        </h2>
+        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">{TOURNAMENT_CONFIG.name}</h2>
         <p className="text-muted-foreground mb-4">
-          Opinber Fortnite deild á Íslandi – Keppt í neti, sýnt í sjónvarpi
+          {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format} ({TOURNAMENT_CONFIG.formatLabel})
         </p>
-
         <div className="flex flex-wrap justify-center gap-2 mb-6">
-          {["Duos", "Online", "Build", "Vor 2026"].map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-sm px-3 py-1.5">
-              {tag}
-            </Badge>
-          ))}
+          <Badge variant="secondary" className="text-sm px-4 py-2">
+            <Calendar className={`h-4 w-4 mr-2 text-[hsl(var(--${accent}))]`} />
+            {TOURNAMENT_CONFIG.dates}
+          </Badge>
+          <Badge variant="secondary" className="text-sm px-4 py-2">
+            <Clock className={`h-4 w-4 mr-2 text-[hsl(var(--${accent}))]`} />
+            {TOURNAMENT_CONFIG.time}
+          </Badge>
         </div>
-
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             size="lg"
-            className="bg-[hsl(var(--planet-tournament))] hover:bg-[hsl(var(--planet-tournament-deep))] text-primary-foreground font-bold"
-            asChild
+            className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent}-deep))] text-primary-foreground font-bold`}
+            onClick={scrollToRegistration}
           >
-            <a href="https://linkar.rafithrottir.is/greida-elko-deildina" target="_blank" rel="noopener noreferrer">
-              Skrá lið <ExternalLink className="ml-2 h-4 w-4" />
-            </a>
+            Skrá mitt lið <ChevronDown className="ml-2 h-4 w-4" />
           </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-[hsl(var(--planet-tournament)/0.4)] text-foreground hover:bg-[hsl(var(--planet-tournament)/0.1)]"
-            onClick={() => scrollTo("um-motid")}
-          >
-            Kynna sér mótið <ChevronDown className="ml-2 h-4 w-4" />
+          <Button size="lg" className="btn-primary-gradient" onClick={scrollToSchedule}>
+            Sjá dagskrá
           </Button>
         </div>
-      </section>
+      </div>
 
-      {/* ═══ SECTION 2 – UM MÓTIÐ ═══ */}
-      <section id="um-motid" className="scroll-mt-28">
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center">
-                <Trophy className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+      {/* Registration status */}
+      <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
+        <Collapsible open={isTeamsListOpen} onOpenChange={setIsTeamsListOpen}>
+          <CollapsibleTrigger asChild>
+            <CardContent className="p-5 cursor-pointer hover:bg-muted/30 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Trophy className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
+                  <span className="font-semibold">Skráning opin</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">{remainingSpots} laus pláss</span>
+                  {isTeamsListOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                </div>
               </div>
-              <CardTitle className="text-lg">Um mótið</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-            <p>
-              Keppnistímabilið 25/26 í Elko Deildinni heldur áfram með alvöru Duos mót sem hefst í lok febrúar.
-              Mótið er spilað í gegnum netið og er öllum keppendum skylt að vera á Discord rás Fortnite Ísland
-              á meðan keppni stendur yfir.
-            </p>
-            <div className="flex flex-col gap-2 pl-1">
-              <span className="flex items-center gap-2">
-                <MessageCircle className="h-4 w-4 text-[hsl(var(--planet-tournament))] shrink-0" />
-                Samskipti við mótastjórn á Discord
-              </span>
-              <span className="flex items-center gap-2">
-                <Radio className="h-4 w-4 text-[hsl(var(--planet-tournament))] shrink-0" />
-                Upplýsingar sendar í rauntíma
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ═══ REGISTRATION STATUS ═══ */}
-      <section>
-        <Card className="bg-card border-[hsl(var(--planet-tournament)/0.3)]">
-          <Collapsible open={isTeamsListOpen} onOpenChange={setIsTeamsListOpen}>
-            <CollapsibleTrigger asChild>
-              <CardContent className="p-5 cursor-pointer hover:bg-muted/30 transition-colors">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-[hsl(var(--planet-tournament))]" />
-                    <span className="font-semibold">Skráning opin</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      {remainingSpots > 0 ? `${remainingSpots} laus pláss` : "Fullt"}
-                    </span>
-                    {isTeamsListOpen ? (
-                      <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </div>
-                </div>
-                <Progress value={progressPercentage} className="h-3 mb-3" />
-                <div className="flex justify-between text-sm">
-                  <span className="text-[hsl(var(--planet-tournament))] font-bold">
-                    {registeredTeamsCount} / {maxTeams} lið skráð
-                  </span>
-                  <span className="text-muted-foreground text-xs">Smelltu til að sjá skráð lið</span>
-                </div>
-              </CardContent>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="px-5 pb-5 border-t border-border">
-                <div className="pt-4">
-                  <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                    <Users className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-                    Skráð lið
-                  </h3>
-                  {isLoading ? (
-                    <p className="text-sm text-muted-foreground">Hleður...</p>
-                  ) : registeredTeams.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">Engin lið skráð ennþá</p>
-                  ) : (
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {registeredTeams.map((team, index) => (
-                        <div key={team.id} className="flex items-center gap-3 py-2 px-3 bg-muted/30 rounded-lg">
-                          <span className="text-xs font-mono text-muted-foreground w-6">#{index + 1}</span>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{team.teamName}</p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {team.player1Name} & {team.player2Name}
-                            </p>
-                          </div>
+              <Progress value={progressPercentage} className="h-3 mb-3" />
+              <div className="flex justify-between text-sm">
+                <span className={`text-[hsl(var(--${accent}))] font-bold`}>
+                  {registeredTeamsCount} / {TOURNAMENT_CONFIG.maxTeams} lið skráð
+                </span>
+                <span className="text-muted-foreground text-xs">Smelltu til að sjá skráð lið</span>
+              </div>
+            </CardContent>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="px-5 pb-5 border-t border-border">
+              <div className="pt-4">
+                <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                  <Users className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+                  Skráð lið
+                </h3>
+                {isLoading ? (
+                  <p className="text-sm text-muted-foreground">Hleður...</p>
+                ) : registeredTeams.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">Engin lið skráð ennþá</p>
+                ) : (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {registeredTeams.map((team, index) => (
+                      <div key={team.id} className="flex items-center gap-3 py-2 px-3 bg-muted/30 rounded-lg">
+                        <span className="text-xs font-mono text-muted-foreground w-6">#{index + 1}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{team.teamName}</p>
+                          <p className="text-xs text-muted-foreground truncate">{team.player1Name} & {team.player2Name}</p>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            </CollapsibleContent>
-          </Collapsible>
-        </Card>
-      </section>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
 
-      {/* ═══ SECTION 3 – DAGSKRÁ (Timeline) ═══ */}
-      <section id="dagskra-elko" className="scroll-mt-28">
-        <Card className="bg-card border-border overflow-hidden">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center">
-                <Clock className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-              </div>
-              <CardTitle className="text-lg">Dagskrá</CardTitle>
+      {/* Pricing / Prizes */}
+      <Card className="bg-card border-border">
+        <CardHeader className="pb-3">
+          <div className="flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
+              <Ticket className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Undankeppni */}
-            <div className="relative pl-6 border-l-2 border-[hsl(var(--planet-tournament)/0.3)]">
-              <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[hsl(var(--planet-tournament))]" />
-              <Badge className="mb-2 bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))] border-[hsl(var(--planet-tournament)/0.3)]">
-                <Calendar className="h-3 w-3 mr-1.5" />
-                25. / 26. Febrúar
-              </Badge>
-              <h4 className="font-display font-semibold mb-1">Undankeppni</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--planet-tournament))]">•</span>
-                  Lið keppa upp á seed fyrir úrslitakvöld
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--planet-tournament))]">•</span>
-                  Því ofar sem lið endar, því fleiri byrjunarstig í úrslitum
-                </li>
-              </ul>
+            <CardTitle className="text-lg">Verð & verðlaun</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between py-3 border-b border-border">
+            <div>
+              <p className="font-medium">Þátttökugjald</p>
+              <p className="text-sm text-muted-foreground">á einstakling</p>
             </div>
-
-            {/* Úrslit */}
-            <div className="relative pl-6 border-l-2 border-[hsl(var(--planet-tournament)/0.3)]">
-              <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[hsl(var(--planet-tournament))]" />
-              <Badge className="mb-2 bg-[hsl(var(--planet-tournament)/0.15)] text-[hsl(var(--planet-tournament))] border-[hsl(var(--planet-tournament)/0.3)]">
-                <Calendar className="h-3 w-3 mr-1.5" />
-                4. Mars
-              </Badge>
-              <h4 className="font-display font-semibold mb-1">Úrslitakeppni</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--planet-tournament))]">•</span>
-                  Stig safnast með eliminations og placement
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--planet-tournament))]">•</span>
-                  Hæsta heildarstig vinnur mótið
-                </li>
-              </ul>
+            <div className="text-right">
+              <p className={`text-xl font-bold text-[hsl(var(--${accent}))]`}>
+                {TOURNAMENT_CONFIG.entryFeePerPlayer.toLocaleString("is-IS")} kr
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString("is-IS")} kr/lið
+              </p>
             </div>
-
-            {/* Time & Broadcast */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                <Clock className="h-5 w-5 text-[hsl(var(--planet-tournament))] shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Keppnistími</p>
-                  <p className="text-xs text-muted-foreground">18:30 – 21:00</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
-                <Tv className="h-5 w-5 text-[hsl(var(--planet-tournament))] shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Útsending</p>
-                  <p className="text-xs text-muted-foreground">Sjónvarp Símans & RÍSÍ</p>
-                </div>
-              </div>
+          </div>
+          <div className="pt-2">
+            <div className="flex items-center gap-2 mb-3">
+              <Medal className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
+              <p className="font-medium text-sm">Heildarverðlaunafé: {TOURNAMENT_CONFIG.prizePool}</p>
             </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ═══ SECTION 4 – FORMAT & REGLUR ═══ */}
-      <section>
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center">
-                <ShieldCheck className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-              </div>
-              <CardTitle className="text-lg">Format & reglur</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            {[
-              {
-                title: "Format",
-                icon: Swords,
-                items: ["Duos Build", "Online play"],
-              },
-              {
-                title: "Aldur",
-                icon: Gamepad2,
-                items: [
-                  "Allir spilarar 13 ára og eldri",
-                  "Undir 13 ára aðeins með leyfi foreldra",
-                ],
-              },
-            ].map((section) => (
-              <div key={section.title}>
-                <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                  <section.icon className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-                  {section.title}
-                </h4>
-                <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
-                  {section.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2">
-                      <span className="text-[hsl(var(--planet-tournament))]">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-
-            {/* Warning */}
-            <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-              <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4" />
-                Aðvörun
-              </h4>
-              <p className="text-sm text-muted-foreground mb-2">Brot á reglum getur leitt til:</p>
-              <ul className="text-sm text-muted-foreground space-y-1 pl-6">
-                <li className="flex items-start gap-2">
-                  <span className="text-destructive">•</span>
-                  Brottreksturs úr deild
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-destructive">•</span>
-                  Banns á Fortnite Íslandi og framtíðarmótum
-                </li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ═══ SECTION 5 – VERÐLAUNAFÉ ═══ */}
-      <section>
-        <Card className="bg-card border-[hsl(var(--planet-tournament)/0.3)] overflow-hidden">
-          <CardHeader className="pb-3 bg-gradient-to-r from-[hsl(var(--planet-tournament)/0.08)] to-transparent">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center">
-                <Medal className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Verðlaunafé</CardTitle>
-                <p className="text-sm text-muted-foreground">Heildarverðlaunafé: 100.000 kr.</p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
               {PRIZE_TIERS.map((tier) => (
                 <div
                   key={tier.place}
-                  className={`flex items-center justify-between px-5 py-4 ${
-                    tier.highlight ? "bg-[hsl(var(--planet-tournament)/0.06)]" : ""
+                  className={`flex items-center justify-between px-4 py-3 ${
+                    tier.highlight ? `bg-[hsl(var(--${accent})/0.06)]` : ""
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <Trophy
-                      className={`h-5 w-5 ${
-                        tier.highlight
-                          ? "text-[hsl(var(--planet-tournament))]"
-                          : "text-muted-foreground"
+                      className={`h-4 w-4 ${
+                        tier.highlight ? `text-[hsl(var(--${accent}))]` : "text-muted-foreground"
                       }`}
                     />
-                    <span className={`font-medium ${tier.highlight ? "text-foreground" : "text-muted-foreground"}`}>
+                    <span className={`text-sm ${tier.highlight ? "font-semibold" : "text-muted-foreground"}`}>
                       {tier.place}
                     </span>
                   </div>
-                  <span
-                    className={`font-bold text-lg ${
-                      tier.highlight
-                        ? "text-[hsl(var(--planet-tournament))]"
-                        : "text-foreground"
-                    }`}
-                  >
+                  <span className={`font-bold ${tier.highlight ? `text-[hsl(var(--${accent}))]` : ""}`}>
                     {tier.amount}
                   </span>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      </section>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* ═══ SECTION 6 – SKRÁNING (Step funnel) ═══ */}
-      <section id="skraning-elko" className="scroll-mt-28">
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-3">
+      {/* Schedule – collapsible accordion */}
+      <div id="dagskra-elko" className="scroll-mt-24">
+        <Accordion type="single" collapsible value={scheduleOpen} onValueChange={setScheduleOpen}>
+          <AccordionItem value="dagskra" className="bg-card border border-border rounded-xl overflow-hidden">
+            <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Clock className="h-4 w-4 text-primary" />
+                </div>
+                <span className="font-display font-semibold text-left">Dagskrá mótsins</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="px-5 pb-5">
+              <div className="space-y-6">
+                {/* Undankeppni */}
+                <div className={`relative pl-6 border-l-2 border-[hsl(var(--${accent})/0.3)]`}>
+                  <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[hsl(var(--${accent}))]`} />
+                  <Badge className={`mb-2 bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))] border-[hsl(var(--${accent})/0.3)]`}>
+                    <Calendar className="h-3 w-3 mr-1.5" />
+                    25. / 26. Febrúar
+                  </Badge>
+                  <h4 className="font-display font-semibold mb-1">Undankeppni</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li className="flex items-start gap-2">
+                      <span className={`text-[hsl(var(--${accent}))]`}>•</span>
+                      Lið keppa upp á seed fyrir úrslitakvöld
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className={`text-[hsl(var(--${accent}))]`}>•</span>
+                      Því ofar sem lið endar, því fleiri byrjunarstig í úrslitum
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Úrslit */}
+                <div className={`relative pl-6 border-l-2 border-[hsl(var(--${accent})/0.3)]`}>
+                  <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[hsl(var(--${accent}))]`} />
+                  <Badge className={`mb-2 bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))] border-[hsl(var(--${accent})/0.3)]`}>
+                    <Calendar className="h-3 w-3 mr-1.5" />
+                    4. Mars
+                  </Badge>
+                  <h4 className="font-display font-semibold mb-1">Úrslitakeppni</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li className="flex items-start gap-2">
+                      <span className={`text-[hsl(var(--${accent}))]`}>•</span>
+                      Stig safnast með eliminations og placement
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className={`text-[hsl(var(--${accent}))]`}>•</span>
+                      Hæsta heildarstig vinnur mótið
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Time & Broadcast */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                    <Clock className={`h-5 w-5 text-[hsl(var(--${accent}))] shrink-0`} />
+                    <div>
+                      <p className="text-sm font-medium">Keppnistími</p>
+                      <p className="text-xs text-muted-foreground">18:30 – 21:00</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                    <Tv className={`h-5 w-5 text-[hsl(var(--${accent}))] shrink-0`} />
+                    <div>
+                      <p className="text-sm font-medium">Útsending</p>
+                      <p className="text-xs text-muted-foreground">Sjónvarp Símans & RÍSÍ</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </div>
+
+      {/* Registration form */}
+      <div id="skraning-elko" className="scroll-mt-24">
+        <Card className={`glass-card border-[hsl(var(--${accent})/0.3)] overflow-hidden`}>
+          <CardHeader className={`bg-gradient-to-r from-[hsl(var(--${accent})/0.1)] to-transparent border-b border-border`}>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center">
-                <Ticket className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+              <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
+                <Trophy className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
               </div>
               <div>
-                <CardTitle className="text-lg">Skráning – skref fyrir skref</CardTitle>
-                <p className="text-sm text-muted-foreground">2.000 kr. á einstakling</p>
+                <CardTitle className="font-display text-lg">Skráning liðs</CardTitle>
+                <p className="text-sm text-muted-foreground">Skráning er fyrir lið (2 keppendur)</p>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {REGISTRATION_STEPS.map((s) => (
-              <div
-                key={s.step}
-                className="flex gap-4 p-4 rounded-xl bg-muted/20 border border-border"
-              >
-                <div className="shrink-0 w-10 h-10 rounded-full bg-[hsl(var(--planet-tournament)/0.15)] flex items-center justify-center">
-                  <span className="font-display font-bold text-[hsl(var(--planet-tournament))]">
-                    {s.step}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-sm mb-1 flex items-center gap-2">
-                    <s.icon className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-                    {s.title}
+          <CardContent className="p-5 md:p-6">
+            <ElkoRegistrationForm />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Rules – collapsible accordion */}
+      <Accordion type="single" collapsible className="space-y-3">
+        <AccordionItem value="reglur" className="bg-card border border-border rounded-xl overflow-hidden">
+          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
+              <span className="font-display font-semibold text-left">Reglur & upplýsingar</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            <div className="space-y-6">
+              {[
+                {
+                  title: "Format",
+                  icon: Swords,
+                  items: ["Duos Build", "Online play – allir keppa heiman"],
+                },
+                {
+                  title: "Aldur",
+                  icon: Gamepad2,
+                  items: [
+                    "Allir spilarar 13 ára og eldri",
+                    "Undir 13 ára aðeins með leyfi foreldra",
+                  ],
+                },
+                {
+                  title: "Discord & samskipti",
+                  icon: MessageCircle,
+                  items: [
+                    "Allir keppendur verða að vera á Fortnite Ísland Discord",
+                    "Samskipti við mótastjórn á Discord á meðan keppni stendur yfir",
+                    "Upplýsingar sendar í rauntíma",
+                  ],
+                },
+                {
+                  title: "Reglubrot",
+                  icon: ShieldCheck,
+                  items: [
+                    "Brot á reglum getur leitt til brottreksturs úr deild",
+                    "Bann á Fortnite Íslandi og framtíðarmótum",
+                  ],
+                },
+              ].map((section) => (
+                <div key={section.title}>
+                  <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <section.icon className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+                    {section.title}
                   </h4>
-                  <p className="text-sm text-muted-foreground">{s.description}</p>
-                  {s.cta && (
-                    <Button
-                      size="sm"
-                      className="mt-3 bg-[hsl(var(--planet-tournament))] hover:bg-[hsl(var(--planet-tournament-deep))] text-primary-foreground"
-                      asChild
-                    >
-                      <a href={s.cta.url} target="_blank" rel="noopener noreferrer">
-                        {s.cta.label} <ExternalLink className="ml-2 h-3.5 w-3.5" />
-                      </a>
-                    </Button>
-                  )}
+                  <ul className="text-sm text-muted-foreground space-y-1.5 pl-6">
+                    {section.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2">
+                        <span className={`text-[hsl(var(--${accent}))]`}>•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                {s.step === 4 && (
-                  <CheckCircle2 className="h-5 w-5 text-[hsl(var(--planet-tournament))] shrink-0 mt-1" />
-                )}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ═══ SECTION 7 – SAMBAND ═══ */}
-      <section>
-        <Card className="bg-card border-border">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] flex items-center justify-center">
-                <Mail className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
-              </div>
-              <CardTitle className="text-lg">Samband</CardTitle>
+              ))}
+              <DiscordSupportActions />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-              <Mail className="h-5 w-5 text-[hsl(var(--planet-tournament))] shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium">Skráning & greiðslur</p>
-                <a
-                  href="mailto:bjarkimar@rafithrottir.is"
-                  className="text-sm text-[hsl(var(--planet-tournament))] hover:underline"
-                >
-                  bjarkimar@rafithrottir.is
-                </a>
-              </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-              <MessageCircle className="h-5 w-5 text-[hsl(var(--planet-tournament))] shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium">Önnur mál</p>
-                <p className="text-sm text-muted-foreground">Mótastjórn Fortnite á Íslandi – Discord</p>
-              </div>
-            </div>
-            <DiscordSupportActions />
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* ═══ SECTION 8 – TENGINGAR INNAN GEIMUR ═══ */}
-      <section className="space-y-3">
-        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium text-center">
-          Skoðaðu meira
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            {
-              label: "Æfingar & þjálfun",
-              href: "/aefingar",
-              icon: Dumbbell,
-              colorVar: "--planet-training",
-            },
-            {
-              label: "Fortnite Maps & tips",
-              href: "/fortnite",
-              icon: Map,
-              colorVar: "--planet-knowledge",
-            },
-            {
-              label: "Samfélag & streymi",
-              href: "/fortnite/community",
-              icon: Radio,
-              colorVar: "--planet-community",
-            },
-          ].map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border hover:border-[hsl(var(${link.colorVar})/0.4)] transition-all hover:bg-muted/30 group"
-            >
-              <link.icon className={`h-5 w-5 text-[hsl(var(${link.colorVar}))] shrink-0`} />
-              <span className="text-sm font-medium">{link.label}</span>
-              <ArrowRight className="h-4 w-4 text-muted-foreground ml-auto group-hover:translate-x-1 transition-transform" />
-            </a>
-          ))}
-        </div>
-      </section>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 }
