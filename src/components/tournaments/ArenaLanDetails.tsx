@@ -129,7 +129,7 @@ const LanPaymentForm = () => {
     setIsSubmitting(true);
     try {
       const { data, error: fnError } = await supabase.functions.invoke("lan-securepay-create", {
-        body: { teamName: teamName.trim(), player1: player1.trim(), player2: player2.trim(), email: email.trim() },
+        body: { teamName: teamName.trim(), player1: player1.trim(), player2: player2.trim(), email: email.trim(), baseUrl: window.location.origin },
       });
       if (fnError || !data?.paymentUrl || !data?.fields) {
         setError(data?.error || "Villa við skráningu — reyndu aftur");

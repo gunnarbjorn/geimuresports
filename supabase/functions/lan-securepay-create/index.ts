@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { teamName, player1, player2, email } = await req.json();
+    const { teamName, player1, player2, email, baseUrl } = await req.json();
 
     // Validate
     if (!teamName?.trim() || !player1?.trim() || !player2?.trim() || !email?.trim()) {
@@ -67,11 +67,24 @@ Deno.serve(async (req) => {
     const GATEWAY_ID = Deno.env.get("TEYA_PAYMENT_GATEWAY_ID")!;
     const SECRET_KEY = Deno.env.get("TEYA_SECRET_KEY")!;
     const PAYMENT_URL = Deno.env.get("TEYA_PAYMENT_URL")!;
-    const BASE_URL = Deno.env.get("APP_BASE_URL")!;
+    const FALLBACK_BASE_URL = Deno.env.get("APP_BASE_URL")!;
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Detect which site initiated the payment (preview vs published) so redirects go back correctly.
+    // Prefer Origin, then Referer, otherwise fallback to configured base URL.
+    const originHeader = req.headers.get("origin") || "";
+    const refererHeader = req.headers.get("referer") || "";
+    let clientBaseUrl = FALLBACK_BASE_URL;
+    try {
+      if (typeof baseUrl === "string" && baseUrl) clientBaseUrl = new URL(baseUrl).origin;
+      else if (originHeader) clientBaseUrl = new URL(originHeader).origin;
+      else if (refererHeader) clientBaseUrl = new URL(refererHeader).origin;
+    } catch {
+      clientBaseUrl = FALLBACK_BASE_URL;
+    }
 
     // Generate unique order ID (max 12 chars)
     let orderId = generateOrderId();
@@ -110,12 +123,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Build return URLs
+    // Build return URLs (point to backend function, but pass base URL so we can redirect back to correct site)
     const fnBase = `${SUPABASE_URL}/functions/v1/lan-payment-callback`;
-    const returnurlsuccess = `${fnBase}?type=success`;
+    const baseParam = encodeURIComponent(clientBaseUrl);
+    const returnurlsuccess = `${fnBase}?type=success&base=${baseParam}`;
     const returnurlsuccessserver = `${fnBase}?type=success-server`;
-    const returnurlcancel = `${fnBase}?type=cancel`;
-    const returnurlerror = `${fnBase}?type=error`;
+    const returnurlcancel = `${fnBase}?type=cancel&base=${baseParam}`;
+    const returnurlerror = `${fnBase}?type=error&base=${baseParam}`;
 
     // Compute checkhash: HMAC SHA256 of "merchantid|returnurlsuccess|returnurlsuccessserver|orderid|amount|currency"
     const hashMessage = `${MERCHANT_ID}|${returnurlsuccess}|${returnurlsuccessserver}|${orderId}|${amountFormatted}|ISK`;

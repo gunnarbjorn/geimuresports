@@ -137,7 +137,8 @@ Deno.serve(async (req) => {
     }
 
     if (type === "success") {
-      const redirectUrl = `${APP_BASE_URL}/lan-mot/stadfesting?orderid=${encodeURIComponent(orderid)}`;
+      const base = url.searchParams.get("base") || APP_BASE_URL;
+      const redirectUrl = `${base}/lan-mot/stadfesting?orderid=${encodeURIComponent(orderid)}`;
       return new Response(null, { status: 302, headers: { Location: redirectUrl } });
     }
 
@@ -145,14 +146,16 @@ Deno.serve(async (req) => {
       if (orderid) {
         await supabase.from("lan_tournament_orders").update({ status: "CANCELED" }).eq("order_id", orderid);
       }
-      return new Response(null, { status: 302, headers: { Location: `${APP_BASE_URL}/keppa/arena-lan?status=cancelled` } });
+      const base = url.searchParams.get("base") || APP_BASE_URL;
+      return new Response(null, { status: 302, headers: { Location: `${base}/keppa/arena-lan?status=cancelled` } });
     }
 
     if (type === "error") {
       if (orderid) {
         await supabase.from("lan_tournament_orders").update({ status: "ERROR" }).eq("order_id", orderid);
       }
-      return new Response(null, { status: 302, headers: { Location: `${APP_BASE_URL}/keppa/arena-lan?status=error` } });
+      const base = url.searchParams.get("base") || APP_BASE_URL;
+      return new Response(null, { status: 302, headers: { Location: `${base}/keppa/arena-lan?status=error` } });
     }
 
     return new Response("Unknown callback type", { status: 400 });
