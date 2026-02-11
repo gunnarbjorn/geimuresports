@@ -37,15 +37,15 @@ export const tournaments: Tournament[] = [
   },
   {
     id: "arena-lan-coming-soon",
-    name: "Stórt Fortnite mót í Arena – Coming Soon",
-    dates: [],
+    name: "Fortnite DUO LAN",
+    dates: ["28. feb"],
     category: "LAN",
     location: "Arena Gaming",
-    description: "Stórt staðarmót í Arena Gaming. 100 keppendur í sama lobby, 5 leikir spilaðir, fjör, tilboð, streymi á staðnum og verðlaun.",
-    isComingSoon: true,
-    ctaText: "Tilkynnt síðar",
-    note: "Skráning opnar síðar. Fylgstu með á samfélagsmiðlum.",
-    tags: ["LAN", "100 manna lobby"],
+    description: "Staðarmót í Arena Gaming. 2 manna lið, 5 leikir, fjör, pizza, streymi á staðnum og verðlaun.",
+    entryFee: "4.440 kr á keppanda",
+    ctaText: "Skrá lið",
+    note: "Skráning opin. Greiðsla fer fram við skráningu.",
+    tags: ["LAN", "Duo"],
   },
 ];
 

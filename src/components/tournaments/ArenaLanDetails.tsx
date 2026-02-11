@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,7 +50,7 @@ import {
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
 
 const TOURNAMENT_CONFIG = {
-  name: "Fortnite Duos LAN",
+  name: "Fortnite DUO LAN",
   game: "Fortnite",
   format: "Duo",
   formatLabel: "2 manna lið",
@@ -120,8 +121,11 @@ const LanPaymentForm = () => {
   const [player1, setPlayer1] = useState("");
   const [player2, setPlayer2] = useState("");
   const [email, setEmail] = useState("");
+  const [wantsPizza, setWantsPizza] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const totalPrice = TOURNAMENT_CONFIG.entryFeePerTeam + (wantsPizza ? TOURNAMENT_CONFIG.pizzaUpsell * 2 : 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,7 +133,7 @@ const LanPaymentForm = () => {
     setIsSubmitting(true);
     try {
       const { data, error: fnError } = await supabase.functions.invoke("lan-securepay-create", {
-        body: { teamName: teamName.trim(), player1: player1.trim(), player2: player2.trim(), email: email.trim(), baseUrl: window.location.origin },
+        body: { teamName: teamName.trim(), player1: player1.trim(), player2: player2.trim(), email: email.trim(), pizza: wantsPizza, baseUrl: window.location.origin },
       });
       if (fnError || !data?.paymentUrl || !data?.fields) {
         setError(data?.error || "Villa við skráningu — reyndu aftur");
@@ -203,6 +207,23 @@ const LanPaymentForm = () => {
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="netfang@dæmi.is" required maxLength={100} />
               <p className="text-xs text-muted-foreground mt-1">Staðfesting send á þetta netfang</p>
             </div>
+            {/* Pizza checkbox */}
+            <div className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30">
+              <Checkbox
+                id="pizza"
+                checked={wantsPizza}
+                onCheckedChange={(checked) => setWantsPizza(checked === true)}
+                className="mt-0.5"
+              />
+              <Label htmlFor="pizza" className="cursor-pointer flex-1">
+                <div className="flex items-center gap-2">
+                  <Pizza className="h-4 w-4 text-accent" />
+                  <span className="font-medium">Pizza pakki</span>
+                  <span className="text-sm text-muted-foreground">+{(TOURNAMENT_CONFIG.pizzaUpsell * 2).toLocaleString("is-IS")} kr/lið</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5">Pizza fyrir báða leikmenn á pásunni</p>
+              </Label>
+            </div>
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
@@ -213,7 +234,7 @@ const LanPaymentForm = () => {
               {isSubmitting ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Vinnsla...</>
               ) : (
-                <>Skrá og greiða — {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString("is-IS")} kr</>
+                <>Skrá og greiða — {totalPrice.toLocaleString("is-IS")} kr</>
               )}
             </Button>
             <p className="text-xs text-center text-muted-foreground">Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>

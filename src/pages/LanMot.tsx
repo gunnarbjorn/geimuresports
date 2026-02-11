@@ -22,7 +22,7 @@ import arenaLanBg from "@/assets/arena-lan-bg.jpeg";
 import arenaLanBgMobile from "@/assets/arena-lan-bg-mobile.jpeg";
 
 const TOURNAMENT_INFO = {
-  name: "Fortnite Duos LAN",
+  name: "Fortnite DUO LAN",
   location: "Arena",
   date: "Lau 28. feb",
   time: "11:00 – 14:00",
