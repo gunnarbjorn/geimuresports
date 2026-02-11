@@ -165,9 +165,9 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
   const accent = "arena-green";
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative">
       {/* Full-page campaign background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      <div className="absolute inset-0 -top-32 -left-[50vw] -right-[50vw] ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen min-h-[calc(100%+8rem)] z-0 pointer-events-none overflow-hidden">
         <div 
           className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat hidden md:block"
           style={{ backgroundImage: `url(${elkoCampaignBg})` }}
