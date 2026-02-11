@@ -89,7 +89,7 @@ export function TournamentForm({ preselectedTournament }: TournamentFormProps) {
       // Google Ads conversion event
       if (typeof (window as any).gtag === 'function') {
         (window as any).gtag('event', 'conversion', {
-          'send_to': 'AW-17945729107/YOUR_CONVERSION_LABEL',
+          'send_to': 'AW-17945729107/bT1DCTTfhcEnOmw01C',
         });
       }
       toast.success("Skráning tókst!", {
