@@ -33,9 +33,17 @@ const HafaSamband = () => {
       <section className="section-spacing relative">
         <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto space-y-8">
+            {/* Contact Form */}
+            <Card className="glass-card border-border max-w-3xl mx-auto">
+              <CardContent className="p-6 md:p-8">
+                <h2 className="font-display text-2xl font-bold mb-6">Sendu okkur skilaboð</h2>
+                <ContactForm />
+              </CardContent>
+            </Card>
+
             {/* Contact Info */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
               <Card className="glass-card border-border card-hover">
                 <CardContent className="p-6 flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -69,16 +77,6 @@ const HafaSamband = () => {
                     <h3 className="font-display font-bold mb-1">Staðsetning</h3>
                     <p className="text-muted-foreground">Reykjavík, Ísland</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Contact Form */}
-            <div className="lg:col-span-2">
-              <Card className="glass-card border-border">
-                <CardContent className="p-6 md:p-8">
-                  <h2 className="font-display text-2xl font-bold mb-6">Sendu okkur skilaboð</h2>
-                  <ContactForm />
                 </CardContent>
               </Card>
             </div>
