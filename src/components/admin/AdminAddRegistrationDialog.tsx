@@ -83,6 +83,13 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
           return;
         }
         const amount = 8880 + (lanPizza ? 2000 : 0);
+
+        // Must match DB constraint order_id_format (e.g. LAN + 9 alphanumeric chars)
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        const adminOrderId = `LAN${Array.from({ length: 9 }, () =>
+          chars.charAt(Math.floor(Math.random() * chars.length)),
+        ).join("")}`;
+
         const { error } = await supabase.from("lan_tournament_orders").insert({
           team_name: lanTeamName,
           player1: lanPlayer1,
@@ -90,7 +97,7 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
           email: lanEmail,
           pizza: lanPizza,
           amount,
-          order_id: `ADMIN-${Date.now()}`,
+          order_id: adminOrderId,
           status: "PAID" as const,
           paid_at: new Date().toISOString(),
         });
