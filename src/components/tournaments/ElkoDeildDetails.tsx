@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
+import elkoCampaignBg from "@/assets/elko-campaign-bg.jpeg";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -404,8 +405,14 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
       {/* Registration form */}
       <div id="skraning-elko" className="scroll-mt-24">
-        <Card className={`glass-card border-[hsl(var(--${accent})/0.3)] overflow-hidden`}>
-          <CardHeader className={`bg-gradient-to-r from-[hsl(var(--${accent})/0.1)] to-transparent border-b border-border`}>
+        <Card className={`glass-card border-[hsl(var(--${accent})/0.3)] overflow-hidden relative`}>
+          {/* Campaign background */}
+          <div 
+            className="absolute inset-0 z-0 opacity-[0.08] bg-cover bg-center bg-no-repeat pointer-events-none"
+            style={{ backgroundImage: `url(${elkoCampaignBg})` }}
+          />
+          <div className="absolute inset-0 z-0 bg-gradient-to-t from-card via-card/70 to-card/40 pointer-events-none" />
+          <CardHeader className={`relative z-10 bg-gradient-to-r from-[hsl(var(--${accent})/0.1)] to-transparent border-b border-border`}>
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
                 <Trophy className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
@@ -416,7 +423,7 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-5 md:p-6">
+          <CardContent className="p-5 md:p-6 relative z-10">
             <ElkoRegistrationForm />
           </CardContent>
         </Card>
