@@ -18,7 +18,8 @@ import Maps from "./pages/fortnite/Maps";
 import MapCategory from "./pages/fortnite/MapCategory";
 import Tips from "./pages/fortnite/Tips";
 import TipArticle from "./pages/fortnite/TipArticle";
-
+import LanMot from "./pages/LanMot";
+import LanMotStadfesting from "./pages/LanMotStadfesting";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,6 +36,8 @@ const App = () => (
           <Route path="/fraedast" element={<Fraedast />} />
           <Route path="/keppa/elko-deild" element={<Keppa defaultTournament="elko-deild-vor-2026" />} />
           <Route path="/keppa/arena-lan" element={<Keppa defaultTournament="arena-lan-coming-soon" />} />
+          <Route path="/lan-mot" element={<LanMot />} />
+          <Route path="/lan-mot/stadfesting" element={<LanMotStadfesting />} />
           {/* Legacy routes */}
           <Route path="/mot" element={<Keppa />} />
           <Route path="/fortnite" element={<Fraedast />} />

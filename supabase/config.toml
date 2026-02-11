@@ -3,3 +3,9 @@ project_id = "kgkljqvwhmdhrjeyqpti"
 [functions.send-notification]
 verify_jwt = false
 # Force redeploy v2
+
+[functions.lan-securepay-create]
+verify_jwt = false
+
+[functions.lan-payment-callback]
+verify_jwt = false
