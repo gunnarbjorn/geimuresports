@@ -13,7 +13,7 @@ import {
   TrendingUp, Target, AlertTriangle,
 } from "lucide-react";
 
-const tournamentComponents: Record<string, React.ComponentType> = {
+const tournamentComponents: Record<string, React.ComponentType<{ onBack?: () => void }>> = {
   "elko-deild-vor-2026": ElkoDeildDetails,
   "arena-lan-coming-soon": ArenaLanDetails,
 };
@@ -177,18 +177,10 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
             {/* Selected tournament detail */}
             {selectedId && SelectedComponent && (
               <FadeInView>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="mb-4 text-muted-foreground"
-                  onClick={() => {
-                    setSelectedId(null);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" /> Öll mót
-                </Button>
-                <SelectedComponent />
+                <SelectedComponent onBack={() => {
+                  setSelectedId(null);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }} />
               </FadeInView>
             )}
           </div>
