@@ -8,7 +8,7 @@ import Keppa from "./pages/Keppa";
 import Aefingar from "./pages/Aefingar";
 import Samfelag from "./pages/Samfelag";
 import Fraedast from "./pages/Fraedast";
-import Skraning from "./pages/Skraning";
+
 import Um from "./pages/Um";
 import HafaSamband from "./pages/HafaSamband";
 import Auth from "./pages/Auth";
@@ -48,7 +48,7 @@ const App = () => (
           <Route path="/fortnite/tips/:topic" element={<TipArticle />} />
           <Route path="/fortnite/tips/:topic" element={<TipArticle />} />
           {/* Utility pages */}
-          <Route path="/skraning" element={<Skraning />} />
+          <Route path="/skraning" element={<Aefingar />} />
           <Route path="/um" element={<Um />} />
           <Route path="/hafa-samband" element={<HafaSamband />} />
           <Route path="/auth" element={<Auth />} />
