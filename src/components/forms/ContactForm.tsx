@@ -53,6 +53,12 @@ export function ContactForm() {
       if (error) throw error;
 
       setIsSubmitted(true);
+      // Google Ads conversion event
+      if (typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-17945729107/YOUR_CONVERSION_LABEL',
+        });
+      }
       toast.success("Skilaboð send!", {
         description: "Við munum svara þér eins fljótt og auðið er.",
       });
