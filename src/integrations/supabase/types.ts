@@ -112,6 +112,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_lan_order_by_id: {
+        Args: { p_order_id: string }
+        Returns: {
+          amount: number
+          email: string
+          order_id: string
+          paid_at: string
+          player1: string
+          player2: string
+          status: Database["public"]["Enums"]["lan_order_status"]
+          team_name: string
+        }[]
+      }
+      get_lan_registered_teams: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          player1: string
+          player2: string
+          team_name: string
+        }[]
+      }
       get_public_registrations: {
         Args: never
         Returns: {

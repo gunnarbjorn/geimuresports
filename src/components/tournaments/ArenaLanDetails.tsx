@@ -239,10 +239,7 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
       setIsLoading(true);
       try {
         const { data, error } = await supabase
-          .from('lan_tournament_orders')
-          .select('id, team_name, player1, player2')
-          .eq('status', 'PAID')
-          .order('created_at', { ascending: true });
+          .rpc('get_lan_registered_teams');
         if (error) { console.error('Error fetching LAN teams:', error); return; }
         if (data) {
           const teams: RegisteredTeam[] = data.map((r) => ({

@@ -29,15 +29,13 @@ export default function LanMotStadfesting() {
     if (!orderId) { setLoading(false); setError(true); return; }
     setLoading(true);
     const { data, error: err } = await supabase
-      .from("lan_tournament_orders")
-      .select("order_id, team_name, player1, player2, email, status, paid_at, amount")
-      .eq("order_id", orderId)
-      .maybeSingle();
+      .rpc("get_lan_order_by_id", { p_order_id: orderId });
 
-    if (err || !data) {
+    const row = Array.isArray(data) ? data[0] : data;
+    if (err || !row) {
       setError(true);
     } else {
-      setOrder(data as OrderData);
+      setOrder(row as OrderData);
     }
     setLoading(false);
   };
