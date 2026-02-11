@@ -166,8 +166,13 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <div className="text-center">
-        <div className="flex items-center justify-center gap-3 mb-4">
+      <div className="text-center relative rounded-xl overflow-hidden py-8 px-4">
+        <div 
+          className="absolute inset-0 z-0 opacity-[0.06] bg-cover bg-center bg-no-repeat pointer-events-none"
+          style={{ backgroundImage: `url(${elkoCampaignBg})` }}
+        />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none" />
+        <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
           <Button
             variant="ghost"
             size="sm"
@@ -186,11 +191,11 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
             {TOURNAMENT_CONFIG.location}
           </Badge>
         </div>
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">{TOURNAMENT_CONFIG.name}</h2>
-        <p className="text-muted-foreground mb-4">
+        <h2 className="font-display text-2xl md:text-3xl font-bold mb-2 relative z-10">{TOURNAMENT_CONFIG.name}</h2>
+        <p className="text-muted-foreground mb-4 relative z-10">
           {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format} ({TOURNAMENT_CONFIG.formatLabel})
         </p>
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="flex flex-wrap justify-center gap-2 mb-6 relative z-10">
           <Badge variant="secondary" className="text-sm px-4 py-2">
             <Calendar className={`h-4 w-4 mr-2 text-[hsl(var(--${accent}))]`} />
             {TOURNAMENT_CONFIG.dates}
@@ -200,7 +205,7 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
             {TOURNAMENT_CONFIG.time}
           </Badge>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center relative z-10">
           <Button
             size="lg"
             className="btn-arena-gradient text-base"
