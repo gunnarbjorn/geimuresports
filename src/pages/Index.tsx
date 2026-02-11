@@ -74,17 +74,17 @@ const Index = () => {
               Veldu leið og byrjaðu ferðalagið
             </p>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: "0.3s" }}>
               {paths.map((path, i) => (
                 <FadeInView key={path.href} delay={i * 80}>
                   <Link to={path.href} className="group">
-                    <Card className={`${path.cardClass} rounded-xl h-full text-center py-6`}>
+                    <Card className={`${path.cardClass} text-center py-6 rounded-xl`}>
                       <CardContent className="p-3 flex flex-col items-center gap-3">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl ${path.iconBg} flex items-center justify-center group-hover:scale-105 transition-all duration-300`}>
-                          <path.icon className={`h-5 w-5 md:h-6 md:w-6 ${path.iconColor} transition-transform duration-300 group-hover:scale-110`} />
+                        <div className={`w-10 h-10 rounded-xl ${path.iconBg} flex items-center justify-center group-hover:scale-105 transition-all duration-300`}>
+                          <path.icon className={`h-5 w-5 ${path.iconColor} transition-transform duration-300 group-hover:scale-110`} />
                         </div>
                         <div>
-                          <h2 className="font-display text-sm md:text-base font-bold mb-0.5 tracking-wide">{path.title}</h2>
+                          <h2 className="font-display text-sm font-bold mb-0.5 tracking-wide">{path.title}</h2>
                           <p className="text-xs text-muted-foreground">{path.description}</p>
                         </div>
                         <ArrowRight className={`h-4 w-4 ${path.accentColor} opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0`} />
