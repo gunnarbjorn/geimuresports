@@ -12,7 +12,6 @@ const journeyLinks = [
 const moreLinks = [
   { href: "/um", label: "Um Geimur" },
   { href: "/hafa-samband", label: "Hafðu samband" },
-  { href: "/skraning", label: "Skráning" },
 ];
 
 const scrollToTop = () => {

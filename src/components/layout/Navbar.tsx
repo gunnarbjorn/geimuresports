@@ -47,7 +47,7 @@ export function Navbar() {
           {/* CTA Button - Desktop */}
           <div className="hidden lg:block">
             <Button asChild className="btn-primary-gradient">
-              <Link to="/keppa">Keppa</Link>
+              <Link to="/hafa-samband">Hafa samband</Link>
             </Button>
           </div>
 
@@ -65,8 +65,8 @@ export function Navbar() {
                 </Link>)}
               <div className="pt-4 px-2">
                 <Button asChild className="w-full btn-primary-gradient">
-                  <Link to="/keppa" onClick={() => { setIsOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
-                    Keppa
+                  <Link to="/hafa-samband" onClick={() => { setIsOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+                    Hafa samband
                   </Link>
                 </Button>
               </div>
