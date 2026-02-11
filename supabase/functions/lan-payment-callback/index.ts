@@ -22,7 +22,6 @@ async function hmacSha256Hex(key: string, message: string): Promise<string> {
 }
 
 function getParam(params: URLSearchParams, name: string): string {
-  // Borgun sends params case-insensitively; try exact then lowercase
   return params.get(name) || params.get(name.toLowerCase()) || "";
 }
 
@@ -63,7 +62,8 @@ Deno.serve(async (req) => {
 
       console.log(`[success-server] orderid=${orderid} status=${status} step=${step}`);
 
-      if (status === "Ok" && step === "Payment") {
+      // Case-insensitive comparison for status and step
+      if (status.toLowerCase() === "ok" && step.toLowerCase() === "payment") {
         // Verify orderhash
         const expectedHash = await hmacSha256Hex(SECRET_KEY, `${orderid}|${amount}|${currency}`);
 
@@ -79,57 +79,80 @@ Deno.serve(async (req) => {
             .eq("order_id", orderid);
 
           if (error) console.error("Update error:", error);
-          console.log(`[success-server] Order ${orderid} marked PAID`);
+          else console.log(`[success-server] Order ${orderid} marked PAID`);
+
+          // Send confirmation email
+          try {
+            const { data: orderData } = await supabase
+              .from("lan_tournament_orders")
+              .select("team_name, player1, player2, email, amount")
+              .eq("order_id", orderid)
+              .single();
+
+            if (orderData?.email) {
+              const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+              if (RESEND_API_KEY) {
+                await fetch("https://api.resend.com/emails", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${RESEND_API_KEY}`,
+                  },
+                  body: JSON.stringify({
+                    from: "Geimur Esports <no-reply@geimuresports.is>",
+                    to: [orderData.email],
+                    subject: "Skráning staðfest – Fortnite Duos LAN ✅",
+                    html: `
+                      <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:20px;">
+                        <h1 style="color:#22c55e;">Skráning staðfest! ✅</h1>
+                        <p>Liðið <strong>${orderData.team_name}</strong> er skráð á <strong>Fortnite Duos LAN</strong> mótið.</p>
+                        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+                          <tr><td style="padding:8px;color:#888;">Leikmaður 1:</td><td style="padding:8px;">${orderData.player1}</td></tr>
+                          <tr><td style="padding:8px;color:#888;">Leikmaður 2:</td><td style="padding:8px;">${orderData.player2}</td></tr>
+                          <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
+                          <tr><td style="padding:8px;color:#888;">Upphæð:</td><td style="padding:8px;">${orderData.amount.toLocaleString("is-IS")} kr</td></tr>
+                        </table>
+                        <p style="color:#888;font-size:14px;">Sjáumst á mótinu! 🎮</p>
+                        <hr style="border:none;border-top:1px solid #333;margin:20px 0;">
+                        <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
+                      </div>
+                    `,
+                  }),
+                });
+                console.log(`[success-server] Confirmation email sent to ${orderData.email}`);
+              }
+            }
+          } catch (emailErr) {
+            console.error("Email send error:", emailErr);
+          }
         } else {
           console.error(`[success-server] Hash mismatch for ${orderid}: expected=${expectedHash} got=${orderhash}`);
         }
       }
 
-      // Respond with XML as Borgun expects
       return new Response(
         `<PaymentNotification>Accepted</PaymentNotification>`,
-        {
-          status: 200,
-          headers: { "Content-Type": "application/xml" },
-        }
+        { status: 200, headers: { "Content-Type": "application/xml" } }
       );
     }
 
     if (type === "success") {
-      // Browser redirect after successful payment
       const redirectUrl = `${APP_BASE_URL}/lan-mot/stadfesting?orderid=${encodeURIComponent(orderid)}`;
-      return new Response(null, {
-        status: 302,
-        headers: { Location: redirectUrl },
-      });
+      return new Response(null, { status: 302, headers: { Location: redirectUrl } });
     }
 
     if (type === "cancel") {
       if (orderid) {
-        await supabase
-          .from("lan_tournament_orders")
-          .update({ status: "CANCELED" })
-          .eq("order_id", orderid);
+        await supabase.from("lan_tournament_orders").update({ status: "CANCELED" }).eq("order_id", orderid);
       }
-      const redirectUrl = `${APP_BASE_URL}/lan-mot?status=cancelled`;
-      return new Response(null, {
-        status: 302,
-        headers: { Location: redirectUrl },
-      });
+      return new Response(null, { status: 302, headers: { Location: `${APP_BASE_URL}/keppa/arena-lan?status=cancelled` } });
     }
 
     if (type === "error") {
       if (orderid) {
-        await supabase
-          .from("lan_tournament_orders")
-          .update({ status: "ERROR" })
-          .eq("order_id", orderid);
+        await supabase.from("lan_tournament_orders").update({ status: "ERROR" }).eq("order_id", orderid);
       }
-      const redirectUrl = `${APP_BASE_URL}/lan-mot?status=error`;
-      return new Response(null, {
-        status: 302,
-        headers: { Location: redirectUrl },
-      });
+      return new Response(null, { status: 302, headers: { Location: `${APP_BASE_URL}/keppa/arena-lan?status=error` } });
     }
 
     return new Response("Unknown callback type", { status: 400 });
