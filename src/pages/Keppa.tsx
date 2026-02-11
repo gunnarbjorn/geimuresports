@@ -55,32 +55,13 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl mx-auto">
 
-            {/* Back button */}
-            <FadeInView>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mb-4 text-muted-foreground hover:text-foreground"
-                onClick={() => {
-                  if (selectedId) {
-                    setSelectedId(null);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }
-                }}
-                asChild={!selectedId}
-              >
-                {selectedId ? (
-                  <span><ArrowLeft className="mr-2 h-4 w-4" /> Öll mót</span>
-                ) : (
-                  <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Til baka</Link>
-                )}
-              </Button>
-            </FadeInView>
-
             {/* Header - only when no tournament selected */}
             {!selectedId && (
               <FadeInView>
                 <div className="text-center mb-10">
+                  <Button asChild variant="ghost" size="sm" className="mb-4 text-muted-foreground">
+                    <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Til baka</Link>
+                  </Button>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[hsl(var(--planet-tournament)/0.1)] text-[hsl(var(--planet-tournament))] text-sm font-medium mb-4">
                     <Trophy className="h-4 w-4" />
                     Keppa
@@ -196,6 +177,19 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
             {/* Selected tournament detail */}
             {selectedId && SelectedComponent && (
               <FadeInView>
+                <div className="text-center mb-6">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mb-4 text-muted-foreground"
+                    onClick={() => {
+                      setSelectedId(null);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Öll mót
+                  </Button>
+                </div>
                 <SelectedComponent />
               </FadeInView>
             )}
