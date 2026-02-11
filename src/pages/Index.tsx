@@ -313,6 +313,57 @@ const Index = () => {
         </div>
       </section>
 
+      {/* ===== SAMFÉLAG ===== */}
+      <section id="section-community" className="relative py-16 lg:py-24 scroll-mt-20">
+        <div className="absolute inset-0 nebula-community pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto">
+            <FadeInView>
+              <h2 className="font-display text-3xl md:text-5xl font-bold mb-4">
+                Samfélag
+              </h2>
+              <p className="text-muted-foreground text-lg mb-10 max-w-2xl">
+                Íslenska Fortnite samfélagið — klipp, highlights og streymi.
+              </p>
+            </FadeInView>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              {[
+                { player: "ÍslandGamer99", title: "Insane clutch í ranked", week: "Vika 6" },
+                { player: "FortniteFreyr", title: "No-scope sniper elimination", week: "Vika 5" },
+                { player: "ArcticAim", title: "1v4 endgame squad wipe", week: "Vika 4" },
+              ].map((clip, i) => (
+                <FadeInView key={i} delay={i * 100}>
+                  <Card className="planet-card-community rounded-xl">
+                    <CardContent className="p-6">
+                      <div className="aspect-video rounded-lg bg-muted/20 border border-border/40 flex items-center justify-center mb-4">
+                        <BookOpen className="h-10 w-10 text-muted-foreground/30" />
+                      </div>
+                      <span className="text-xs text-[hsl(var(--planet-community))] font-medium">{clip.week}</span>
+                      <h3 className="font-display font-bold mt-1">{clip.title}</h3>
+                      <p className="text-sm text-muted-foreground">{clip.player}</p>
+                    </CardContent>
+                  </Card>
+                </FadeInView>
+              ))}
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button asChild size="lg" className="bg-[hsl(var(--planet-community))] hover:bg-[hsl(var(--planet-community-deep))] text-primary-foreground font-bold">
+                <Link to="/fortnite/community#senda-clip">
+                  Sendu inn klipp <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="border-[hsl(var(--planet-community)/0.4)] hover:border-[hsl(var(--planet-community)/0.7)]">
+                <Link to="/fortnite/community">
+                  Skoða samfélagið
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ===== FAQ ===== */}
       <section className="relative py-16 lg:py-24">
         <div className="absolute inset-0 nebula-bg-alt pointer-events-none" />
