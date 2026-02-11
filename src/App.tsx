@@ -33,10 +33,13 @@ const App = () => (
           <Route path="/aefingar" element={<Aefingar />} />
           <Route path="/samfelag" element={<Samfelag />} />
           <Route path="/fraedast" element={<Fraedast />} />
+          <Route path="/keppa/elko-deild" element={<Keppa defaultTournament="elko-deild-vor-2026" />} />
+          <Route path="/keppa/arena-lan" element={<Keppa defaultTournament="arena-lan-coming-soon" />} />
           {/* Legacy routes */}
           <Route path="/mot" element={<Keppa />} />
           <Route path="/fortnite" element={<Fraedast />} />
           <Route path="/fortnite/community" element={<Samfelag />} />
+          <Route path="/fortnite/ranked" element={<Keppa />} />
           <Route path="/fortnite/ranked" element={<Keppa />} />
           {/* Sub-pages */}
           <Route path="/fortnite/maps" element={<Fraedast />} />
