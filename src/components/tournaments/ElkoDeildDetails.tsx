@@ -165,18 +165,18 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
   const accent = "arena-green";
 
   return (
-    <div className="relative">
-      {/* Full-page campaign background - mobile uses portrait, desktop uses landscape */}
-      <div className="absolute inset-0 -left-[50vw] -right-[50vw] ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen z-0 pointer-events-none">
+    <div className="relative overflow-hidden">
+      {/* Full-page campaign background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <div 
-          className="absolute inset-0 opacity-[0.4] bg-cover bg-top bg-no-repeat hidden md:block"
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat hidden md:block"
           style={{ backgroundImage: `url(${elkoCampaignBg})` }}
         />
         <div 
-          className="absolute inset-0 opacity-[0.4] bg-cover bg-top bg-no-repeat md:hidden"
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat md:hidden"
           style={{ backgroundImage: `url(${elkoCampaignBgMobile})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
       </div>
 
       <div className="relative z-10 space-y-6">
