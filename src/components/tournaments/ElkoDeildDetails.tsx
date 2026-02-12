@@ -38,6 +38,7 @@ import {
   Medal,
   Tv,
   Swords,
+  CheckCircle2,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
@@ -288,13 +289,21 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
       {/* Competitor Checklist – collapsible accordion */}
       <Accordion type="single" collapsible value={handbookOpen} onValueChange={setHandbookOpen}>
-        <AccordionItem value="handbook" className="bg-card border border-border rounded-xl overflow-hidden">
-          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Trophy className="h-4 w-4 text-primary" />
+        <AccordionItem value="handbook" className={`bg-card border border-[hsl(var(--${accent})/0.3)] rounded-xl overflow-hidden`}>
+          <AccordionTrigger className="px-5 py-5 hover:no-underline hover:bg-muted/50">
+            <div className="flex flex-col items-start gap-2 text-left">
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center shrink-0`}>
+                  <CheckCircle2 className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
+                </div>
+                <span className="font-display text-lg font-bold">Keppendahandbók – Lestu áður en mót hefst</span>
               </div>
-              <span className="font-display font-semibold text-left">Keppendahandbók – Lestu áður en mót hefst</span>
+              <p className="text-sm text-muted-foreground pl-12">
+                Til að komast inn í leik verður þú að klára þessi skref.{" "}
+                <span className={`text-[hsl(var(--${accent}))] font-semibold`}>
+                  90% af þeim sem lenda í vandræðum hafa sleppt skrefi 2.
+                </span>
+              </p>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-5 pb-5">
