@@ -117,6 +117,7 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
   const [isTeamsListOpen, setIsTeamsListOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState<string | undefined>(undefined);
+  const [handbookOpen, setHandbookOpen] = useState<string | undefined>(undefined);
 
   const registeredTeamsCount = registeredTeams.length;
   const remainingSpots = TOURNAMENT_CONFIG.maxTeams - registeredTeamsCount;
@@ -285,8 +286,22 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
         </Collapsible>
       </Card>
 
-      {/* Competitor Checklist */}
-      <CompetitorChecklist />
+      {/* Competitor Checklist – collapsible accordion */}
+      <Accordion type="single" collapsible value={handbookOpen} onValueChange={setHandbookOpen}>
+        <AccordionItem value="handbook" className="bg-card border border-border rounded-xl overflow-hidden">
+          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <Trophy className="h-4 w-4 text-primary" />
+              </div>
+              <span className="font-display font-semibold text-left">Keppendahandbók – Lestu áður en mót hefst</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            <CompetitorChecklist />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       {/* Pricing / Prizes – collapsible accordion */}
       <Accordion type="single" collapsible>
