@@ -231,9 +231,6 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
         </div>
       </div>
 
-      {/* Competitor Checklist */}
-      <CompetitorChecklist />
-
       {/* Registration status */}
       <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
         <Collapsible open={isTeamsListOpen} onOpenChange={setIsTeamsListOpen}>
@@ -288,63 +285,70 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
         </Collapsible>
       </Card>
 
-      {/* Pricing / Prizes */}
-      <Card className="bg-card border-border">
-        <CardHeader className="pb-3">
-          <div className="flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
-              <Ticket className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+      {/* Competitor Checklist */}
+      <CompetitorChecklist />
+
+      {/* Pricing / Prizes – collapsible accordion */}
+      <Accordion type="single" collapsible>
+        <AccordionItem value="verd" className="bg-card border border-border rounded-xl overflow-hidden">
+          <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center shrink-0`}>
+                <Ticket className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+              </div>
+              <span className="font-display font-semibold text-left">Verð & verðlaun</span>
             </div>
-            <CardTitle className="text-lg">Verð & verðlaun</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-border">
-            <div>
-              <p className="font-medium">Þátttökugjald</p>
-              <p className="text-sm text-muted-foreground">á einstakling</p>
-            </div>
-            <div className="text-right">
-              <p className={`text-xl font-bold text-[hsl(var(--${accent}))]`}>
-                {TOURNAMENT_CONFIG.entryFeePerPlayer.toLocaleString("is-IS")} kr
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString("is-IS")} kr/lið
-              </p>
-            </div>
-          </div>
-          <div className="pt-2">
-            <div className="flex items-center gap-2 mb-3">
-              <Medal className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
-              <p className="font-medium text-sm">Heildarverðlaunafé: {TOURNAMENT_CONFIG.prizePool}</p>
-            </div>
-            <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
-              {PRIZE_TIERS.map((tier) => (
-                <div
-                  key={tier.place}
-                  className={`flex items-center justify-between px-4 py-3 ${
-                    tier.highlight ? `bg-[hsl(var(--${accent})/0.06)]` : ""
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Trophy
-                      className={`h-4 w-4 ${
-                        tier.highlight ? `text-[hsl(var(--${accent}))]` : "text-muted-foreground"
-                      }`}
-                    />
-                    <span className={`text-sm ${tier.highlight ? "font-semibold" : "text-muted-foreground"}`}>
-                      {tier.place}
-                    </span>
-                  </div>
-                  <span className={`font-bold ${tier.highlight ? `text-[hsl(var(--${accent}))]` : ""}`}>
-                    {tier.amount}
-                  </span>
+          </AccordionTrigger>
+          <AccordionContent className="px-5 pb-5">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-3 border-b border-border">
+                <div>
+                  <p className="font-medium">Þátttökugjald</p>
+                  <p className="text-sm text-muted-foreground">á einstakling</p>
                 </div>
-              ))}
+                <div className="text-right">
+                  <p className={`text-xl font-bold text-[hsl(var(--${accent}))]`}>
+                    {TOURNAMENT_CONFIG.entryFeePerPlayer.toLocaleString("is-IS")} kr
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {TOURNAMENT_CONFIG.entryFeePerTeam.toLocaleString("is-IS")} kr/lið
+                  </p>
+                </div>
+              </div>
+              <div className="pt-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <Medal className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
+                  <p className="font-medium text-sm">Heildarverðlaunafé: {TOURNAMENT_CONFIG.prizePool}</p>
+                </div>
+                <div className="divide-y divide-border rounded-lg border border-border overflow-hidden">
+                  {PRIZE_TIERS.map((tier) => (
+                    <div
+                      key={tier.place}
+                      className={`flex items-center justify-between px-4 py-3 ${
+                        tier.highlight ? `bg-[hsl(var(--${accent})/0.06)]` : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Trophy
+                          className={`h-4 w-4 ${
+                            tier.highlight ? `text-[hsl(var(--${accent}))]` : "text-muted-foreground"
+                          }`}
+                        />
+                        <span className={`text-sm ${tier.highlight ? "font-semibold" : "text-muted-foreground"}`}>
+                          {tier.place}
+                        </span>
+                      </div>
+                      <span className={`font-bold ${tier.highlight ? `text-[hsl(var(--${accent}))]` : ""}`}>
+                        {tier.amount}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       {/* Schedule – collapsible accordion */}
       <div id="dagskra-elko" className="scroll-mt-24">
