@@ -566,21 +566,6 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
             Event Disclaimer
           </h3>
 
-          <div className="space-y-1">
-            <p className="text-xs font-semibold text-muted-foreground">Event Rules</p>
-            <p className="text-xs text-muted-foreground">
-              Full event rules are available here:{" "}
-              <a
-                href="https://geimuresports.is/reglur"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`text-[hsl(var(--${accent}))] underline underline-offset-2 hover:opacity-80`}
-              >
-                geimuresports.is/reglur
-              </a>
-            </p>
-          </div>
-
           <div className="space-y-3 text-[11px] leading-relaxed text-muted-foreground/70">
             <p>
               THIS EVENT IS IN NO WAY SPONSORED, ENDORSED, OR ADMINISTERED BY, OR OTHERWISE ASSOCIATED WITH, EPIC GAMES, INC. THE INFORMATION PLAYERS PROVIDE IN CONNECTION WITH THIS EVENT IS BEING PROVIDED TO EVENT ORGANIZER AND NOT TO EPIC GAMES, INC.
