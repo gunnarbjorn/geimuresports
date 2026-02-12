@@ -87,7 +87,7 @@ export function CompetitorChecklist() {
 
   const isStepComplete = (ids: string[]) => ids.every((id) => checked[id]);
 
-  const renderCheck = (id: string, label: string, extra?: React.ReactNode) => (
+  const renderCheck = (id: string, label: React.ReactNode, extra?: React.ReactNode) => (
     <label key={id} className="flex items-center gap-3 cursor-pointer py-1">
       <Checkbox checked={!!checked[id]} onCheckedChange={() => toggleCheck(id)} />
       <span className={`text-sm ${checked[id] ? "text-muted-foreground line-through" : ""}`}>
@@ -379,7 +379,7 @@ export function CompetitorChecklist() {
                     {pcAnswer === "yes" && (
                       <div className="space-y-3">
                         <div className="space-y-2">
-                          {renderCheck("r1", "Save Replays ON í Settings → Game")}
+                          {renderCheck("r1", <>Farðu í Fortnite → Settings → Game → <span className="font-bold">Save Replays ON</span></>)}
                         </div>
 
                         <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
