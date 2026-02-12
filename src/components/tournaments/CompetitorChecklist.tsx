@@ -439,8 +439,13 @@ export function CompetitorChecklist() {
                 </p>
                 <Button
                   onClick={scrollToLeikdagur}
-                  className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black font-semibold w-full sm:w-auto border-2 border-[hsl(var(--${accent}))]`}
+                  className="font-semibold w-full sm:w-auto text-black"
                   size="lg"
+                  style={{
+                    backgroundColor: 'hsl(var(--arena-green))',
+                    borderColor: 'hsl(var(--arena-green))',
+                    borderWidth: '2px',
+                  }}
                 >
                   Sjá leikdag →
                 </Button>
