@@ -453,7 +453,7 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
       {/* Game Day Guide – collapsible accordion */}
       <Accordion type="single" collapsible>
-        <AccordionItem value="leikdagur" className={`bg-card border border-[hsl(var(--${accent})/0.3)] rounded-xl overflow-hidden`}>
+        <AccordionItem id="leikdagur-section" value="leikdagur" className={`bg-card border border-[hsl(var(--${accent})/0.3)] rounded-xl overflow-hidden`}>
           <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
             <div className="flex items-center gap-3">
               <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center shrink-0`}>

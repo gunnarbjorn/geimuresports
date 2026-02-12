@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Collapsible,
   CollapsibleContent,
@@ -53,7 +53,7 @@ export function CompetitorChecklist() {
   const [showVideo, setShowVideo] = useState(false);
   const [showImages, setShowImages] = useState(false);
   const [showWhyVerified, setShowWhyVerified] = useState(false);
-  const [isPc, setIsPc] = useState(false);
+  const [pcAnswer, setPcAnswer] = useState<"yes" | "no" | null>(null);
 
   const toggleCheck = useCallback((id: string) => {
     setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -64,12 +64,26 @@ export function CompetitorChecklist() {
   };
 
   const mainChecks = ["d1", "d2", "d3", "e1", "e2", "e3", "e4", "e5", "e6", "y1", "y2", "y3", "y4", "y5", "y6"];
-  const pcChecks = ["r1"];
-  const totalChecks = mainChecks.length + (isPc ? pcChecks.length : 0);
+  const pcChecks = pcAnswer === "yes" ? ["r1"] : [];
+  const step4Answered = pcAnswer !== null;
+  const totalChecks = mainChecks.length + pcChecks.length;
   const checkedCount =
     mainChecks.filter((id) => checked[id]).length +
-    (isPc ? pcChecks.filter((id) => checked[id]).length : 0);
+    pcChecks.filter((id) => checked[id]).length;
   const progressPercentage = totalChecks > 0 ? Math.round((checkedCount / totalChecks) * 100) : 0;
+  const allDone = progressPercentage === 100 && step4Answered;
+
+  const scrollToLeikdagur = () => {
+    const el = document.querySelector('[data-value="leikdagur"]') || document.getElementById('leikdagur-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Try to open the accordion
+      const trigger = el.querySelector('button');
+      if (trigger && el.getAttribute('data-state') !== 'open') {
+        trigger.click();
+      }
+    }
+  };
 
   const isStepComplete = (ids: string[]) => ids.every((id) => checked[id]);
 
@@ -315,7 +329,7 @@ export function CompetitorChecklist() {
               </div>
             </Collapsible>
 
-            {/* ─── STEP 4 – REPLAY (PC) ─── */}
+             {/* ─── STEP 4 – REPLAY (PC) ─── */}
             <Collapsible open={openSteps["replay"]} onOpenChange={() => toggleStep("replay")}>
               <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
                 <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors">
@@ -327,7 +341,7 @@ export function CompetitorChecklist() {
                     <span className="font-semibold text-sm">Replay (PC only)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {isPc && checked["r1"] && (
+                    {step4Answered && (pcAnswer === "no" || (pcAnswer === "yes" && checked["r1"])) && (
                       <CheckCircle2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
                     )}
                     {openSteps["replay"] ? (
@@ -340,12 +354,29 @@ export function CompetitorChecklist() {
 
                 <CollapsibleContent>
                   <div className="px-4 pb-4 space-y-3 border-t border-border">
-                    <div className="mt-3 flex items-center gap-3">
+                    <div className="mt-3">
                       <span className="text-sm font-medium">Spilar þú á PC?</span>
-                      <Switch checked={isPc} onCheckedChange={setIsPc} />
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          variant={pcAnswer === "yes" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setPcAnswer("yes")}
+                          className={pcAnswer === "yes" ? `bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black` : ""}
+                        >
+                          Já
+                        </Button>
+                        <Button
+                          variant={pcAnswer === "no" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setPcAnswer("no")}
+                          className={pcAnswer === "no" ? `bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black` : ""}
+                        >
+                          Nei
+                        </Button>
+                      </div>
                     </div>
 
-                    {isPc && (
+                    {pcAnswer === "yes" && (
                       <div className="space-y-3">
                         <div className="space-y-2">
                           {renderCheck("r1", "Save Replays ON í Settings → Game")}
@@ -359,10 +390,35 @@ export function CompetitorChecklist() {
                         </div>
                       </div>
                     )}
+
+                    {pcAnswer === "no" && (
+                      <p className="text-xs text-muted-foreground">
+                        Þú þarft ekki að hafa áhyggjur af Replay skrám.
+                      </p>
+                    )}
                   </div>
                 </CollapsibleContent>
               </div>
             </Collapsible>
+
+            {/* ─── COMPLETION MESSAGE ─── */}
+            {allDone && (
+              <div className={`rounded-xl border border-[hsl(var(--${accent})/0.4)] bg-[hsl(var(--${accent})/0.06)] p-5 text-center space-y-3`}>
+                <CheckCircle2 className={`h-8 w-8 text-[hsl(var(--${accent}))] mx-auto`} />
+                <h3 className={`font-display font-bold text-lg text-[hsl(var(--${accent}))]`}>
+                  Allt klárt! 🎉
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Þú ert tilbúin(n) fyrir mótið. Núna þarftu bara að vera tilbúin(n) á leikdag!
+                </p>
+                <Button
+                  onClick={scrollToLeikdagur}
+                  className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black font-semibold`}
+                >
+                  Sjá leikdag →
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
