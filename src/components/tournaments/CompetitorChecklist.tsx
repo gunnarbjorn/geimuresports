@@ -63,7 +63,7 @@ export function CompetitorChecklist() {
     setOpenSteps((prev) => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
-  const mainChecks = ["d1", "d2", "d3", "e1", "e2", "e3", "e4", "e5", "e6", "y1", "y2", "y3", "y4", "y5"];
+  const mainChecks = ["d1", "d2", "d3", "e1", "e2", "e3", "e4", "e5", "e6", "y1", "y2", "y3", "y4", "y5", "y6"];
   const pcChecks = ["r1"];
   const totalChecks = mainChecks.length + (isPc ? pcChecks.length : 0);
   const checkedCount =
@@ -245,7 +245,7 @@ export function CompetitorChecklist() {
             {/* ─── STEP 3 – YUNITE DASHBOARD ─── */}
             <Collapsible open={openSteps["yunite"]} onOpenChange={() => toggleStep("yunite")}>
               <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
-                {stepHeader(3, Monitor, "Yunite Dashboard", "yunite", ["y1", "y2", "y3", "y4", "y5"])}
+                {stepHeader(3, Monitor, "Yunite Dashboard", "yunite", ["y1", "y2", "y3", "y4", "y5", "y6"])}
                 <CollapsibleContent>
                   <div className="px-4 pb-4 space-y-3 border-t border-border">
                     <div className="mt-3 space-y-2">
@@ -254,57 +254,52 @@ export function CompetitorChecklist() {
                       {renderCheck("y3", 'Ég valdi Fortnite Ísland undir "Select your server"')}
                       {renderCheck("y4", 'Ég ýtti á "Join Now"')}
                       {renderCheck("y5", "Ég sé mótið mitt þar")}
-                    </div>
-
-                    {/* "Allir liðsfélagar verified" with "Af hverju?" */}
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <Info className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-                        <span className="text-sm font-medium">Allir liðsfélagar eru verified</span>
+                      {renderCheck("y6", "Allir liðsfélagar eru verified",
                         <button
                           onClick={() => setShowWhyVerified(!showWhyVerified)}
-                          className="text-xs font-semibold text-[hsl(var(--destructive))] hover:underline ml-1"
+                          className="text-xs font-semibold text-[hsl(var(--destructive))] hover:underline ml-1 shrink-0"
                         >
                           Af hverju?
                         </button>
-                      </div>
-
-                      {showWhyVerified && (
-                        <div className="ml-6 mt-2 p-3 rounded-lg bg-muted/30 border border-border space-y-3">
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Ef liðsfélagi er ekki Verified kemst liðið ekki inn í custom lobby.
-                          </p>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Yunite notar Replay File skrár til að reikna stigin.
-                            Ef Save Replays er ekki kveikt í Fortnite telja stigin ekki.
-                          </p>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Replay File er skrá sem býr til sjálfkrafa eftir hvern leik.
-                          </p>
-                          <p className="text-xs text-muted-foreground leading-relaxed">
-                            Eftir hvern leik þarf að uploada replay á Yunite.
-                            Ef þú notar Yunite Client forritið sendir það replay sjálfkrafa — svo lengi sem Save Replays er ON.
-                          </p>
-
-                          <div className="flex flex-wrap gap-2 pt-1">
-                            <Button variant="outline" size="sm" asChild>
-                              <a href="https://yunite.xyz/replays" target="_blank" rel="noopener noreferrer">
-                                <Upload className="mr-2 h-4 w-4" />
-                                Upload Replay
-                                <ExternalLink className="ml-1.5 h-3 w-3" />
-                              </a>
-                            </Button>
-                            <Button variant="outline" size="sm" asChild>
-                              <a href="https://yunite.xyz/client" target="_blank" rel="noopener noreferrer">
-                                <Monitor className="mr-2 h-4 w-4" />
-                                Yunite Client
-                                <ExternalLink className="ml-1.5 h-3 w-3" />
-                              </a>
-                            </Button>
-                          </div>
-                        </div>
                       )}
                     </div>
+
+                    {/* "Allir liðsfélagar verified" expanded explanation */}
+                    {showWhyVerified && (
+                      <div className="mt-2 p-3 rounded-lg bg-muted/30 border border-border space-y-3">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Ef liðsfélagi er ekki Verified kemst liðið ekki inn í custom lobby.
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Yunite notar Replay File skrár til að reikna stigin.
+                          Ef Save Replays er ekki kveikt í Fortnite telja stigin ekki.
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Replay File er skrá sem býr til sjálfkrafa eftir hvern leik.
+                        </p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Eftir hvern leik þarf að uploada replay á Yunite.
+                          Ef þú notar Yunite Client forritið sendir það replay sjálfkrafa — svo lengi sem Save Replays er ON.
+                        </p>
+
+                        <div className="flex flex-wrap gap-2 pt-1">
+                          <Button variant="outline" size="sm" asChild>
+                            <a href="https://yunite.xyz/replays" target="_blank" rel="noopener noreferrer">
+                              <Upload className="mr-2 h-4 w-4" />
+                              Upload Replay
+                              <ExternalLink className="ml-1.5 h-3 w-3" />
+                            </a>
+                          </Button>
+                          <Button variant="outline" size="sm" asChild>
+                            <a href="https://yunite.xyz/client" target="_blank" rel="noopener noreferrer">
+                              <Monitor className="mr-2 h-4 w-4" />
+                              Yunite Client
+                              <ExternalLink className="ml-1.5 h-3 w-3" />
+                            </a>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex flex-wrap gap-2 mt-2">
                       <Button variant="outline" size="sm" asChild>
