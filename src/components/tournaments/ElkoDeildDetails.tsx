@@ -4,6 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ElkoRegistrationForm } from "@/components/forms/ElkoRegistrationForm";
+import { CompetitorChecklist } from "@/components/tournaments/CompetitorChecklist";
+import { GameDayGuide, CommonMistakes, DiscordRulesCard } from "@/components/tournaments/GameDayGuide";
 import elkoCampaignBg from "@/assets/elko-campaign-bg.jpeg";
 import elkoCampaignBgMobile from "@/assets/elko-campaign-bg-mobile.png";
 import { Badge } from "@/components/ui/badge";
@@ -229,6 +231,9 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
         </div>
       </div>
 
+      {/* Competitor Checklist */}
+      <CompetitorChecklist />
+
       {/* Registration status */}
       <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
         <Collapsible open={isTeamsListOpen} onOpenChange={setIsTeamsListOpen}>
@@ -418,6 +423,9 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
         </Accordion>
       </div>
 
+      {/* Game Day Guide */}
+      <GameDayGuide />
+
       {/* Registration form */}
       <div id="skraning-elko" className="scroll-mt-24">
         <Card className={`bg-card border-[hsl(var(--${accent})/0.3)] overflow-hidden`}>
@@ -437,6 +445,12 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Common Mistakes */}
+      <CommonMistakes />
+
+      {/* Discord Rules */}
+      <DiscordRulesCard />
 
       {/* Rules – collapsible accordion */}
       <Accordion type="single" collapsible className="space-y-3">
