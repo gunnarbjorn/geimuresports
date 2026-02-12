@@ -491,9 +491,6 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
       {/* Common Mistakes */}
       <CommonMistakes />
 
-      {/* Discord Rules */}
-      <DiscordRulesCard />
-
       {/* Rules – collapsible accordion */}
       <Accordion type="single" collapsible className="space-y-3">
         <AccordionItem value="reglur" className="bg-card border border-border rounded-xl overflow-hidden">
@@ -557,6 +554,9 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+
+      {/* Discord Rules */}
+      <DiscordRulesCard />
       </div>
     </div>
   );
