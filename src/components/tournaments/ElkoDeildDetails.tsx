@@ -289,7 +289,7 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
       {/* Competitor Checklist – collapsible accordion */}
       <Accordion type="single" collapsible value={handbookOpen} onValueChange={setHandbookOpen}>
-        <AccordionItem value="handbook" className={`bg-card border border-[hsl(var(--${accent})/0.3)] rounded-xl overflow-hidden`}>
+        <AccordionItem id="handbook-section" value="handbook" className={`bg-card border border-[hsl(var(--${accent})/0.3)] rounded-xl overflow-hidden`}>
           <AccordionTrigger className="px-5 py-5 hover:no-underline hover:bg-muted/50">
             <div className="flex flex-col items-start gap-2 text-left">
               <div className="flex items-center gap-3">

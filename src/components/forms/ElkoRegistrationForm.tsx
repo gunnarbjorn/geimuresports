@@ -186,6 +186,20 @@ export function ElkoRegistrationForm() {
       toast.success("Skráning tókst!", {
         description: "Þú færð staðfestingu í tölvupósti.",
       });
+      // Scroll to the handbook checklist and open it
+      setTimeout(() => {
+        const handbookSection = document.getElementById('handbook-section');
+        if (handbookSection) {
+          // Open the accordion if closed
+          if (handbookSection.getAttribute('data-state') !== 'open') {
+            const btn = handbookSection.querySelector('button');
+            btn?.click();
+          }
+          setTimeout(() => {
+            handbookSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 150);
+        }
+      }, 500);
       reset();
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -218,11 +232,30 @@ export function ElkoRegistrationForm() {
           </p>
           <Button 
             onClick={() => {
+              // Scroll to handbook and open it
+              const handbookSection = document.getElementById('handbook-section');
+              if (handbookSection) {
+                if (handbookSection.getAttribute('data-state') !== 'open') {
+                  const btn = handbookSection.querySelector('button');
+                  btn?.click();
+                }
+                setTimeout(() => {
+                  handbookSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 150);
+              }
+            }} 
+            className="btn-arena-gradient"
+            size="lg"
+          >
+            Opna keppendahandbók →
+          </Button>
+          <Button 
+            onClick={() => {
               setIsSubmitted(false);
               setCurrentStep(1);
             }} 
             variant="outline"
-            className="mt-6"
+            className="mt-3"
           >
             Skrá annað lið
           </Button>

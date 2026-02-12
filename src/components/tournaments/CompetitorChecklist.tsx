@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -54,10 +54,36 @@ export function CompetitorChecklist() {
   const [showImages, setShowImages] = useState(false);
   const [showWhyVerified, setShowWhyVerified] = useState(false);
   const [pcAnswer, setPcAnswer] = useState<"yes" | "no" | null>(null);
+  const prevCheckedRef = useRef<Record<string, boolean>>({});
+
+  const step1Ids = ["d1", "d2", "d3"];
+  const step2Ids = ["e1", "e2", "e3", "e4", "e5", "e6"];
+  const step3Ids = ["y1", "y2", "y3", "y4", "y5", "y6"];
 
   const toggleCheck = useCallback((id: string) => {
     setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
   }, []);
+
+  // Auto-open next step when current step is completed
+  useEffect(() => {
+    const allChecked = (ids: string[]) => ids.every((id) => checked[id]);
+    const wasAllChecked = (ids: string[]) => ids.every((id) => prevCheckedRef.current[id]);
+
+    // Step 1 just completed → open step 2
+    if (allChecked(step1Ids) && !wasAllChecked(step1Ids) && !openSteps["epic"]) {
+      setOpenSteps((prev) => ({ ...prev, epic: true }));
+    }
+    // Step 2 just completed → open step 3
+    if (allChecked(step1Ids) && allChecked(step2Ids) && !wasAllChecked(step2Ids) && !openSteps["yunite"]) {
+      setOpenSteps((prev) => ({ ...prev, yunite: true }));
+    }
+    // Step 3 just completed → open step 4
+    if (allChecked(step1Ids) && allChecked(step2Ids) && allChecked(step3Ids) && !wasAllChecked(step3Ids) && !openSteps["replay"]) {
+      setOpenSteps((prev) => ({ ...prev, replay: true }));
+    }
+
+    prevCheckedRef.current = { ...checked };
+  }, [checked]);
 
   const toggleStep = (stepId: string) => {
     setOpenSteps((prev) => ({ ...prev, [stepId]: !prev[stepId] }));
@@ -413,7 +439,8 @@ export function CompetitorChecklist() {
                 </p>
                 <Button
                   onClick={scrollToLeikdagur}
-                  className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black font-semibold`}
+                  className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black font-semibold w-full sm:w-auto border-2 border-[hsl(var(--${accent}))]`}
+                  size="lg"
                 >
                   Sjá leikdag →
                 </Button>
