@@ -112,6 +112,15 @@ export function CompetitorChecklist() {
   return (
     <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
       <CardContent className="p-5 md:p-6">
+        {/* Progress */}
+        <div className="mb-5">
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-muted-foreground">Framvinda</span>
+            <span className={`font-bold text-[hsl(var(--${accent}))]`}>{progressPercentage}%</span>
+          </div>
+          <Progress value={progressPercentage} className="h-3" />
+        </div>
+
         {/* Steps */}
         <div className="space-y-3">
           {STEPS.map((step, index) => (
