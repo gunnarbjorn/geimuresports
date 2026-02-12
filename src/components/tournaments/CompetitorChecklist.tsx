@@ -25,7 +25,6 @@ import {
   Monitor,
   Play,
   Upload,
-  Download,
   CheckCircle2,
   Info,
   Search,
@@ -34,7 +33,18 @@ import {
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
-const REPLAY_CHANNEL_URL = "https://discord.com/channels/1213089665960247367/1213200307836686376";
+
+const ALL_CHECK_IDS = [
+  // Step 1 - Discord
+  "d1", "d2", "d3",
+  // Step 2 - Epic
+  "e1", "e2", "e3", "e4", "e5", "e6",
+  // Step 3 - Yunite
+  "y1", "y2", "y3", "y4", "y5",
+  // Step 4 - Replay (conditional)
+  "r1",
+];
+
 export function CompetitorChecklist() {
   const accent = "arena-green";
 
@@ -53,7 +63,7 @@ export function CompetitorChecklist() {
     setOpenSteps((prev) => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
-  const mainChecks = ["d1", "d2", "d3", "e1", "e2", "e3", "e4", "e5", "e6", "y1", "y2", "y3", "y4", "y5", "y6", "rp1"];
+  const mainChecks = ["d1", "d2", "d3", "e1", "e2", "e3", "e4", "e5", "e6", "y1", "y2", "y3", "y4", "y5", "y6"];
   const pcChecks = pcAnswer === "yes" ? ["r1"] : [];
   const step4Answered = pcAnswer !== null;
   const totalChecks = mainChecks.length + pcChecks.length;
@@ -386,105 +396,6 @@ export function CompetitorChecklist() {
                         Þú þarft ekki að hafa áhyggjur af Replay skrám.
                       </p>
                     )}
-                  </div>
-                </CollapsibleContent>
-              </div>
-            </Collapsible>
-
-            {/* ─── STEP 5 – EFTIR HVERN LEIK ─── */}
-            <Collapsible open={openSteps["aftergame"]} onOpenChange={() => toggleStep("aftergame")}>
-              <div className="rounded-xl border border-[hsl(var(--destructive)/0.4)] bg-[hsl(var(--destructive)/0.04)] overflow-hidden">
-                {stepHeader(5, Play, "Eftir hvern leik – Replay", "aftergame", ["rp1"], true)}
-                <CollapsibleContent>
-                  <div className="px-4 pb-4 space-y-4 border-t border-border">
-                    {/* Alert */}
-                    <div className="mt-3 flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
-                      <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-bold text-[hsl(var(--destructive))] uppercase">
-                          Til þess að stigin þín telji verður þú að senda replay
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Yunite notar Replay File skrár til að reikna stig allra leikmanna. Ef replay er ekki sent inn telja stigin þín ekki.
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Checklist item */}
-                    <div className="space-y-2">
-                      {renderCheck("rp1", "Ég skil hvernig á að senda replay")}
-                    </div>
-
-                    {/* 3 options */}
-                    <div className="grid gap-3">
-                      {/* Option 1 */}
-                      <div className="rounded-lg border border-border bg-muted/20 p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Upload className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-                          <h5 className="text-sm font-bold">Draga replay á Yunite</h5>
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          Farðu á yunite.xyz/replays og dragðu replay skrána beint inn á síðuna eftir leik.
-                        </p>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href="https://yunite.xyz/replays" target="_blank" rel="noopener noreferrer">
-                            Opna Yunite Replay Upload
-                            <ExternalLink className="ml-1.5 h-3 w-3" />
-                          </a>
-                        </Button>
-                      </div>
-
-                      {/* Option 2 */}
-                      <div className="rounded-lg border border-border bg-muted/20 p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MessageCircle className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-                          <h5 className="text-sm font-bold">Senda í #replay rás</h5>
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          Þú getur líka dregið replay skrána beint inn í #replay rásina á Fortnite Ísland Discord.
-                        </p>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href={REPLAY_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
-                            Opna #replay rás
-                            <ExternalLink className="ml-1.5 h-3 w-3" />
-                          </a>
-                        </Button>
-                      </div>
-
-                      {/* Option 3 – Recommended */}
-                      <div className={`rounded-lg border-2 border-[hsl(var(--${accent})/0.5)] bg-[hsl(var(--${accent})/0.05)] p-4 relative`}>
-                        <span className={`absolute -top-2.5 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[hsl(var(--${accent}))] text-background`}>
-                          Mælt með
-                        </span>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Download className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-                          <h5 className={`text-sm font-bold text-[hsl(var(--${accent}))]`}>Yunite Client (Sjálfvirkt)</h5>
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          Ef þú setur upp Yunite Client forritið sendir það replay sjálfkrafa eftir hvern leik – svo lengi sem Save Replays er ON í Fortnite stillingum.
-                        </p>
-                        <Button size="sm" className={`bg-[hsl(var(--${accent}))] hover:bg-[hsl(var(--${accent})/0.9)] text-black`} asChild>
-                          <a href="https://yunite.xyz/client" target="_blank" rel="noopener noreferrer">
-                            Sækja Yunite Client
-                            <ExternalLink className="ml-1.5 h-3 w-3" />
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* PC Warning */}
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border">
-                      <Monitor className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-bold mb-0.5">PC Spilarar</p>
-                        <p className="text-sm text-muted-foreground">
-                          Farðu í Fortnite → Settings → Game → <span className="font-semibold text-foreground">Save Replays = ON</span>
-                        </p>
-                        <p className="text-xs text-[hsl(var(--destructive))] mt-1 font-medium">
-                          Ef Save Replays er ekki kveikt tapast stigin þín.
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </CollapsibleContent>
               </div>
