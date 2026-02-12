@@ -557,6 +557,40 @@ export function ElkoDeildDetails({ onBack }: { onBack?: () => void }) {
 
       {/* Discord Rules */}
       <DiscordRulesCard />
+
+      {/* Event Disclaimer */}
+      <div className="mt-8">
+        <div className="h-px w-full bg-border mb-6" />
+        <div className="rounded-xl bg-muted/40 border border-border px-5 py-6 space-y-4">
+          <h3 className="font-display text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+            Event Disclaimer
+          </h3>
+
+          <div className="space-y-1">
+            <p className="text-xs font-semibold text-muted-foreground">Event Rules</p>
+            <p className="text-xs text-muted-foreground">
+              Full event rules are available here:{" "}
+              <a
+                href="https://geimuresports.is/reglur"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`text-[hsl(var(--${accent}))] underline underline-offset-2 hover:opacity-80`}
+              >
+                geimuresports.is/reglur
+              </a>
+            </p>
+          </div>
+
+          <div className="space-y-3 text-[11px] leading-relaxed text-muted-foreground/70">
+            <p>
+              THIS EVENT IS IN NO WAY SPONSORED, ENDORSED, OR ADMINISTERED BY, OR OTHERWISE ASSOCIATED WITH, EPIC GAMES, INC. THE INFORMATION PLAYERS PROVIDE IN CONNECTION WITH THIS EVENT IS BEING PROVIDED TO EVENT ORGANIZER AND NOT TO EPIC GAMES, INC.
+            </p>
+            <p>
+              BY PARTICIPATING IN THIS EVENT, TO THE EXTENT PERMITTED BY APPLICABLE LAW, PLAYERS AGREE TO RELEASE AND HOLD HARMLESS EPIC GAMES, INC., ITS LICENSORS, ITS AND THEIR AFFILIATES, AND ITS AND THEIR EMPLOYEES, OFFICERS, DIRECTORS, AGENTS, CONTRACTORS, AND OTHER REPRESENTATIVES FROM ALL CLAIMS, DEMANDS, ACTIONS, LOSSES, LIABILITIES, AND EXPENSES RELATED TO THE EVENT.
+            </p>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );
