@@ -5,13 +5,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  Clock,
   AlertTriangle,
   ChevronDown,
   ChevronUp,
@@ -22,12 +15,15 @@ import {
   HelpCircle,
   XCircle,
   Play,
+  Upload,
+  Download,
   Monitor,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
+const REPLAY_CHANNEL_URL = "https://discord.com/channels/1213089665960247367/1213200307836686376";
 
 const TIMELINE = [
   { time: "18:00", label: "Mæta Discord", icon: MessageCircle },
@@ -35,15 +31,15 @@ const TIMELINE = [
   { time: "19:30", label: "Match start", icon: Play },
 ];
 
-const LOBBY_STEPS = [
-  "Ýta á ✋ í skráningarrás",
-  "Fá DM frá Yunite",
-  "Accept friend request",
-  "Invite bot í party",
-  "Set bot sem leader",
-  "Bot setur kóða",
-  "Bot fer",
-  "Bíða eftir start",
+const LOBBY_STEPS: { text: string; suffix?: string; link?: string }[] = [
+  { text: "Ýta á ✋ í ", suffix: "skráningarrás", link: REPLAY_CHANNEL_URL },
+  { text: "Fá DM frá Yunite" },
+  { text: "Accept friend request" },
+  { text: "Invite bot í party" },
+  { text: "Set bot sem leader" },
+  { text: "Bot setur kóða" },
+  { text: "Bot fer" },
+  { text: "Bíða eftir start" },
 ];
 
 const COMMON_MISTAKES = [
@@ -99,7 +95,23 @@ export function GameDayGuide() {
               <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`}>
                 {i + 1}
               </span>
-              <span className="text-sm">{step}</span>
+              <span className="text-sm">
+                {step.suffix ? (
+                  <>
+                    {step.text}
+                    <a
+                      href={step.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`text-[hsl(var(--${accent}))] underline underline-offset-2 hover:opacity-80`}
+                    >
+                      {step.suffix}
+                    </a>
+                  </>
+                ) : (
+                  step.text
+                )}
+              </span>
             </div>
           ))}
         </div>
@@ -129,6 +141,106 @@ export function GameDayGuide() {
             <p className="font-medium mb-1">Ef bot er niðri:</p>
             <p className="text-muted-foreground pl-4">Bíddu aðeins og reyndu aftur síðar.</p>
           </div>
+        </div>
+      </div>
+
+      {/* EFTIR HVERN LEIK */}
+      <AfterGameSection />
+    </div>
+  );
+}
+
+export function AfterGameSection() {
+  const accent = "arena-green";
+
+  return (
+    <div className="space-y-4">
+      {/* Red alert header */}
+      <div className="flex items-start gap-3 p-4 rounded-lg bg-[hsl(var(--destructive)/0.1)] border border-[hsl(var(--destructive)/0.3)]">
+        <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
+        <div>
+          <h4 className="font-display text-sm font-bold text-[hsl(var(--destructive))] uppercase">
+            Til þess að stigin þín telji verður þú að senda replay
+          </h4>
+          <p className="text-sm text-muted-foreground mt-1">
+            Yunite notar Replay File skrár til að reikna stig allra leikmanna. Ef replay er ekki sent inn telja stigin þín ekki.
+          </p>
+        </div>
+      </div>
+
+      <h4 className="font-display text-sm font-bold flex items-center gap-2">
+        <Play className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+        Eftir hvern leik – Til að stigin þín telji
+      </h4>
+
+      {/* 3 options */}
+      <div className="grid gap-3">
+        {/* Option 1 */}
+        <div className="rounded-lg border border-border bg-muted/20 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Upload className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+            <h5 className="text-sm font-bold">Draga replay á Yunite</h5>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Farðu á yunite.xyz/replays og dragðu replay skrána beint inn á síðuna eftir leik.
+          </p>
+          <Button variant="outline" size="sm" asChild>
+            <a href="https://yunite.xyz/replays" target="_blank" rel="noopener noreferrer">
+              Opna Yunite Replay Upload
+              <ExternalLink className="ml-1.5 h-3 w-3" />
+            </a>
+          </Button>
+        </div>
+
+        {/* Option 2 */}
+        <div className="rounded-lg border border-border bg-muted/20 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <MessageCircle className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+            <h5 className="text-sm font-bold">Senda í #replay rás</h5>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Þú getur líka dregið replay skrána beint inn í #replay rásina á Fortnite Ísland Discord.
+          </p>
+          <Button variant="outline" size="sm" asChild>
+            <a href={REPLAY_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+              Opna #replay rás
+              <ExternalLink className="ml-1.5 h-3 w-3" />
+            </a>
+          </Button>
+        </div>
+
+        {/* Option 3 – Recommended */}
+        <div className={`rounded-lg border-2 border-[hsl(var(--${accent})/0.5)] bg-[hsl(var(--${accent})/0.05)] p-4 relative`}>
+          <span className={`absolute -top-2.5 right-3 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[hsl(var(--${accent}))] text-background`}>
+            Mælt með
+          </span>
+          <div className="flex items-center gap-2 mb-2">
+            <Download className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+            <h5 className={`text-sm font-bold text-[hsl(var(--${accent}))]`}>Yunite Client (Sjálfvirkt)</h5>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            Ef þú setur upp Yunite Client forritið sendir það replay sjálfkrafa eftir hvern leik – svo lengi sem Save Replays er ON í Fortnite stillingum.
+          </p>
+          <Button size="sm" className="btn-arena-gradient" asChild>
+            <a href="https://yunite.xyz/client" target="_blank" rel="noopener noreferrer">
+              Sækja Yunite Client
+              <ExternalLink className="ml-1.5 h-3 w-3" />
+            </a>
+          </Button>
+        </div>
+      </div>
+
+      {/* PC Warning */}
+      <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30 border border-border">
+        <Monitor className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-bold mb-0.5">PC Spilarar</p>
+          <p className="text-sm text-muted-foreground">
+            Farðu í Fortnite → Settings → Game → <span className="font-semibold text-foreground">Save Replays = ON</span>
+          </p>
+          <p className="text-xs text-[hsl(var(--destructive))] mt-1 font-medium">
+            Ef Save Replays er ekki kveikt tapast stigin þín.
+          </p>
         </div>
       </div>
     </div>
