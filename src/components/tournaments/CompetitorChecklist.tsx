@@ -10,6 +10,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   MessageCircle,
   ShieldCheck,
   ExternalLink,
@@ -17,140 +23,319 @@ import {
   ChevronUp,
   AlertTriangle,
   Monitor,
-  BookOpen,
   Play,
   Upload,
   CheckCircle2,
+  Info,
+  Search,
+  Film,
+  Settings,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
 
-interface CheckItem {
-  id: string;
-  label: string;
-}
-
-const STEPS = [
-  {
-    id: "discord",
-    title: "Discord",
-    icon: MessageCircle,
-    emphasized: false,
-    checks: [
-      { id: "d1", label: "Ég er með Discord" },
-      { id: "d2", label: "Ég er búin(n) að joina Fortnite Ísland" },
-      { id: "d3", label: "Ég hef lesið Server Guide" },
-    ] as CheckItem[],
-    buttons: [
-      { label: "Join Discord", href: DISCORD_INVITE_URL, icon: MessageCircle },
-      { label: "Opna Server Guide", href: "https://discord.com/channels/720290498613313647/1338265979263684658", icon: BookOpen },
-    ],
-  },
-  {
-    id: "epic",
-    title: "Epic Verification",
-    icon: ShieldCheck,
-    emphasized: true,
-    warning: "Án Verified by Yunite role kemstu ekki inn í custom lobby.",
-    checks: [
-      { id: "e1", label: "Ég hef farið í #epic-verification" },
-      { id: "e2", label: "Ég hef ýtt á ✋" },
-      { id: "e3", label: "Ég er komin(n) með Verified role" },
-    ] as CheckItem[],
-    videoUrl: "https://www.youtube.com/embed/B4zESqrigBQ",
-    buttons: [
-      { label: "Fara í epic-verification", href: "https://discord.com/channels/720290498613313647/1319377696659959848", icon: ShieldCheck },
-    ],
-  },
-  {
-    id: "yunite",
-    title: "Yunite Dashboard",
-    icon: Monitor,
-    emphasized: false,
-    checks: [
-      { id: "y1", label: "Ég hef loggað mig inn á dash.yunite.xyz" },
-      { id: "y2", label: "Ég sé mótið mitt þar" },
-      { id: "y3", label: "Allir liðsfélagar eru verified" },
-    ] as CheckItem[],
-    buttons: [
-      { label: "Opna Yunite Dashboard", href: "https://dash.yunite.xyz", icon: ExternalLink },
-    ],
-  },
-];
-
-const REPLAY_CHECKS: CheckItem[] = [
-  { id: "r1", label: "Save Replays ON" },
-  { id: "r2", label: "Ég veit hvernig ég uploada replay" },
-  { id: "r3", label: "Ég hef prófað einu sinni" },
+const ALL_CHECK_IDS = [
+  // Step 1 - Discord
+  "d1", "d2", "d3",
+  // Step 2 - Epic
+  "e1", "e2", "e3", "e4", "e5", "e6",
+  // Step 3 - Yunite
+  "y1", "y2", "y3", "y4", "y5",
+  // Step 4 - Replay (conditional)
+  "r1",
 ];
 
 export function CompetitorChecklist() {
   const accent = "arena-green";
 
-  const allCheckIds = [
-    ...STEPS.flatMap((s) => s.checks.map((c) => c.id)),
-  ];
-
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [openSteps, setOpenSteps] = useState<Record<string, boolean>>({ discord: true });
+  const [showVideo, setShowVideo] = useState(false);
+  const [showImages, setShowImages] = useState(false);
+  const [showWhyVerified, setShowWhyVerified] = useState(false);
   const [isPc, setIsPc] = useState(false);
 
   const toggleCheck = useCallback((id: string) => {
     setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
   }, []);
 
-  const totalChecks = allCheckIds.length + (isPc ? REPLAY_CHECKS.length : 0);
-  const checkedCount =
-    allCheckIds.filter((id) => checked[id]).length +
-    (isPc ? REPLAY_CHECKS.filter((c) => checked[c.id]).length : 0);
-  const progressPercentage = totalChecks > 0 ? Math.round((checkedCount / totalChecks) * 100) : 0;
-
   const toggleStep = (stepId: string) => {
     setOpenSteps((prev) => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
-  return (
-    <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
-      <CardContent className="p-5 md:p-6">
-        {/* Progress */}
-        <div className="mb-5">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Framvinda</span>
-            <span className={`font-bold text-[hsl(var(--${accent}))]`}>{progressPercentage}%</span>
-          </div>
-          <Progress value={progressPercentage} className="h-3" />
-        </div>
+  const mainChecks = ["d1", "d2", "d3", "e1", "e2", "e3", "e4", "e5", "e6", "y1", "y2", "y3", "y4", "y5"];
+  const pcChecks = ["r1"];
+  const totalChecks = mainChecks.length + (isPc ? pcChecks.length : 0);
+  const checkedCount =
+    mainChecks.filter((id) => checked[id]).length +
+    (isPc ? pcChecks.filter((id) => checked[id]).length : 0);
+  const progressPercentage = totalChecks > 0 ? Math.round((checkedCount / totalChecks) * 100) : 0;
 
-        {/* Steps */}
-        <div className="space-y-3">
-          {STEPS.map((step, index) => (
-            <Collapsible key={step.id} open={openSteps[step.id]} onOpenChange={() => toggleStep(step.id)}>
-              <div
-                className={`rounded-xl border overflow-hidden transition-colors ${
-                  step.emphasized
-                    ? `border-[hsl(var(--destructive)/0.4)] bg-[hsl(var(--destructive)/0.04)]`
-                    : "border-border bg-muted/20"
-                }`}
-              >
+  const isStepComplete = (ids: string[]) => ids.every((id) => checked[id]);
+
+  const renderCheck = (id: string, label: string, extra?: React.ReactNode) => (
+    <label key={id} className="flex items-center gap-3 cursor-pointer py-1">
+      <Checkbox checked={!!checked[id]} onCheckedChange={() => toggleCheck(id)} />
+      <span className={`text-sm ${checked[id] ? "text-muted-foreground line-through" : ""}`}>
+        {label}
+      </span>
+      {extra}
+    </label>
+  );
+
+  const stepHeader = (
+    index: number,
+    icon: React.ElementType,
+    title: string,
+    stepId: string,
+    checkIds: string[],
+    emphasized = false
+  ) => {
+    const Icon = icon;
+    return (
+      <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors">
+        <div className="flex items-center gap-3">
+          <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
+            emphasized
+              ? "bg-[hsl(var(--destructive)/0.15)] text-[hsl(var(--destructive))]"
+              : `bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`
+          }`}>
+            {index}
+          </span>
+          <Icon className={`h-4 w-4 ${
+            emphasized ? "text-[hsl(var(--destructive))]" : `text-[hsl(var(--${accent}))]`
+          }`} />
+          <span className="font-semibold text-sm">{title}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {isStepComplete(checkIds) && (
+            <CheckCircle2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+          )}
+          {openSteps[stepId] ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
+        </div>
+      </CollapsibleTrigger>
+    );
+  };
+
+  return (
+    <TooltipProvider delayDuration={200}>
+      <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
+        <CardContent className="p-5 md:p-6">
+          {/* Progress */}
+          <div className="mb-5">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-muted-foreground">Framvinda</span>
+              <span className={`font-bold text-[hsl(var(--${accent}))]`}>{progressPercentage}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-3" />
+          </div>
+
+          <div className="space-y-3">
+            {/* ─── STEP 1 – DISCORD ─── */}
+            <Collapsible open={openSteps["discord"]} onOpenChange={() => toggleStep("discord")}>
+              <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
+                {stepHeader(1, MessageCircle, "Discord", "discord", ["d1", "d2", "d3"])}
+                <CollapsibleContent>
+                  <div className="px-4 pb-4 space-y-3 border-t border-border">
+                    <div className="mt-3 space-y-2">
+                      {renderCheck("d1", "Ég er með Discord")}
+                      {renderCheck("d2", "Ég er búin(n) að joina Fortnite Ísland")}
+                      {renderCheck("d3", "Ég hef lesið Server Guide",
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Settings className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground cursor-help ml-1 shrink-0" />
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+                            Server Guide er efst í vinstri dálknum inni á Discord server Fortnite Ísland. Þegar þú ert kominn inn á serverinn sérðu rásina "Server Guide". Þar inni eru mikilvægar upplýsingar sem þú verður að lesa.
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer">
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Join Discord
+                          <ExternalLink className="ml-1.5 h-3 w-3" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+
+            {/* ─── STEP 2 – EPIC VERIFICATION ─── */}
+            <Collapsible open={openSteps["epic"]} onOpenChange={() => toggleStep("epic")}>
+              <div className="rounded-xl border border-[hsl(var(--destructive)/0.4)] bg-[hsl(var(--destructive)/0.04)] overflow-hidden">
+                {stepHeader(2, ShieldCheck, "Epic Verification", "epic", ["e1", "e2", "e3", "e4", "e5", "e6"], true)}
+                <CollapsibleContent>
+                  <div className="px-4 pb-4 space-y-3 border-t border-border">
+                    {/* Warning */}
+                    <div className="mt-3 flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
+                      <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
+                      <p className="text-sm font-medium text-[hsl(var(--destructive))]">
+                        Án Verified by Yunite role kemstu ekki inn í custom lobby.
+                      </p>
+                    </div>
+
+                    {/* Checklist */}
+                    <div className="mt-3 space-y-2">
+                      {renderCheck("e1", 'Ég er inni á Fortnite Ísland Discord')}
+                      {renderCheck("e2", 'Ég fór í "Server Guide"')}
+                      {renderCheck("e3", 'Ég opnaði rásina "Verify Epic Games Account"')}
+                      {renderCheck("e4", "Ég ýtti á ✋ neðst í rásinni")}
+                      {renderCheck("e5", "Ég fékk DM frá Yunite")}
+                      {renderCheck("e6", "Ég er komin(n) með role: Verified by Yunite")}
+                    </div>
+
+                    {/* Collapsible video */}
+                    <Collapsible open={showVideo} onOpenChange={setShowVideo}>
+                      <CollapsibleTrigger className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1">
+                        <Film className="h-3.5 w-3.5" />
+                        <span>Sjá kennslumyndband</span>
+                        {showVideo ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="mt-2 rounded-lg overflow-hidden aspect-video max-w-sm">
+                          <iframe
+                            src="https://www.youtube.com/embed/B4zESqrigBQ"
+                            title="Epic Verification Guide"
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+
+                    {/* Collapsible images */}
+                    <Collapsible open={showImages} onOpenChange={setShowImages}>
+                      <CollapsibleTrigger className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        <Search className="h-3.5 w-3.5" />
+                        <span>🔍 Sýna myndir</span>
+                        {showImages ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <div className="rounded-lg bg-muted/30 border border-border p-3 text-center">
+                            <p className="text-xs text-muted-foreground">Server Guide staðsetning</p>
+                          </div>
+                          <div className="rounded-lg bg-muted/30 border border-border p-3 text-center">
+                            <p className="text-xs text-muted-foreground">Verify Epic rás</p>
+                          </div>
+                          <div className="rounded-lg bg-muted/30 border border-border p-3 text-center">
+                            <p className="text-xs text-muted-foreground">Link Epic Account</p>
+                          </div>
+                          <div className="rounded-lg bg-muted/30 border border-border p-3 text-center">
+                            <p className="text-xs text-muted-foreground">DM frá Yunite</p>
+                          </div>
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  </div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+
+            {/* ─── STEP 3 – YUNITE DASHBOARD ─── */}
+            <Collapsible open={openSteps["yunite"]} onOpenChange={() => toggleStep("yunite")}>
+              <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
+                {stepHeader(3, Monitor, "Yunite Dashboard", "yunite", ["y1", "y2", "y3", "y4", "y5"])}
+                <CollapsibleContent>
+                  <div className="px-4 pb-4 space-y-3 border-t border-border">
+                    <div className="mt-3 space-y-2">
+                      {renderCheck("y1", "Ég fór á dash.yunite.xyz")}
+                      {renderCheck("y2", 'Ég loggaði mig inn með Discord aðganginum mínum')}
+                      {renderCheck("y3", 'Ég valdi Fortnite Ísland undir "Select your server"')}
+                      {renderCheck("y4", 'Ég ýtti á "Join Now"')}
+                      {renderCheck("y5", "Ég sé mótið mitt þar")}
+                    </div>
+
+                    {/* "Allir liðsfélagar verified" with "Af hverju?" */}
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Info className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+                        <span className="text-sm font-medium">Allir liðsfélagar eru verified</span>
+                        <button
+                          onClick={() => setShowWhyVerified(!showWhyVerified)}
+                          className="text-xs font-semibold text-[hsl(var(--destructive))] hover:underline ml-1"
+                        >
+                          Af hverju?
+                        </button>
+                      </div>
+
+                      {showWhyVerified && (
+                        <div className="ml-6 mt-2 p-3 rounded-lg bg-muted/30 border border-border space-y-3">
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Ef liðsfélagi er ekki Verified kemst liðið ekki inn í custom lobby.
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Yunite notar Replay File skrár til að reikna stigin.
+                            Ef Save Replays er ekki kveikt í Fortnite telja stigin ekki.
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Replay File er skrá sem býr til sjálfkrafa eftir hvern leik.
+                          </p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            Eftir hvern leik þarf að uploada replay á Yunite.
+                            Ef þú notar Yunite Client forritið sendir það replay sjálfkrafa — svo lengi sem Save Replays er ON.
+                          </p>
+
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            <Button variant="outline" size="sm" asChild>
+                              <a href="https://yunite.xyz/replays" target="_blank" rel="noopener noreferrer">
+                                <Upload className="mr-2 h-4 w-4" />
+                                Upload Replay
+                                <ExternalLink className="ml-1.5 h-3 w-3" />
+                              </a>
+                            </Button>
+                            <Button variant="outline" size="sm" asChild>
+                              <a href="https://yunite.xyz/client" target="_blank" rel="noopener noreferrer">
+                                <Monitor className="mr-2 h-4 w-4" />
+                                Yunite Client
+                                <ExternalLink className="ml-1.5 h-3 w-3" />
+                              </a>
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <a href="https://dash.yunite.xyz" target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="mr-2 h-4 w-4" />
+                          Opna Yunite Dashboard
+                          <ExternalLink className="ml-1.5 h-3 w-3" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </div>
+            </Collapsible>
+
+            {/* ─── STEP 4 – REPLAY (PC) ─── */}
+            <Collapsible open={openSteps["replay"]} onOpenChange={() => toggleStep("replay")}>
+              <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
                 <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors">
                   <div className="flex items-center gap-3">
-                    <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center ${
-                      step.emphasized
-                        ? "bg-[hsl(var(--destructive)/0.15)] text-[hsl(var(--destructive))]"
-                        : `bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`
-                    }`}>
-                      {index + 1}
+                    <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`}>
+                      4
                     </span>
-                    <step.icon className={`h-4 w-4 ${
-                      step.emphasized ? "text-[hsl(var(--destructive))]" : `text-[hsl(var(--${accent}))]`
-                    }`} />
-                    <span className="font-semibold text-sm">{step.title}</span>
+                    <Play className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+                    <span className="font-semibold text-sm">Replay (PC only)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {step.checks.every((c) => checked[c.id]) && (
+                    {isPc && checked["r1"] && (
                       <CheckCircle2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
                     )}
-                    {openSteps[step.id] ? (
+                    {openSteps["replay"] ? (
                       <ChevronUp className="h-4 w-4 text-muted-foreground" />
                     ) : (
                       <ChevronDown className="h-4 w-4 text-muted-foreground" />
@@ -160,144 +345,32 @@ export function CompetitorChecklist() {
 
                 <CollapsibleContent>
                   <div className="px-4 pb-4 space-y-3 border-t border-border">
-                    {/* Warning */}
-                    {step.warning && (
-                      <div className="mt-3 flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
-                        <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
-                        <p className="text-sm font-medium text-[hsl(var(--destructive))]">{step.warning}</p>
-                      </div>
-                    )}
-
-                    {/* Checklist */}
-                    <div className="mt-3 space-y-2">
-                      {step.checks.map((c) => (
-                        <label
-                          key={c.id}
-                          className="flex items-center gap-3 cursor-pointer py-1"
-                        >
-                          <Checkbox
-                            checked={!!checked[c.id]}
-                            onCheckedChange={() => toggleCheck(c.id)}
-                          />
-                          <span className={`text-sm ${checked[c.id] ? "text-muted-foreground line-through" : ""}`}>
-                            {c.label}
-                          </span>
-                        </label>
-                      ))}
+                    <div className="mt-3 flex items-center gap-3">
+                      <span className="text-sm font-medium">Spilar þú á PC?</span>
+                      <Switch checked={isPc} onCheckedChange={setIsPc} />
                     </div>
 
-                    {/* Video */}
-                    {step.videoUrl && (
-                      <div className="mt-2 rounded-lg overflow-hidden aspect-video">
-                        <iframe
-                          src={step.videoUrl}
-                          title="Epic Verification Guide"
-                          className="w-full h-full"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        />
-                      </div>
-                    )}
+                    {isPc && (
+                      <div className="space-y-3">
+                        <div className="space-y-2">
+                          {renderCheck("r1", "Save Replays ON í Settings → Game")}
+                        </div>
 
-                    {/* Buttons */}
-                    {step.buttons && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {step.buttons.map((btn) => (
-                          <Button
-                            key={btn.label}
-                            variant="outline"
-                            size="sm"
-                            asChild
-                          >
-                            <a href={btn.href} target="_blank" rel="noopener noreferrer">
-                              <btn.icon className="mr-2 h-4 w-4" />
-                              {btn.label}
-                              <ExternalLink className="ml-1.5 h-3 w-3" />
-                            </a>
-                          </Button>
-                        ))}
+                        <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
+                          <AlertTriangle className="h-4 w-4 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
+                          <p className="text-xs font-medium text-[hsl(var(--destructive))]">
+                            Stillirðu þetta ekki → tapast stigin þín.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
                 </CollapsibleContent>
               </div>
             </Collapsible>
-          ))}
-
-          {/* STEP 4 – Replay (PC toggle) */}
-          <Collapsible open={openSteps["replay"]} onOpenChange={() => toggleStep("replay")}>
-            <div className="rounded-xl border border-border bg-muted/20 overflow-hidden">
-              <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <span className={`text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`}>
-                    4
-                  </span>
-                  <Play className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-                  <span className="font-semibold text-sm">Replay (PC only)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {isPc && REPLAY_CHECKS.every((c) => checked[c.id]) && (
-                    <CheckCircle2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-                  )}
-                  {openSteps["replay"] ? (
-                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                  )}
-                </div>
-              </CollapsibleTrigger>
-
-              <CollapsibleContent>
-                <div className="px-4 pb-4 space-y-3 border-t border-border">
-                  <div className="mt-3 flex items-center gap-3">
-                    <span className="text-sm font-medium">Spilar þú á PC?</span>
-                    <Switch checked={isPc} onCheckedChange={setIsPc} />
-                  </div>
-
-                  {isPc && (
-                    <>
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
-                        <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
-                        <p className="text-sm font-medium text-[hsl(var(--destructive))]">
-                          Ef Save Replays er OFF telja stigin þín ekki.
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        {REPLAY_CHECKS.map((c) => (
-                          <label key={c.id} className="flex items-center gap-3 cursor-pointer py-1">
-                            <Checkbox checked={!!checked[c.id]} onCheckedChange={() => toggleCheck(c.id)} />
-                            <span className={`text-sm ${checked[c.id] ? "text-muted-foreground line-through" : ""}`}>
-                              {c.label}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        <Button variant="outline" size="sm" asChild>
-                          <a href="https://dash.yunite.xyz" target="_blank" rel="noopener noreferrer">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Upload replay
-                            <ExternalLink className="ml-1.5 h-3 w-3" />
-                          </a>
-                        </Button>
-                        <Button variant="outline" size="sm" asChild>
-                          <a href="https://yunite.xyz/download" target="_blank" rel="noopener noreferrer">
-                            <Monitor className="mr-2 h-4 w-4" />
-                            Yunite client
-                            <ExternalLink className="ml-1.5 h-3 w-3" />
-                          </a>
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </CollapsibleContent>
-            </div>
-          </Collapsible>
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 }
