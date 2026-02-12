@@ -112,30 +112,6 @@ export function CompetitorChecklist() {
   return (
     <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
       <CardContent className="p-5 md:p-6">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-3">
-          <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
-            <CheckCircle2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-          </div>
-          <h3 className="font-display text-lg font-bold">Keppendahandbók – Lestu áður en mót hefst</h3>
-        </div>
-
-        <p className="text-sm text-muted-foreground mb-4">
-          Til að komast inn í leik verður þú að klára þessi skref.{" "}
-          <span className={`text-[hsl(var(--${accent}))] font-semibold`}>
-            90% af þeim sem lenda í vandræðum hafa sleppt skrefi 2.
-          </span>
-        </p>
-
-        {/* Progress */}
-        <div className="mb-6">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Framvinda</span>
-            <span className={`font-bold text-[hsl(var(--${accent}))]`}>{progressPercentage}%</span>
-          </div>
-          <Progress value={progressPercentage} className="h-3" />
-        </div>
-
         {/* Steps */}
         <div className="space-y-3">
           {STEPS.map((step, index) => (
