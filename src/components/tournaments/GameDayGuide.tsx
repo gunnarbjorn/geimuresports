@@ -65,84 +65,72 @@ export function GameDayGuide() {
 
   return (
     <div className="space-y-6">
-      {/* Leikdagur */}
-      <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
-        <CardContent className="p-5 md:p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
-              <Clock className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-            </div>
-            <h3 className="font-display text-lg font-bold">Leikdagur – Hvernig kemst ég inn?</h3>
-          </div>
-
-          {/* Timeline */}
-          <div className={`relative pl-6 border-l-2 border-[hsl(var(--${accent})/0.3)] space-y-4 mb-6`}>
-            {TIMELINE.map((item, i) => (
-              <div key={i} className="relative">
-                <div className={`absolute -left-[calc(1.5rem+5px)] top-1 w-3 h-3 rounded-full bg-[hsl(var(--${accent}))]`} />
-                <div className="flex items-center gap-3">
-                  <span className={`font-mono text-sm font-bold text-[hsl(var(--${accent}))]`}>{item.time}</span>
-                  <item.icon className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Warning */}
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)] mb-6">
-            <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
-            <p className="text-sm font-medium text-[hsl(var(--destructive))]">
-              Kemst ekki inn eftir start.
-            </p>
-          </div>
-
-          {/* How to join lobby */}
-          <div className="mb-4">
-            <h4 className="font-display text-sm font-bold mb-3 flex items-center gap-2">
-              <Gamepad2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-              Hvernig joina ég custom lobby?
-            </h4>
-            <div className="space-y-2">
-              {LOBBY_STEPS.map((step, i) => (
-                <div key={i} className="flex items-start gap-3 py-1.5">
-                  <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`}>
-                    {i + 1}
-                  </span>
-                  <span className="text-sm">{step}</span>
-                </div>
-              ))}
+      {/* Timeline */}
+      <div className={`relative pl-6 border-l-2 border-[hsl(var(--${accent})/0.3)] space-y-4`}>
+        {TIMELINE.map((item, i) => (
+          <div key={i} className="relative">
+            <div className={`absolute -left-[calc(1.5rem+5px)] top-1 w-3 h-3 rounded-full bg-[hsl(var(--${accent}))]`} />
+            <div className="flex items-center gap-3">
+              <span className={`font-mono text-sm font-bold text-[hsl(var(--${accent}))]`}>{item.time}</span>
+              <item.icon className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">{item.label}</span>
             </div>
           </div>
+        ))}
+      </div>
 
-          {/* Troubleshooting */}
-          <div className="rounded-lg border border-border bg-muted/20 p-4">
-            <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
-              <HelpCircle className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
-              Vandamál?
-            </h4>
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="font-medium mb-1">Ef ekkert DM kemur:</p>
-                <ul className="space-y-1 text-muted-foreground pl-4">
-                  <li className="flex items-start gap-2">
-                    <span className={`text-[hsl(var(--${accent}))]`}>1.</span>
-                    Kveiktu á Direct Messages (Privacy Settings → Allow DMs from server members)
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className={`text-[hsl(var(--${accent}))]`}>2.</span>
-                    Reyndu aftur
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <p className="font-medium mb-1">Ef bot er niðri:</p>
-                <p className="text-muted-foreground pl-4">Bíddu aðeins og reyndu aftur síðar.</p>
-              </div>
+      {/* Warning */}
+      <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--destructive)/0.08)] border border-[hsl(var(--destructive)/0.2)]">
+        <AlertTriangle className="h-5 w-5 text-[hsl(var(--destructive))] shrink-0 mt-0.5" />
+        <p className="text-sm font-medium text-[hsl(var(--destructive))]">
+          Kemst ekki inn eftir start.
+        </p>
+      </div>
+
+      {/* How to join lobby */}
+      <div>
+        <h4 className="font-display text-sm font-bold mb-3 flex items-center gap-2">
+          <Gamepad2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+          Hvernig joina ég custom lobby?
+        </h4>
+        <div className="space-y-2">
+          {LOBBY_STEPS.map((step, i) => (
+            <div key={i} className="flex items-start gap-3 py-1.5">
+              <span className={`text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))]`}>
+                {i + 1}
+              </span>
+              <span className="text-sm">{step}</span>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Troubleshooting */}
+      <div className="rounded-lg border border-border bg-muted/20 p-4">
+        <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
+          <HelpCircle className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+          Vandamál?
+        </h4>
+        <div className="space-y-3 text-sm">
+          <div>
+            <p className="font-medium mb-1">Ef ekkert DM kemur:</p>
+            <ul className="space-y-1 text-muted-foreground pl-4">
+              <li className="flex items-start gap-2">
+                <span className={`text-[hsl(var(--${accent}))]`}>1.</span>
+                Kveiktu á Direct Messages (Privacy Settings → Allow DMs from server members)
+              </li>
+              <li className="flex items-start gap-2">
+                <span className={`text-[hsl(var(--${accent}))]`}>2.</span>
+                Reyndu aftur
+              </li>
+            </ul>
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <p className="font-medium mb-1">Ef bot er niðri:</p>
+            <p className="text-muted-foreground pl-4">Bíddu aðeins og reyndu aftur síðar.</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
