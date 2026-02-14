@@ -4,7 +4,10 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
@@ -44,6 +47,7 @@ import {
   User,
   Gamepad2,
   CreditCard,
+  Pencil,
 } from "lucide-react";
 
 interface RegistrationData {
@@ -91,7 +95,9 @@ const AdminPage = () => {
   const [lanOrders, setLanOrders] = useState<LanOrder[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
+  const [editingOrder, setEditingOrder] = useState<LanOrder | null>(null);
+  const [editForm, setEditForm] = useState({ team_name: "", player1: "", player2: "", email: "" });
+  const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
@@ -205,6 +211,47 @@ const AdminPage = () => {
       toast.error("Villa við eyðingu");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleEditLanOrder = (order: LanOrder) => {
+    setEditForm({
+      team_name: order.team_name,
+      player1: order.player1,
+      player2: order.player2,
+      email: order.email,
+    });
+    setEditingOrder(order);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingOrder) return;
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from("lan_tournament_orders")
+        .update({
+          team_name: editForm.team_name.trim(),
+          player1: editForm.player1.trim(),
+          player2: editForm.player2.trim(),
+          email: editForm.email.trim(),
+        })
+        .eq("id", editingOrder.id);
+
+      if (error) {
+        console.error("Update error:", error);
+        toast.error("Villa við uppfærslu");
+        return;
+      }
+
+      toast.success("Skráning uppfærð!");
+      setEditingOrder(null);
+      fetchRegistrations();
+    } catch (err) {
+      console.error("Error updating:", err);
+      toast.error("Villa við uppfærslu");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -398,7 +445,7 @@ const AdminPage = () => {
                               <TableHead>Order ID</TableHead>
                               <TableHead>Staða</TableHead>
                               <TableHead>Skráð</TableHead>
-                              <TableHead className="w-20">Eyða</TableHead>
+                              <TableHead className="w-20">Aðgerðir</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -435,27 +482,32 @@ const AdminPage = () => {
                                   </div>
                                 </TableCell>
                                 <TableCell>
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" disabled={deletingId === order.id}>
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>Eyða LAN skráningu?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          Ertu viss um að þú viljir eyða skráningu <strong>{order.team_name}</strong>? Þetta er ekki hægt að afturkalla.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>Hætta við</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDeleteLanOrder(order.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                          Eyða
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
+                                  <div className="flex items-center gap-1">
+                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => handleEditLanOrder(order)}>
+                                      <Pencil className="h-4 w-4" />
+                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" disabled={deletingId === order.id}>
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Eyða LAN skráningu?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Ertu viss um að þú viljir eyða skráningu <strong>{order.team_name}</strong>? Þetta er ekki hægt að afturkalla.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Hætta við</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleDeleteLanOrder(order.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                            Eyða
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -679,6 +731,41 @@ const AdminPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit LAN Order Dialog */}
+      <Dialog open={!!editingOrder} onOpenChange={(open) => !open && setEditingOrder(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Breyta skráningu</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="edit-team">Liðsheiti</Label>
+              <Input id="edit-team" value={editForm.team_name} onChange={(e) => setEditForm(f => ({ ...f, team_name: e.target.value }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-p1">Spilari 1</Label>
+                <Input id="edit-p1" value={editForm.player1} onChange={(e) => setEditForm(f => ({ ...f, player1: e.target.value }))} />
+              </div>
+              <div>
+                <Label htmlFor="edit-p2">Spilari 2</Label>
+                <Input id="edit-p2" value={editForm.player2} onChange={(e) => setEditForm(f => ({ ...f, player2: e.target.value }))} />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="edit-email">Netfang</Label>
+              <Input id="edit-email" type="email" value={editForm.email} onChange={(e) => setEditForm(f => ({ ...f, email: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingOrder(null)}>Hætta við</Button>
+            <Button onClick={handleSaveEdit} disabled={isSaving}>
+              {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Vista...</> : "Vista breytingar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };
