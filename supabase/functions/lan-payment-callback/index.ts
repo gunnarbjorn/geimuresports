@@ -89,39 +89,69 @@ Deno.serve(async (req) => {
               .eq("order_id", orderid)
               .single();
 
-            if (orderData?.email) {
-              const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-              if (RESEND_API_KEY) {
-                await fetch("https://api.resend.com/emails", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${RESEND_API_KEY}`,
-                  },
-                  body: JSON.stringify({
-                    from: "Geimur Esports <no-reply@geimuresports.is>",
-                    to: [orderData.email],
-                    subject: "Skráning staðfest – Fortnite Duos LAN ✅",
-                    html: `
-                      <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:20px;">
-                        <h1 style="color:#22c55e;">Skráning staðfest! ✅</h1>
-                        <p>Liðið <strong>${orderData.team_name}</strong> er skráð á <strong>Fortnite Duos LAN</strong> mótið.</p>
-                        <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-                          <tr><td style="padding:8px;color:#888;">Leikmaður 1:</td><td style="padding:8px;">${orderData.player1}</td></tr>
-                          <tr><td style="padding:8px;color:#888;">Leikmaður 2:</td><td style="padding:8px;">${orderData.player2}</td></tr>
-                          <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
-                          <tr><td style="padding:8px;color:#888;">Upphæð:</td><td style="padding:8px;">${orderData.amount.toLocaleString("is-IS")} kr</td></tr>
-                        </table>
-                        <p style="color:#888;font-size:14px;">Sjáumst á mótinu! 🎮</p>
-                        <hr style="border:none;border-top:1px solid #333;margin:20px 0;">
-                        <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
-                      </div>
-                    `,
-                  }),
-                });
-                console.log(`[success-server] Confirmation email sent to ${orderData.email}`);
+              if (orderData?.email) {
+                const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+                if (RESEND_API_KEY) {
+                  // Send confirmation to registrant
+                  await fetch("https://api.resend.com/emails", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${RESEND_API_KEY}`,
+                    },
+                    body: JSON.stringify({
+                      from: "Geimur Esports <no-reply@geimuresports.is>",
+                      to: [orderData.email],
+                      subject: "Skráning staðfest – Fortnite Duos LAN ✅",
+                      html: `
+                        <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:20px;">
+                          <h1 style="color:#22c55e;">Skráning staðfest! ✅</h1>
+                          <p>Liðið <strong>${orderData.team_name}</strong> er skráð á <strong>Fortnite Duos LAN</strong> mótið.</p>
+                          <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+                            <tr><td style="padding:8px;color:#888;">Leikmaður 1:</td><td style="padding:8px;">${orderData.player1}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Leikmaður 2:</td><td style="padding:8px;">${orderData.player2}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Upphæð:</td><td style="padding:8px;">${orderData.amount.toLocaleString("is-IS")} kr</td></tr>
+                          </table>
+                          <p style="color:#888;font-size:14px;">Sjáumst á mótinu! 🎮</p>
+                          <hr style="border:none;border-top:1px solid #333;margin:20px 0;">
+                          <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
+                        </div>
+                      `,
+                    }),
+                  });
+                  console.log(`[success-server] Confirmation email sent to ${orderData.email}`);
+
+                  // Send admin notification to club email
+                  await fetch("https://api.resend.com/emails", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${RESEND_API_KEY}`,
+                    },
+                    body: JSON.stringify({
+                      from: "Geimur Esports <no-reply@geimuresports.is>",
+                      to: ["rafgeimur@gmail.com"],
+                      subject: `🎮 Ný DUO LAN skráning: ${orderData.team_name}`,
+                      html: `
+                        <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:20px;">
+                          <h1 style="color:#22c55e;">Ný greidd skráning!</h1>
+                          <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+                            <tr><td style="padding:8px;color:#888;">Lið:</td><td style="padding:8px;"><strong>${orderData.team_name}</strong></td></tr>
+                            <tr><td style="padding:8px;color:#888;">Leikmaður 1:</td><td style="padding:8px;">${orderData.player1}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Leikmaður 2:</td><td style="padding:8px;">${orderData.player2}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Netfang:</td><td style="padding:8px;">${orderData.email}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Upphæð:</td><td style="padding:8px;">${orderData.amount.toLocaleString("is-IS")} kr</td></tr>
+                          </table>
+                          <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
+                        </div>
+                      `,
+                    }),
+                  });
+                  console.log(`[success-server] Admin notification sent to rafgeimur@gmail.com`);
+                }
               }
-            }
           } catch (emailErr) {
             console.error("Email send error:", emailErr);
           }
