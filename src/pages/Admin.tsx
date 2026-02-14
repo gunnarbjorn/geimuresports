@@ -84,6 +84,7 @@ interface LanOrder {
   paid_at: string | null;
   authorization_code: string | null;
   masked_card: string | null;
+  pizza: boolean;
   created_at: string;
 }
 
@@ -443,6 +444,7 @@ const AdminPage = () => {
                               <TableHead>Spilari 2</TableHead>
                               <TableHead>Email</TableHead>
                               <TableHead>Order ID</TableHead>
+                              <TableHead>🍕</TableHead>
                               <TableHead>Staða</TableHead>
                               <TableHead>Skráð</TableHead>
                               <TableHead className="w-20">Aðgerðir</TableHead>
@@ -463,6 +465,9 @@ const AdminPage = () => {
                                 </TableCell>
                                 <TableCell>
                                   <Badge variant="outline" className="font-mono text-xs">{order.order_id}</Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                  {order.pizza ? "✅" : "—"}
                                 </TableCell>
                                 <TableCell>
                                   <Badge className={
