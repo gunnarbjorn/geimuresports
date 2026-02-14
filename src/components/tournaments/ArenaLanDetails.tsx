@@ -194,12 +194,12 @@ const LanPaymentForm = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="player1"><Gamepad2 className="inline h-3.5 w-3.5 mr-1" />Leikmaður 1</Label>
-                <Input id="player1" value={player1} onChange={(e) => setPlayer1(e.target.value)} placeholder="Nafn" required maxLength={50} />
+                <Label htmlFor="player1"><Gamepad2 className="inline h-3.5 w-3.5 mr-1" />Hvað heitir þú í fortnite?</Label>
+                <Input id="player1" value={player1} onChange={(e) => setPlayer1(e.target.value)} placeholder="Fortnite nafn" required maxLength={50} />
               </div>
               <div>
-                <Label htmlFor="player2"><Gamepad2 className="inline h-3.5 w-3.5 mr-1" />Leikmaður 2</Label>
-                <Input id="player2" value={player2} onChange={(e) => setPlayer2(e.target.value)} placeholder="Nafn" required maxLength={50} />
+                <Label htmlFor="player2"><Gamepad2 className="inline h-3.5 w-3.5 mr-1" />Hvað heitir vinur þinn í fortnite?</Label>
+                <Input id="player2" value={player2} onChange={(e) => setPlayer2(e.target.value)} placeholder="Fortnite nafn" required maxLength={50} />
               </div>
             </div>
             <div>
