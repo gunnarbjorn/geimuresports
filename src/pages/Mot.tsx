@@ -91,7 +91,7 @@ const Mot = () => {
             {/* Tournament selector cards */}
             {!selectedId && (
               <div className="space-y-4">
-                {tournaments.map((t, i) => (
+                {tournaments.filter(t => !t.hidden).map((t, i) => (
                   <FadeInView key={t.id} delay={i * 80}>
                     <Card
                       className="planet-card-tournament rounded-2xl overflow-hidden cursor-pointer hover:border-[hsl(var(--planet-tournament)/0.5)] transition-all hover:shadow-lg hover:shadow-[hsl(var(--planet-tournament)/0.1)]"

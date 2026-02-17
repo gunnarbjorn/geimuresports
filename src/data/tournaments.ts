@@ -12,6 +12,7 @@ export interface Tournament {
   ctaUrl?: string;
   ctaText?: string;
   isComingSoon?: boolean;
+  hidden?: boolean;
   note?: string;
   discordUrl?: string;
   tags?: string[];
@@ -34,6 +35,7 @@ export const tournaments: Tournament[] = [
     note: "Allir keppendur þurfa að vera með Discord aðgang og skráðir á Fortnite á Íslandi Discord.",
     discordUrl: "https://discord.com/invite/57P9SAy4Fq",
     tags: ["Duo", "Online", "Build"],
+    hidden: true,
   },
   {
     id: "arena-lan-coming-soon",

@@ -27,7 +27,9 @@ const rankedSections = [
 
 const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
-  const [selectedId, setSelectedId] = useState<string | null>(defaultTournament || null);
+  const visibleTournaments = tournaments.filter(t => !t.hidden);
+  const effectiveDefault = defaultTournament || (visibleTournaments.length === 1 ? visibleTournaments[0].id : null);
+  const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
 
   useEffect(() => {
     if (location.hash) {
@@ -80,7 +82,7 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
             {!selectedId && (
               <>
                 <div className="space-y-4 mb-16">
-                  {tournaments.map((t, i) => (
+                  {visibleTournaments.map((t, i) => (
                     <FadeInView key={t.id} delay={i * 80}>
                       <Card
                         className="planet-card-tournament rounded-2xl overflow-hidden cursor-pointer hover:border-[hsl(var(--planet-tournament)/0.5)] transition-all hover:shadow-lg hover:shadow-[hsl(var(--planet-tournament)/0.1)]"
