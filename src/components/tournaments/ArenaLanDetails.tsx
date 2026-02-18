@@ -237,7 +237,7 @@ const LanPaymentForm = () => {
                 <>Skrá og greiða — {totalPrice.toLocaleString("is-IS")} kr</>
               )}
             </Button>
-            <p className="text-xs text-center text-muted-foreground">Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>
+            <p className="text-xs text-center text-muted-foreground">4.440 kr á mann · Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>
           </form>
         </CardContent>
       </Card>
