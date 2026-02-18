@@ -142,9 +142,9 @@ export default function LanMot() {
             <p className="text-muted-foreground">
               Keppnisgjald:{" "}
               <span className="text-[hsl(var(--arena-green))] font-bold">
-                {TOURNAMENT_INFO.entryFeePerTeam.toLocaleString("is-IS")} kr
+                4.440 kr á mann
               </span>{" "}
-              á lið
+              ({TOURNAMENT_INFO.entryFeePerTeam.toLocaleString("is-IS")} kr á lið)
             </p>
           </div>
 
