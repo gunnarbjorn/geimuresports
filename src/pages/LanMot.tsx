@@ -246,7 +246,7 @@ export default function LanMot() {
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  Þú verður vísað á örugg greiðslusíðu Teya/Borgun
+                  4.440 kr á mann — Þú verður vísað á örugg greiðslusíðu Teya/Borgun
                 </p>
               </form>
             </CardContent>
