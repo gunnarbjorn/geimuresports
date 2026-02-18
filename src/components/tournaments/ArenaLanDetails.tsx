@@ -234,7 +234,7 @@ const LanPaymentForm = () => {
               {isSubmitting ? (
                 <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Vinnsla...</>
               ) : (
-                <>Skrá og greiða — {totalPrice.toLocaleString("is-IS")} kr</>
+                <>Skrá og greiða — 4.440 kr á mann</>
               )}
             </Button>
             <p className="text-xs text-center text-muted-foreground">4.440 kr á mann · Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>
