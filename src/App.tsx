@@ -19,6 +19,8 @@ import MapCategory from "./pages/fortnite/MapCategory";
 import Tips from "./pages/fortnite/Tips";
 import TipArticle from "./pages/fortnite/TipArticle";
 import LanMotStadfesting from "./pages/LanMotStadfesting";
+import Vefkokur from "./pages/Vefkokur";
+import Personuvernd from "./pages/Personuvernd";
 import { Navigate } from "react-router-dom";
 const queryClient = new QueryClient();
 
@@ -54,6 +56,8 @@ const App = () => (
           <Route path="/skraning" element={<Aefingar />} />
           <Route path="/um" element={<Um />} />
           <Route path="/hafa-samband" element={<HafaSamband />} />
+          <Route path="/vefkokur" element={<Vefkokur />} />
+          <Route path="/personuvernd" element={<Personuvernd />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
