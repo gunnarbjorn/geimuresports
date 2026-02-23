@@ -7,14 +7,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Video, Send, Users, MessageSquare, Gamepad2 } from "lucide-react";
+import { ArrowLeft, Video, Send, Users, MessageSquare, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
+
 const communityCards = [
-  { title: "Discord", desc: "Tengdu við aðra Fortnite spilara á Íslandi. Spjall, LFG og tilkynningar.", icon: MessageSquare },
-  { title: "Klipp vikunnar", desc: "Sendu inn bestu klippin þín og littu á highlight reel vikunnar.", icon: Video },
-  { title: "Scrims", desc: "Skipulagðir æfingaleikir í hálfopnum lobbíum.", icon: Gamepad2 },
+  { title: "Discord", desc: "Tengdu við aðra Fortnite spilara á Íslandi. Spjall, LFG og tilkynningar.", icon: MessageSquare, href: DISCORD_INVITE_URL, external: true },
+  { title: "Bestu klippin", desc: "Skoðaðu bestu klippin frá íslensku Fortnite community-inu.", icon: Video, href: "#bestu-klippin", external: false },
 ];
 
 const placeholderClips = [
@@ -91,20 +92,38 @@ const Samfelag = () => {
       <section className="section-spacing-lg relative">
         <div className="absolute inset-0 nebula-community pointer-events-none opacity-40" />
         <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
             {communityCards.map((item, i) => (
               <FadeInView key={i} delay={i * 80}>
-                <Card className="planet-card-community rounded-xl text-center py-6">
-                  <CardContent className="p-3 flex flex-col items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
-                      <item.icon className="h-7 w-7 text-[hsl(var(--planet-community))]" />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-base font-bold mb-1">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground">{item.desc}</p>
-                    </div>
-                  </CardContent>
-                </Card>
+                {item.external ? (
+                  <a href={item.href} target="_blank" rel="noopener noreferrer" className="block">
+                    <Card className="planet-card-community rounded-xl text-center py-6 hover:border-[hsl(var(--planet-community)/0.4)] transition-colors cursor-pointer">
+                      <CardContent className="p-3 flex flex-col items-center gap-3">
+                        <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
+                          <item.icon className="h-7 w-7 text-[hsl(var(--planet-community))]" />
+                        </div>
+                        <div>
+                          <h3 className="font-display text-base font-bold mb-1 inline-flex items-center gap-1.5">{item.title} <ExternalLink className="h-3.5 w-3.5" /></h3>
+                          <p className="text-sm text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </a>
+                ) : (
+                  <a href={item.href} className="block">
+                    <Card className="planet-card-community rounded-xl text-center py-6 hover:border-[hsl(var(--planet-community)/0.4)] transition-colors cursor-pointer">
+                      <CardContent className="p-3 flex flex-col items-center gap-3">
+                        <div className="w-14 h-14 rounded-2xl bg-[hsl(var(--planet-community)/0.12)] flex items-center justify-center">
+                          <item.icon className="h-7 w-7 text-[hsl(var(--planet-community))]" />
+                        </div>
+                        <div>
+                          <h3 className="font-display text-base font-bold mb-1">{item.title}</h3>
+                          <p className="text-sm text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </a>
+                )}
               </FadeInView>
             ))}
           </div>
@@ -113,14 +132,14 @@ const Samfelag = () => {
 
       <div className="section-divider max-w-3xl mx-auto" />
 
-      {/* Clip vikunnar */}
-      <section className="section-spacing-lg relative">
+      {/* Bestu klippin */}
+      <section id="bestu-klippin" className="section-spacing-lg scroll-mt-28 relative">
         <div className="absolute inset-0 nebula-community pointer-events-none opacity-50" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center section-heading-spacing">
-            <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-community))] mb-2 block">Vikulegt</span>
-            <h2 className="font-display text-3xl font-bold mb-3">Klipp vikunnar</h2>
-            <p className="text-muted-foreground max-w-md mx-auto">Bestu klippin úr íslensku Fortnite community-inu.</p>
+            <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-community))] mb-2 block">Highlights</span>
+            <h2 className="font-display text-3xl font-bold mb-3">Bestu klippin</h2>
+            <p className="text-muted-foreground max-w-md mx-auto">Bestu klippin frá íslensku Fortnite samfélaginu.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {placeholderClips.map((clip, i) => (
