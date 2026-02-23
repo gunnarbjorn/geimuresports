@@ -15,7 +15,7 @@ const DISCORD_INVITE_URL = "https://discord.com/invite/57P9SAy4Fq";
 
 const communityCards = [
   { title: "Discord", desc: "Tengdu við aðra Fortnite spilara á Íslandi. Spjall, LFG og tilkynningar.", icon: MessageSquare, href: DISCORD_INVITE_URL, external: true },
-  { title: "Bestu klippin", desc: "Skoðaðu bestu klippin frá íslensku Fortnite community-inu.", icon: Video, href: "#bestu-klippin", external: false },
+  { title: "Bestu klippurnar", desc: "Skoðaðu bestu klippurnar frá íslensku Fortnite community-inu.", icon: Video, href: "#bestu-klippin", external: false },
 ];
 
 const placeholderClips = [
@@ -138,8 +138,8 @@ const Samfelag = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center section-heading-spacing">
             <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-community))] mb-2 block">Highlights</span>
-            <h2 className="font-display text-3xl font-bold mb-3">Bestu klippin</h2>
-            <p className="text-muted-foreground max-w-md mx-auto">Bestu klippin frá íslensku Fortnite samfélaginu.</p>
+            <h2 className="font-display text-3xl font-bold mb-3">Bestu klippurnar</h2>
+            <p className="text-muted-foreground max-w-md mx-auto">Bestu klippurnar frá íslensku Fortnite samfélaginu.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {placeholderClips.map((clip, i) => (
@@ -167,8 +167,8 @@ const Samfelag = () => {
           <div className="max-w-lg mx-auto">
             <div className="text-center mb-8">
               <span className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--planet-community))] mb-2 block">Deildu</span>
-              <h2 className="font-display text-3xl font-bold mb-2">Sendu inn klipp</h2>
-              <p className="text-muted-foreground">Ertu með klipp sem á skilið spotlight?</p>
+              <h2 className="font-display text-3xl font-bold mb-2">Sendu inn klippu</h2>
+              <p className="text-muted-foreground">Ertu með klippu sem á skilið spotlight?</p>
             </div>
             <Card className="planet-card-community rounded-xl">
               <CardContent className="p-6">
