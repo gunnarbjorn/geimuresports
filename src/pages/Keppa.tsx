@@ -34,7 +34,7 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const visibleTournaments = tournaments.filter(t => !t.hidden);
-  const effectiveDefault = defaultTournament || (visibleTournaments.length === 1 ? visibleTournaments[0].id : null);
+  const effectiveDefault = defaultTournament || null;
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
 
   useEffect(() => {
