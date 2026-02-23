@@ -18,10 +18,9 @@ const communityCards = [
   { title: "Bestu klippurnar", desc: "Skoðaðu bestu klippurnar frá íslensku Fortnite community-inu.", icon: Video, href: "#bestu-klippin", external: false },
 ];
 
-const placeholderClips = [
-  { player: "ÍslandGamer99", title: "Insane clutch í ranked", week: "Vika 6" },
-  { player: "FortniteFreyr", title: "No-scope sniper elimination", week: "Vika 5" },
-  { player: "ArcticAim", title: "1v4 endgame squad wipe", week: "Vika 4" },
+const communityClips = [
+  { player: "Marri G", src: "/clips/marri-g.mp4" },
+  { player: "Domi70", src: "/clips/domi70.mov" },
 ];
 
 const Samfelag = () => {
@@ -141,16 +140,14 @@ const Samfelag = () => {
             <h2 className="font-display text-3xl font-bold mb-3">Bestu klippurnar</h2>
             <p className="text-muted-foreground max-w-md mx-auto">Bestu klippurnar frá íslensku Fortnite samfélaginu.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {placeholderClips.map((clip, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {communityClips.map((clip, i) => (
               <Card key={i} className="planet-card-community rounded-xl">
                 <CardContent className="p-6">
-                  <div className="aspect-video rounded-lg bg-muted/20 border border-border/40 flex items-center justify-center mb-4">
-                    <Video className="h-10 w-10 text-muted-foreground/30" />
+                  <div className="aspect-video rounded-lg overflow-hidden bg-muted/20 border border-border/40 mb-4">
+                    <video src={clip.src} controls className="w-full h-full object-cover" preload="metadata" />
                   </div>
-                  <span className="text-xs text-[hsl(var(--planet-community))] font-medium">{clip.week}</span>
-                  <h3 className="font-display font-bold mt-1">{clip.title}</h3>
-                  <p className="text-sm text-muted-foreground">{clip.player}</p>
+                  <h3 className="font-display font-bold">{clip.player}</h3>
                 </CardContent>
               </Card>
             ))}
@@ -190,7 +187,7 @@ const Samfelag = () => {
                   </div>
                   <div className="flex items-start gap-3">
                     <Checkbox id="clip-consent" checked={formData.consent} onCheckedChange={(checked) => setFormData(p => ({ ...p, consent: checked === true }))} />
-                    <Label htmlFor="clip-consent" className="text-sm text-muted-foreground leading-relaxed">Ég samþykki að Geimur Esports megi birta klippið mitt á síðu og á samfélagsmiðlum.</Label>
+                    <Label htmlFor="clip-consent" className="text-sm text-muted-foreground leading-relaxed">Ég samþykki að Geimur Esports megi birta klippuna mína á síðunni og á samfélagsmiðlum.</Label>
                   </div>
                   <Button type="submit" className="w-full bg-[hsl(var(--planet-community))] hover:bg-[hsl(var(--planet-community-deep))] text-primary-foreground" disabled={isSubmitting}>
                     {isSubmitting ? "Sendi..." : "Senda inn klipp"}
