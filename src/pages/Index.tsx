@@ -9,7 +9,7 @@ const paths = [
   {
     title: "KEPPA",
     description: "Mót & keppni",
-    href: "/keppa",
+    href: "/keppa/arena-lan",
     icon: Trophy,
     cardClass: "planet-card-tournament",
     iconBg: "bg-[hsl(var(--planet-tournament)/0.12)]",
