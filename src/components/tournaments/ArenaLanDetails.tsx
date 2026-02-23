@@ -393,7 +393,7 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
                 ) : registeredTeams.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Engin lið skráð ennþá</p>
                 ) : (
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <div className="space-y-2">
                     {registeredTeams.map((team, index) => (
                       <div key={team.id} className="flex items-center gap-3 py-2 px-3 bg-muted/30 rounded-lg">
                         <span className="text-xs font-mono text-muted-foreground w-6">#{index + 1}</span>
