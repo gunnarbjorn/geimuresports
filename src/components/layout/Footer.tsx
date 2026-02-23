@@ -12,6 +12,8 @@ const journeyLinks = [
 const moreLinks = [
   { href: "/um", label: "Um Geimur" },
   { href: "/hafa-samband", label: "Hafðu samband" },
+  { href: "/vefkokur", label: "Vefkökur" },
+  { href: "/personuvernd", label: "Persónuvernd" },
 ];
 
 const scrollToTop = () => {
@@ -124,9 +126,17 @@ export function Footer() {
             <p className="text-xs text-muted-foreground/70">
               © {new Date().getFullYear()} Geimur – Rafíþróttafélag. Öll réttindi áskilin.
             </p>
-            <p className="text-xs text-muted-foreground/50">
-              Hannað á Íslandi 🇮🇸
-            </p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => { if ((window as any).Cookiebot) (window as any).Cookiebot.renew(); }}
+                className="text-xs text-muted-foreground/50 hover:text-primary transition-colors cursor-pointer"
+              >
+                Cookie stillingar
+              </button>
+              <p className="text-xs text-muted-foreground/50">
+                Hannað á Íslandi 🇮🇸
+              </p>
+            </div>
           </div>
         </div>
       </div>
