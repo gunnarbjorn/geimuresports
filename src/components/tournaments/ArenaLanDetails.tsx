@@ -412,96 +412,122 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
       </Card>
 
       {/* Prizes */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <h3 className="font-display text-xl md:text-2xl font-bold flex items-center justify-center gap-2">
-            <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-            VERÐLAUN
+      <div className="space-y-5">
+        {/* Section header */}
+        <div className="text-center space-y-2">
+          <h3 className="font-display text-2xl md:text-3xl font-bold flex items-center justify-center gap-2.5">
+            🏆 VERÐLAUN
           </h3>
+          <p className="text-sm text-muted-foreground">
+            Duo mót — verðlaun eru á mann (2 í liði).
+          </p>
+          <div className="mx-auto w-24 h-px bg-gradient-to-r from-transparent via-[hsl(var(--arena-green)/0.5)] to-transparent mt-3" />
         </div>
 
         <div className="space-y-3">
-          {/* 1st place - highlight */}
-          <Card className="bg-card border-[hsl(var(--arena-green)/0.5)] relative overflow-hidden group hover:border-[hsl(var(--arena-green)/0.8)] transition-all duration-300 hover:shadow-lg hover:shadow-[hsl(var(--arena-green)/0.15)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--arena-green)/0.08)] to-transparent pointer-events-none" />
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[hsl(var(--arena-green)/0.6)] via-[hsl(var(--arena-green))] to-[hsl(var(--arena-green)/0.6)]" />
-            <CardContent className="p-4 md:p-5 relative">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.15)] flex items-center justify-center border border-[hsl(var(--arena-green)/0.3)]">
-                  <Trophy className="h-5 w-5 text-[hsl(var(--arena-green))]" />
-                </div>
-                <h4 className="font-display text-lg font-bold text-[hsl(var(--arena-green))]">1. SÆTI</h4>
+          {/* 1st place - Hero Prize Card */}
+          <Card className="relative overflow-hidden group border-[hsl(var(--arena-green)/0.4)] bg-card/80 backdrop-blur-sm hover:border-[hsl(var(--arena-green)/0.7)] transition-all duration-300 hover:shadow-xl hover:shadow-[hsl(var(--arena-green)/0.12)] hover:-translate-y-0.5">
+            <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--arena-green)/0.1)] via-transparent to-[hsl(var(--arena-green)/0.03)] pointer-events-none" />
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[hsl(var(--arena-green))] to-transparent" />
+            {/* TOP PRIZE ribbon */}
+            <div className="absolute top-3 right-3">
+              <Badge className="bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)] text-[10px] font-bold uppercase tracking-wider">
+                Top Prize
+              </Badge>
+            </div>
+            <CardContent className="p-5 md:p-7 relative">
+              <div className="flex items-center gap-3 mb-5">
+                <span className="text-3xl">🥇</span>
+                <h4 className="font-display text-xl md:text-2xl font-bold text-[hsl(var(--arena-green))]">1. SÆTI</h4>
               </div>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--arena-green))] mt-0.5">•</span>
-                  <div>
-                    <p className="font-medium">5 klst. spilatími á mann í Arena</p>
-                    <p className="text-xs text-muted-foreground">10 klst. samtals fyrir liðið</p>
+              {/* Reward rows */}
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--arena-green)/0.05)] border border-[hsl(var(--arena-green)/0.1)]">
+                  <div className="w-9 h-9 rounded-lg bg-[hsl(var(--arena-green)/0.12)] flex items-center justify-center shrink-0 mt-0.5">
+                    <Gamepad2 className="h-4.5 w-4.5 text-[hsl(var(--arena-green))]" />
                   </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--arena-green))] mt-0.5">•</span>
                   <div>
-                    <p className="font-medium">2x HyperX heyrnartól frá Senu</p>
-                    <p className="text-xs text-muted-foreground">1 stk á hvorn liðsfélaga</p>
+                    <p className="font-semibold text-sm">5 klst. spilatími á mann</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">10 klst. samtals fyrir liðið</p>
                   </div>
-                </li>
-              </ul>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-[hsl(var(--arena-green)/0.05)] border border-[hsl(var(--arena-green)/0.1)]">
+                  <div className="w-9 h-9 rounded-lg bg-[hsl(var(--arena-green)/0.12)] flex items-center justify-center shrink-0 mt-0.5">
+                    <Trophy className="h-4.5 w-4.5 text-[hsl(var(--arena-green))]" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-sm">2x HyperX heyrnartól frá Senu</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">1 stk á hvorn liðsfélaga</p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 flex justify-center">
+                <Badge variant="outline" className="text-[10px] font-medium text-muted-foreground border-border">
+                  Á mann · 2 verðlaunapakkar í liðinu
+                </Badge>
+              </div>
             </CardContent>
           </Card>
 
-          {/* 2nd & 3rd in a row on mobile too */}
+          {/* 2nd & 3rd */}
           <div className="grid grid-cols-2 gap-3">
             {/* 2nd place */}
-            <Card className="bg-card border-border group hover:border-[hsl(var(--arena-green)/0.4)] transition-all duration-300">
+            <Card className="relative overflow-hidden bg-card/80 backdrop-blur-sm border-border group hover:border-[hsl(var(--arena-green)/0.4)] transition-all duration-300 hover:shadow-lg hover:shadow-[hsl(var(--arena-green)/0.06)] hover:-translate-y-0.5">
               <CardContent className="p-4 md:p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center">
-                    <Trophy className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🥈</span>
+                    <h4 className="font-display text-base md:text-lg font-bold">2. SÆTI</h4>
                   </div>
-                  <h4 className="font-display text-base font-bold">2. SÆTI</h4>
                 </div>
-                <p className="text-sm font-medium">3 klst. spilatími á mann í Arena</p>
-                <p className="text-xs text-muted-foreground">6 klst. samtals fyrir liðið</p>
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border">
+                  <p className="text-sm font-semibold">3 klst. spilatími á mann</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">6 klst. samtals fyrir liðið</p>
+                </div>
               </CardContent>
             </Card>
 
             {/* 3rd place */}
-            <Card className="bg-card border-border group hover:border-[hsl(var(--arena-green)/0.4)] transition-all duration-300">
+            <Card className="relative overflow-hidden bg-card/80 backdrop-blur-sm border-border group hover:border-[hsl(var(--arena-green)/0.4)] transition-all duration-300 hover:shadow-lg hover:shadow-[hsl(var(--arena-green)/0.06)] hover:-translate-y-0.5">
               <CardContent className="p-4 md:p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center">
-                    <Trophy className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🥉</span>
+                    <h4 className="font-display text-base md:text-lg font-bold">3. SÆTI</h4>
                   </div>
-                  <h4 className="font-display text-base font-bold">3. SÆTI</h4>
                 </div>
-                <p className="text-sm font-medium">2 klst. spilatími á mann í Arena</p>
-                <p className="text-xs text-muted-foreground">4 klst. samtals fyrir liðið</p>
+                <div className="p-2.5 rounded-lg bg-muted/30 border border-border">
+                  <p className="text-sm font-semibold">2 klst. spilatími á mann</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">4 klst. samtals fyrir liðið</p>
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Raffle */}
-          <Card className="bg-card border-[hsl(var(--planet-tournament)/0.3)] relative overflow-hidden group hover:border-[hsl(var(--planet-tournament)/0.5)] transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--planet-tournament)/0.05)] to-transparent pointer-events-none" />
-            <CardContent className="p-4 md:p-5 relative">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-[hsl(var(--planet-tournament)/0.12)] flex items-center justify-center">
-                  <PartyPopper className="h-4 w-4 text-[hsl(var(--planet-tournament))]" />
+          {/* Raffle - Lucky Draw */}
+          <Card className="relative overflow-hidden bg-card/80 backdrop-blur-sm border-[hsl(var(--planet-tournament)/0.3)] group hover:border-[hsl(var(--planet-tournament)/0.5)] transition-all duration-300 hover:shadow-lg hover:shadow-[hsl(var(--planet-tournament)/0.08)] hover:-translate-y-0.5">
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--planet-tournament)/0.06)] to-transparent pointer-events-none" />
+            <CardContent className="p-5 md:p-6 relative">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-2xl">🎁</span>
+                <div>
+                  <h4 className="font-display text-base md:text-lg font-bold">HAPPDRÆTTI</h4>
+                  <p className="text-xs text-[hsl(var(--planet-tournament))] font-medium uppercase tracking-wide">Allir eiga séns</p>
                 </div>
-                <h4 className="font-display text-base font-bold">HAPPDRÆTTI</h4>
+                <div className="ml-auto">
+                  <PartyPopper className="h-5 w-5 text-[hsl(var(--planet-tournament))] animate-pulse" />
+                </div>
               </div>
-              <ul className="space-y-2 text-sm mb-2">
-                <li className="flex items-start gap-2">
-                  <span className="text-[hsl(var(--planet-tournament))] mt-0.5">•</span>
-                  <div>
-                    <p className="font-medium">2x Revolution Pro pinnar frá Senu</p>
-                    <p className="text-xs text-muted-foreground">Dregið af handahófi meðal allra skráðra keppenda</p>
-                  </div>
-                </li>
-              </ul>
+              <div className="p-3 rounded-lg bg-[hsl(var(--planet-tournament)/0.05)] border border-[hsl(var(--planet-tournament)/0.1)] mb-3">
+                <p className="text-sm font-semibold">2x Revolution Pro pinnar frá Senu</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Dregið af handahófi meðal allra skráðra keppenda</p>
+              </div>
               <p className="text-xs text-muted-foreground italic">Vinningshafar verða dregnir í lok móts.</p>
+              <div className="mt-3 pt-3 border-t border-border">
+                <p className="text-xs text-[hsl(var(--planet-tournament))] font-medium text-center">
+                  ✨ Skráðu þig og þú ert sjálfkrafa með í happdrætti
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
