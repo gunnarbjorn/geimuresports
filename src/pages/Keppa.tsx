@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { FadeInView } from "@/components/layout/FadeInView";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,8 +25,14 @@ const rankedSections = [
   { icon: Trophy, title: "Hvernig Geimur undirbýr spilara", content: "Við förum yfir VOD reviews, landing spots, rotation paths og endgame aðstæður. Í æfingum spiluðum við custom scrims sem líkja eftir ranked aðstæðum." },
 ];
 
+const tournamentRoutes: Record<string, string> = {
+  "elko-deild-vor-2026": "/keppa/elko-deild",
+  "arena-lan-coming-soon": "/keppa/arena-lan",
+};
+
 const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const visibleTournaments = tournaments.filter(t => !t.hidden);
   const effectiveDefault = defaultTournament || (visibleTournaments.length === 1 ? visibleTournaments[0].id : null);
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
@@ -86,7 +92,14 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
                     <FadeInView key={t.id} delay={i * 80}>
                       <Card
                         className="planet-card-tournament rounded-2xl overflow-hidden cursor-pointer hover:border-[hsl(var(--planet-tournament)/0.5)] transition-all hover:shadow-lg hover:shadow-[hsl(var(--planet-tournament)/0.1)]"
-                        onClick={() => setSelectedId(t.id)}
+                        onClick={() => {
+                          const route = tournamentRoutes[t.id];
+                          if (route) {
+                            navigate(route);
+                          } else {
+                            setSelectedId(t.id);
+                          }
+                        }}
                       >
                         <CardContent className="p-5 md:p-6">
                           <div className="flex items-start justify-between gap-4">
