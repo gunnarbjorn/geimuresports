@@ -198,8 +198,7 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
             {selectedId && SelectedComponent && (
               <FadeInView>
                 <SelectedComponent onBack={() => {
-                  setSelectedId(null);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  navigate("/keppa");
                 }} />
               </FadeInView>
             )}
