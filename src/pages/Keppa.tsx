@@ -37,6 +37,11 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const effectiveDefault = defaultTournament || null;
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
 
+  // Sync state when prop changes (e.g. navigating between /keppa and /keppa/arena-lan)
+  useEffect(() => {
+    setSelectedId(effectiveDefault);
+  }, [effectiveDefault]);
+
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace("#", "");
