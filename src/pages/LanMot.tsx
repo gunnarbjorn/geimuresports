@@ -25,7 +25,7 @@ const TOURNAMENT_INFO = {
   name: "Fortnite DUO LAN",
   location: "Arena",
   date: "Lau 28. feb",
-  time: "11:00 – 14:00",
+  time: "13:00 – 16:00",
   entryFeePerTeam: 8880,
 };
 

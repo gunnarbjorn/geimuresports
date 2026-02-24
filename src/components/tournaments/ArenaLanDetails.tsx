@@ -56,7 +56,7 @@ const TOURNAMENT_CONFIG = {
   formatLabel: "2 manna lið",
   location: "Arena",
   date: "Lau 28. feb",
-  time: "11:00 – 14:00",
+  time: "13:00 – 16:00",
   duration: "3 klst",
   ageLimit: "Allur aldur",
   entryFeePerPlayer: 4440,
@@ -589,13 +589,13 @@ export function ArenaLanDetails({ onBack }: { onBack?: () => void }) {
             <AccordionContent className="px-5 pb-5">
               <div className="space-y-2">
                 {[
-                  { time: "11:00", title: "Leikur 1", icon: Timer, color: "arena-green" },
-                  { time: "11:30", title: "Leikur 2", icon: Timer, color: "arena-green" },
-                  { time: "12:00", title: "Leikur 3", icon: Timer, color: "arena-green" },
-                  { time: "12:30", title: "Pása (pizza / hvíld)", icon: Pause, color: "accent" },
-                  { time: "13:00", title: "Leikur 4", icon: Timer, color: "arena-green" },
-                  { time: "13:30", title: "Leikur 5", icon: Timer, color: "arena-green" },
-                  { time: "14:00", title: "Verðlaun & raffle", icon: PartyPopper, color: "primary" },
+                  { time: "13:00", title: "Leikur 1", icon: Timer, color: "arena-green" },
+                  { time: "13:30", title: "Leikur 2", icon: Timer, color: "arena-green" },
+                  { time: "14:00", title: "Leikur 3", icon: Timer, color: "arena-green" },
+                  { time: "14:30", title: "Pása (pizza / hvíld)", icon: Pause, color: "accent" },
+                  { time: "15:00", title: "Leikur 4", icon: Timer, color: "arena-green" },
+                  { time: "15:30", title: "Leikur 5", icon: Timer, color: "arena-green" },
+                  { time: "16:00", title: "Verðlaun & raffle", icon: PartyPopper, color: "primary" },
                 ].map((item, index) => (
                   <div key={index} className="flex items-center gap-3 py-2">
                     <Badge
