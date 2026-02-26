@@ -126,29 +126,33 @@ export default function BroadcastView({ state }: Props) {
         ))}
       </div>
 
-      {/* Scoring guide */}
+      {/* Scoring guide — left side, vertically centered */}
       <div
-        className="fixed bottom-4 right-4 p-3 rounded-lg text-xs leading-relaxed"
+        className="fixed left-0 top-1/2 -translate-y-1/2 py-6 px-6 rounded-r-xl text-base leading-loose"
         style={{
-          background: 'rgba(13, 13, 15, 0.85)',
-          border: '1px solid rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(8px)',
+          background: 'rgba(13, 13, 15, 0.9)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          borderLeft: 'none',
+          backdropFilter: 'blur(12px)',
           fontFamily: 'Rajdhani, sans-serif',
-          color: '#888',
-          minWidth: '160px',
+          color: '#aaa',
+          minWidth: '220px',
         }}
       >
-        <p className="font-bold text-gray-400 mb-1" style={{ fontSize: '11px', letterSpacing: '0.05em' }}>
+        <p className="font-black text-lg tracking-wider mb-3" style={{ color: '#ccc', letterSpacing: '0.08em' }}>
           🎯 STIGAKERFI
         </p>
-        <p>Fell (kill): <span style={{ color: '#e8341c' }}>+{state.killPointsPerKill}</span> stig</p>
-        {state.placementPointsConfig.slice(0, 6).map((pts, i) => {
-          const label = i < 5 ? `${i + 1}. sæti` : `6.-${state.placementPointsConfig.length}. sæti`;
-          if (i === 5) {
-            return <p key={i}>{label}: <span style={{ color: '#ffd700' }}>+{pts}</span> stig</p>;
-          }
-          return <p key={i}>{i + 1}. sæti: <span style={{ color: '#ffd700' }}>+{pts}</span> stig</p>;
-        })}
+        <p className="font-bold">Fell (kill): <span style={{ color: '#e8341c' }}>+{state.killPointsPerKill}</span> stig</p>
+        <div className="mt-2 flex flex-col gap-0.5">
+          {state.placementPointsConfig.slice(0, 6).map((pts, i) => {
+            const label = i < 5 ? `${i + 1}. sæti` : `6.-${state.placementPointsConfig.length}. sæti`;
+            return (
+              <p key={i} className="font-semibold">
+                {label}: <span style={{ color: '#ffd700' }}>+{pts}</span> stig
+              </p>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
