@@ -32,9 +32,9 @@ export default function LanTournamentManager() {
       try {
         const { data } = await (supabase as any).rpc('get_lan_registered_teams');
         if (data && data.length > 0) {
-          const existingIds = new Set(INITIAL_TEAMS.map(t => t.id));
+          const existingNames = new Set(state.teams.map(t => t.name.toLowerCase()));
           const dbTeams: Team[] = data
-            .filter((row: any) => !existingIds.has(row.id))
+            .filter((row: any) => !existingNames.has(row.team_name.toLowerCase()))
             .map((row: any) => ({
               id: row.id,
               name: row.team_name,
@@ -46,17 +46,7 @@ export default function LanTournamentManager() {
             }));
 
           if (dbTeams.length > 0) {
-            const allTeams: Team[] = [
-              ...INITIAL_TEAMS.map(t => ({
-                ...t,
-                killPoints: 0,
-                placementPoints: 0,
-                alive: true,
-                gameKills: 0,
-              })),
-              ...dbTeams,
-            ];
-            dispatch({ type: 'SET_TEAMS', teams: allTeams });
+            dispatch({ type: 'SET_TEAMS', teams: [...state.teams, ...dbTeams] });
           }
         }
       } catch {}
