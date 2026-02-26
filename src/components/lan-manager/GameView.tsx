@@ -79,11 +79,11 @@ export default function GameView({ state, dispatch }: Props) {
           🟢 SPILARAR Á LÍFI ({alivePlayers.length})
         </h2>
 
-        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+        <div className="grid gap-3 grid-cols-2">
           {alivePlayers.map(p => (
             <div
               key={`${p.teamId}-${p.playerIndex}`}
-              className="p-3 rounded-xl flex items-center justify-between transition-all"
+              className="p-5 rounded-xl flex items-center justify-between transition-all min-h-[80px]"
               style={{
                 background: '#1a1a1f',
                 border: '1px solid #22c55e33',
@@ -91,14 +91,14 @@ export default function GameView({ state, dispatch }: Props) {
               }}
             >
               <div className="min-w-0">
-                <h3 className="font-bold text-base truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+                <h3 className="font-bold text-xl truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
                   {p.name}
                 </h3>
-                <p className="text-xs text-gray-500 truncate">{p.teamName}</p>
+                <p className="text-sm text-gray-500 truncate">{p.teamName}</p>
               </div>
               <button
                 onClick={() => handleEliminate(p)}
-                className="ml-2 px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95"
+                className="ml-3 px-6 py-3 text-sm font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95"
                 style={{
                   background: 'rgba(232, 52, 28, 0.2)',
                   border: '1px solid #e8341c',
