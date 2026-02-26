@@ -6,25 +6,49 @@ interface Props {
   dispatch: React.Dispatch<TournamentAction>;
 }
 
-export default function GameView({ state, dispatch }: Props) {
-  const [eliminatingTeam, setEliminatingTeam] = useState<string | null>(null);
+interface PlayerRef {
+  teamId: string;
+  playerIndex: number;
+  name: string;
+  teamName: string;
+}
 
-  const aliveTeams = state.teams.filter(t => t.alive);
-  const eliminatedTeams = state.teams.filter(t => !t.alive);
+export default function GameView({ state, dispatch }: Props) {
+  const [eliminatingPlayer, setEliminatingPlayer] = useState<PlayerRef | null>(null);
   const ranked = getRankedTeams(state.teams);
 
-  const handleEliminate = (teamId: string) => {
-    setEliminatingTeam(teamId);
+  // Build flat lists of alive/eliminated players
+  const alivePlayers: PlayerRef[] = [];
+  const eliminatedPlayers: PlayerRef[] = [];
+
+  state.teams.forEach(team => {
+    team.players.forEach((name, idx) => {
+      const ref: PlayerRef = { teamId: team.id, playerIndex: idx, name, teamName: team.name };
+      if (team.playersAlive[idx]) {
+        alivePlayers.push(ref);
+      } else {
+        eliminatedPlayers.push(ref);
+      }
+    });
+  });
+
+  const handleEliminate = (player: PlayerRef) => {
+    setEliminatingPlayer(player);
   };
 
-  const handleSelectKiller = (killerTeamId: string) => {
-    if (!eliminatingTeam) return;
-    dispatch({ type: 'ELIMINATE_TEAM', teamId: eliminatingTeam, killerTeamId });
-    setEliminatingTeam(null);
+  const handleSelectKiller = (killerPlayer: PlayerRef) => {
+    if (!eliminatingPlayer) return;
+    dispatch({
+      type: 'ELIMINATE_PLAYER',
+      teamId: eliminatingPlayer.teamId,
+      playerIndex: eliminatingPlayer.playerIndex,
+      killerTeamId: killerPlayer.teamId,
+    });
+    setEliminatingPlayer(null);
   };
 
-  const handleRevive = (teamId: string) => {
-    dispatch({ type: 'REVIVE_TEAM', teamId });
+  const handleRevive = (player: PlayerRef) => {
+    dispatch({ type: 'REVIVE_PLAYER', teamId: player.teamId, playerIndex: player.playerIndex });
   };
 
   const handleEndGame = () => {
@@ -35,38 +59,32 @@ export default function GameView({ state, dispatch }: Props) {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4 h-full">
-      {/* Left Panel: Teams Alive */}
+      {/* Left Panel: Players */}
       <div className="flex-1 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>
-            🟢 SPILARAR Á LÍFI ({aliveTeams.length})
-          </h2>
-        </div>
+        <h2 className="text-xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>
+          🟢 SPILARAR Á LÍFI ({alivePlayers.length})
+        </h2>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          {aliveTeams.map(team => (
+        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+          {alivePlayers.map(p => (
             <div
-              key={team.id}
-              className="p-4 rounded-xl flex items-center justify-between transition-all"
+              key={`${p.teamId}-${p.playerIndex}`}
+              className="p-3 rounded-xl flex items-center justify-between transition-all"
               style={{
                 background: '#1a1a1f',
                 border: '1px solid #22c55e33',
-                boxShadow: '0 0 10px rgba(34, 197, 94, 0.1)',
+                boxShadow: '0 0 8px rgba(34, 197, 94, 0.08)',
               }}
             >
-              <div>
-                <h3 className="font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-                  {team.players[0]} & {team.players[1]}
+              <div className="min-w-0">
+                <h3 className="font-bold text-base truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+                  {p.name}
                 </h3>
-                {team.gameKills > 0 && (
-                  <p className="text-xs mt-1" style={{ color: '#e8341c' }}>
-                    {team.gameKills} kills ({team.gameKills * 2} stig)
-                  </p>
-                )}
+                <p className="text-xs text-gray-500 truncate">{p.teamName}</p>
               </div>
               <button
-                onClick={() => handleEliminate(team.id)}
-                className="px-4 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105 active:scale-95"
+                onClick={() => handleEliminate(p)}
+                className="ml-2 px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95"
                 style={{
                   background: 'rgba(232, 52, 28, 0.2)',
                   border: '1px solid #e8341c',
@@ -80,28 +98,28 @@ export default function GameView({ state, dispatch }: Props) {
           ))}
         </div>
 
-        {/* Eliminated teams */}
-        {eliminatedTeams.length > 0 && (
+        {/* Eliminated players */}
+        {eliminatedPlayers.length > 0 && (
           <>
             <h3 className="text-lg font-bold text-gray-500 mt-4" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-              ÚR LEIK ({eliminatedTeams.length})
+              ÚR LEIK ({eliminatedPlayers.length})
             </h3>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {eliminatedTeams.map(team => (
+            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+              {eliminatedPlayers.map(p => (
                 <div
-                  key={team.id}
+                  key={`${p.teamId}-${p.playerIndex}`}
                   className="p-3 rounded-xl flex items-center justify-between opacity-50"
                   style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}
                 >
-                  <div>
-                    <h3 className="font-bold text-sm line-through" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-                      {team.name}
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-sm line-through truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+                      {p.name}
                     </h3>
-                    <p className="text-xs text-gray-500">{team.players[0]} & {team.players[1]}</p>
+                    <p className="text-xs text-gray-600 truncate">{p.teamName}</p>
                   </div>
                   <button
-                    onClick={() => handleRevive(team.id)}
-                    className="px-3 py-1.5 text-xs font-bold rounded-lg transition-all hover:scale-105"
+                    onClick={() => handleRevive(p)}
+                    className="ml-2 px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all hover:scale-105"
                     style={{
                       background: 'rgba(34, 197, 94, 0.2)',
                       border: '1px solid #22c55e',
@@ -188,30 +206,30 @@ export default function GameView({ state, dispatch }: Props) {
       </div>
 
       {/* Elimination Modal */}
-      {eliminatingTeam && (
+      {eliminatingPlayer && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center"
           style={{ background: 'rgba(0,0,0,0.8)' }}
-          onClick={() => setEliminatingTeam(null)}
+          onClick={() => setEliminatingPlayer(null)}
         >
           <div
-            className="p-6 rounded-2xl w-full max-w-md mx-4"
+            className="p-6 rounded-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-auto"
             style={{ background: '#1a1a1f', border: '1px solid #e8341c' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-              HVER FELDI ÞETTA LIÐ?
+              HVER FELDI {eliminatingPlayer.name.toUpperCase()}?
             </h3>
             <p className="text-sm text-gray-400 mb-4">
-              {state.teams.find(t => t.id === eliminatingTeam)?.name} var fellt
+              {eliminatingPlayer.name} ({eliminatingPlayer.teamName}) var felld/ur
             </p>
             <div className="grid gap-2">
-              {aliveTeams
-                .filter(t => t.id !== eliminatingTeam)
-                .map(team => (
+              {alivePlayers
+                .filter(p => !(p.teamId === eliminatingPlayer.teamId && p.playerIndex === eliminatingPlayer.playerIndex))
+                .map(p => (
                   <button
-                    key={team.id}
-                    onClick={() => handleSelectKiller(team.id)}
+                    key={`${p.teamId}-${p.playerIndex}`}
+                    onClick={() => handleSelectKiller(p)}
                     className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       background: '#0d0d0f',
@@ -219,15 +237,13 @@ export default function GameView({ state, dispatch }: Props) {
                       fontFamily: 'Rajdhani, sans-serif',
                     }}
                   >
-                    {team.name}
-                    <span className="text-xs text-gray-500 ml-2">
-                      {team.players[0]} & {team.players[1]}
-                    </span>
+                    {p.name}
+                    <span className="text-xs text-gray-500 ml-2">{p.teamName}</span>
                   </button>
                 ))}
             </div>
             <button
-              onClick={() => setEliminatingTeam(null)}
+              onClick={() => setEliminatingPlayer(null)}
               className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-white transition-colors"
             >
               Hætta við

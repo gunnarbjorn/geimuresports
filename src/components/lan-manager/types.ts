@@ -2,9 +2,10 @@ export interface Team {
   id: string;
   name: string;
   players: [string, string];
+  playersAlive: [boolean, boolean];
   killPoints: number;
   placementPoints: number;
-  alive: boolean;
+  alive: boolean; // derived: true if any player alive
   gameKills: number; // kills in current game
 }
 
@@ -31,7 +32,7 @@ export interface TournamentState {
 
 export const DEFAULT_PLACEMENT_POINTS = [10, 7, 5, 3, 2, 1, 1, 1, 1];
 
-export const INITIAL_TEAMS: Omit<Team, 'killPoints' | 'placementPoints' | 'alive' | 'gameKills'>[] = [
+export const INITIAL_TEAMS: Omit<Team, 'killPoints' | 'placementPoints' | 'alive' | 'gameKills' | 'playersAlive'>[] = [
   { id: 't1', name: 'Bumburnar', players: ['Breki', 'Kristófer'] },
   { id: 't2', name: 'Bucket Boys', players: ['Gísli Bucket', 'Veigz In A Bucket'] },
   { id: 't3', name: 'Sveittir', players: ['Kisi', 'K-ófer'] },
@@ -47,7 +48,9 @@ export type TournamentAction =
   | { type: 'START_TOURNAMENT' }
   | { type: 'RESET_TOURNAMENT' }
   | { type: 'ELIMINATE_TEAM'; teamId: string; killerTeamId: string }
+  | { type: 'ELIMINATE_PLAYER'; teamId: string; playerIndex: number; killerTeamId: string }
   | { type: 'REVIVE_TEAM'; teamId: string }
+  | { type: 'REVIVE_PLAYER'; teamId: string; playerIndex: number }
   | { type: 'END_GAME' }
   | { type: 'UPDATE_PLACEMENT_CONFIG'; config: number[] }
   | { type: 'SET_RAFFLE_WINNERS'; winners: string[] }
@@ -59,6 +62,7 @@ export function createInitialState(teams?: Team[]): TournamentState {
     killPoints: 0,
     placementPoints: 0,
     alive: true,
+    playersAlive: [true, true] as [boolean, boolean],
     gameKills: 0,
   }));
 
@@ -76,7 +80,7 @@ export function createInitialState(teams?: Team[]): TournamentState {
 export function tournamentReducer(state: TournamentState, action: TournamentAction): TournamentState {
   switch (action.type) {
     case 'START_TOURNAMENT': {
-      const teams = state.teams.map(t => ({ ...t, alive: true, gameKills: 0 }));
+      const teams = state.teams.map(t => ({ ...t, alive: true, playersAlive: [true, true] as [boolean, boolean], gameKills: 0 }));
       return { ...state, status: 'active', currentGame: 1, teams, eliminationOrder: [] };
     }
 
@@ -87,6 +91,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
           killPoints: 0,
           placementPoints: 0,
           alive: true,
+          playersAlive: [true, true] as [boolean, boolean],
           gameKills: 0,
         }))
       );
@@ -94,7 +99,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
 
     case 'ELIMINATE_TEAM': {
       const teams = state.teams.map(t => {
-        if (t.id === action.teamId) return { ...t, alive: false };
+        if (t.id === action.teamId) return { ...t, alive: false, playersAlive: [false, false] as [boolean, boolean] };
         if (t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + 2, gameKills: t.gameKills + 1 };
         return t;
       });
@@ -105,10 +110,45 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
       };
     }
 
+    case 'ELIMINATE_PLAYER': {
+      const teams = state.teams.map(t => {
+        if (t.id === action.teamId) {
+          const newPlayersAlive = [...t.playersAlive] as [boolean, boolean];
+          newPlayersAlive[action.playerIndex] = false;
+          const teamAlive = newPlayersAlive.some(a => a);
+          return { ...t, playersAlive: newPlayersAlive, alive: teamAlive };
+        }
+        if (t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + 2, gameKills: t.gameKills + 1 };
+        return t;
+      });
+      // If the team is now fully eliminated, add to eliminationOrder
+      const eliminatedTeam = teams.find(t => t.id === action.teamId);
+      const newElimOrder = eliminatedTeam && !eliminatedTeam.alive && !state.eliminationOrder.includes(action.teamId)
+        ? [...state.eliminationOrder, action.teamId]
+        : state.eliminationOrder;
+      return { ...state, teams, eliminationOrder: newElimOrder };
+    }
+
     case 'REVIVE_TEAM': {
       const teams = state.teams.map(t =>
-        t.id === action.teamId ? { ...t, alive: true } : t
+        t.id === action.teamId ? { ...t, alive: true, playersAlive: [true, true] as [boolean, boolean] } : t
       );
+      return {
+        ...state,
+        teams,
+        eliminationOrder: state.eliminationOrder.filter(id => id !== action.teamId),
+      };
+    }
+
+    case 'REVIVE_PLAYER': {
+      const teams = state.teams.map(t => {
+        if (t.id === action.teamId) {
+          const newPlayersAlive = [...t.playersAlive] as [boolean, boolean];
+          newPlayersAlive[action.playerIndex] = true;
+          return { ...t, playersAlive: newPlayersAlive, alive: true };
+        }
+        return t;
+      });
       return {
         ...state,
         teams,
@@ -144,6 +184,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
           ...t,
           placementPoints: t.placementPoints + p.placementPoints,
           alive: true,
+          playersAlive: [true, true] as [boolean, boolean],
           gameKills: 0,
         };
       });

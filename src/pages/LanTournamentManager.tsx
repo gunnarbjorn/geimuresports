@@ -39,6 +39,7 @@ export default function LanTournamentManager() {
               id: row.id,
               name: row.team_name,
               players: [row.player1, row.player2] as [string, string],
+              playersAlive: [true, true] as [boolean, boolean],
               killPoints: 0,
               placementPoints: 0,
               alive: true,
