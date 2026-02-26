@@ -32,6 +32,9 @@ export default function GameView({ state, dispatch }: Props) {
     });
   });
 
+  alivePlayers.sort((a, b) => a.name.localeCompare(b.name, 'is'));
+  eliminatedPlayers.sort((a, b) => a.name.localeCompare(b.name, 'is'));
+
   const handleEliminate = (player: PlayerRef) => {
     setEliminatingPlayer(player);
   };
