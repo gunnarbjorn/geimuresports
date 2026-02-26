@@ -9,6 +9,7 @@ interface Props {
 export default function DashboardView({ state, dispatch }: Props) {
   const [showSettings, setShowSettings] = useState(false);
   const [config, setConfig] = useState(state.placementPointsConfig);
+  const [killPts, setKillPts] = useState(state.killPointsPerKill);
 
   const handleStart = () => dispatch({ type: 'START_TOURNAMENT' });
   const handleReset = () => {
@@ -19,6 +20,7 @@ export default function DashboardView({ state, dispatch }: Props) {
 
   const handleSaveConfig = () => {
     dispatch({ type: 'UPDATE_PLACEMENT_CONFIG', config });
+    dispatch({ type: 'UPDATE_KILL_POINTS', killPointsPerKill: killPts });
     setShowSettings(false);
   };
 
@@ -81,6 +83,22 @@ export default function DashboardView({ state, dispatch }: Props) {
 
       {showSettings && (
         <div className="p-4 rounded-xl w-full max-w-md" style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}>
+          {/* Kill points config */}
+          <h3 className="text-sm font-bold mb-3 text-gray-300" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+            STIG FYRIR FELL (KILL)
+          </h3>
+          <div className="flex items-center gap-2 mb-4">
+            <input
+              type="number"
+              min={0}
+              value={killPts}
+              onChange={e => setKillPts(Math.max(0, parseInt(e.target.value) || 0))}
+              className="w-16 px-2 py-1 text-sm rounded text-white text-center"
+              style={{ background: '#0d0d0f', border: '1px solid #2a2a30' }}
+            />
+            <span className="text-xs text-gray-600">stig per kill</span>
+          </div>
+
           <h3 className="text-sm font-bold mb-3 text-gray-300" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
             PLACEMENT STIG
           </h3>
@@ -112,7 +130,7 @@ export default function DashboardView({ state, dispatch }: Props) {
               VISTA
             </button>
             <button
-              onClick={() => { setConfig(DEFAULT_PLACEMENT_POINTS); }}
+              onClick={() => { setConfig(DEFAULT_PLACEMENT_POINTS); setKillPts(2); }}
               className="px-4 py-1.5 text-xs rounded text-gray-400 hover:text-white"
               style={{ background: '#2a2a30' }}
             >
