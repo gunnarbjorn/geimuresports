@@ -306,8 +306,8 @@ export default function ResultsView({ state, dispatch }: Props) {
 
         {/* Player list */}
         <div
-          className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6 p-4 rounded-xl max-h-64 overflow-auto"
-          style={{ background: '#0d0d0f', border: '1px solid #2a2a30' }}
+          className="grid gap-2 mb-6 p-4 rounded-xl"
+          style={{ background: '#0d0d0f', border: '1px solid #2a2a30', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}
         >
           {allPlayers.map((name, i) => {
             const isWinner = raffleWinners.includes(name);
