@@ -21,6 +21,8 @@ import TipArticle from "./pages/fortnite/TipArticle";
 import LanMotStadfesting from "./pages/LanMotStadfesting";
 import Vefkokur from "./pages/Vefkokur";
 import Personuvernd from "./pages/Personuvernd";
+import LanTournamentManager from "./pages/LanTournamentManager";
+import LanBroadcast from "./pages/LanBroadcast";
 import { Navigate } from "react-router-dom";
 const queryClient = new QueryClient();
 
@@ -60,6 +62,8 @@ const App = () => (
           <Route path="/personuvernd" element={<Personuvernd />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/lan-manager" element={<LanTournamentManager />} />
+          <Route path="/admin/lan-broadcast" element={<LanBroadcast />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
