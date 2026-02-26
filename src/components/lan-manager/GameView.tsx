@@ -50,6 +50,17 @@ export default function GameView({ state, dispatch }: Props) {
     setEliminatingPlayer(null);
   };
 
+  const handleStormKill = () => {
+    if (!eliminatingPlayer) return;
+    dispatch({
+      type: 'ELIMINATE_PLAYER',
+      teamId: eliminatingPlayer.teamId,
+      playerIndex: eliminatingPlayer.playerIndex,
+      killerTeamId: '__storm__',
+    });
+    setEliminatingPlayer(null);
+  };
+
   const handleRevive = (player: PlayerRef) => {
     dispatch({ type: 'REVIVE_PLAYER', teamId: player.teamId, playerIndex: player.playerIndex });
   };
@@ -227,8 +238,23 @@ export default function GameView({ state, dispatch }: Props) {
               {eliminatingPlayer.name} ({eliminatingPlayer.teamName}) var felld/ur
             </p>
             <div className="grid gap-2">
+              {/* Storm / Fall damage option */}
+              <button
+                onClick={handleStormKill}
+                className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid #f59e0b',
+                  color: '#f59e0b',
+                  fontFamily: 'Rajdhani, sans-serif',
+                }}
+              >
+                ⚡ Stormur / Fall damage
+                <span className="text-xs ml-2 opacity-60">Engin kill stig</span>
+              </button>
+
               {alivePlayers
-                .filter(p => !(p.teamId === eliminatingPlayer.teamId && p.playerIndex === eliminatingPlayer.playerIndex))
+                .filter(p => p.teamId !== eliminatingPlayer.teamId)
                 .map(p => (
                   <button
                     key={`${p.teamId}-${p.playerIndex}`}

@@ -111,6 +111,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
     }
 
     case 'ELIMINATE_PLAYER': {
+      const isStorm = action.killerTeamId === '__storm__';
       const teams = state.teams.map(t => {
         if (t.id === action.teamId) {
           const newPlayersAlive = [...t.playersAlive] as [boolean, boolean];
@@ -118,10 +119,9 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
           const teamAlive = newPlayersAlive.some(a => a);
           return { ...t, playersAlive: newPlayersAlive, alive: teamAlive };
         }
-        if (t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + 2, gameKills: t.gameKills + 1 };
+        if (!isStorm && t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + 2, gameKills: t.gameKills + 1 };
         return t;
       });
-      // If the team is now fully eliminated, add to eliminationOrder
       const eliminatedTeam = teams.find(t => t.id === action.teamId);
       const newElimOrder = eliminatedTeam && !eliminatedTeam.alive && !state.eliminationOrder.includes(action.teamId)
         ? [...state.eliminationOrder, action.teamId]
