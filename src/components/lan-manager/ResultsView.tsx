@@ -63,8 +63,8 @@ export default function ResultsView({ state, dispatch }: Props) {
   const [raffleCount, setRaffleCount] = useState(2);
   const intervalRef = useRef<number | null>(null);
 
-  // All player names for raffle
-  const allPlayers = state.teams.flatMap(t => t.players);
+  // All player names for raffle (deduplicated)
+  const allPlayers = [...new Set(state.teams.flatMap(t => t.players))];
 
   useEffect(() => {
     const timer = setTimeout(() => setShowConfetti(false), 5000);
@@ -76,33 +76,50 @@ export default function ResultsView({ state, dispatch }: Props) {
     setRaffleRunning(true);
     setRaffleWinners([]);
 
-    const sound = playRaffleSound(4);
-    let tick = 0;
-    const maxTicks = 60;
-
-    intervalRef.current = window.setInterval(() => {
-      tick++;
-      const progress = tick / maxTicks;
-      const idx = Math.floor(Math.random() * allPlayers.length);
-      setRaffleHighlight(idx);
-
-      if (tick >= maxTicks) {
-        clearInterval(intervalRef.current!);
-        // Pick random winners
-        const shuffled = [...allPlayers].sort(() => Math.random() - 0.5);
-        const winners = shuffled.slice(0, raffleCount);
-        setRaffleWinners(winners);
+    // Draw winners sequentially with animation per winner
+    const drawWinner = (winnerIndex: number, alreadyPicked: string[]) => {
+      if (winnerIndex >= raffleCount) {
         setRaffleRunning(false);
-        dispatch({ type: 'SET_RAFFLE_WINNERS', winners });
+        dispatch({ type: 'SET_RAFFLE_WINNERS', winners: alreadyPicked });
+        return;
       }
 
-      // Slow down the interval over time
-      if (tick % 10 === 0 && tick < maxTicks) {
-        clearInterval(intervalRef.current!);
-        const newDelay = 50 + progress * 200;
-        intervalRef.current = window.setInterval(arguments.callee as any, newDelay);
-      }
-    }, 50);
+      playRaffleSound(3);
+      let tick = 0;
+      const maxTicks = 50;
+
+      const runTick = () => {
+        tick++;
+        const progress = tick / maxTicks;
+        const idx = Math.floor(Math.random() * allPlayers.length);
+        setRaffleHighlight(idx);
+
+        if (tick >= maxTicks) {
+          // Pick one unique winner
+          const available = allPlayers.filter(p => !alreadyPicked.includes(p));
+          const winner = available[Math.floor(Math.random() * available.length)];
+          const newPicked = [...alreadyPicked, winner];
+          setRaffleWinners(newPicked);
+          setRaffleHighlight(null);
+
+          // Draw next winner after a pause, or finish
+          if (winnerIndex < raffleCount - 1) {
+            setTimeout(() => drawWinner(winnerIndex + 1, newPicked), 1500);
+          } else {
+            setRaffleRunning(false);
+            dispatch({ type: 'SET_RAFFLE_WINNERS', winners: newPicked });
+          }
+          return;
+        }
+
+        const delay = 50 + progress * 150;
+        setTimeout(runTick, delay);
+      };
+
+      runTick();
+    };
+
+    drawWinner(0, []);
   }, [allPlayers, raffleRunning, raffleCount, dispatch]);
 
   // Simple confetti effect with CSS
