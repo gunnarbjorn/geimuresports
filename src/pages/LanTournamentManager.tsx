@@ -1,21 +1,21 @@
 import { useReducer, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   TournamentState,
-  TournamentAction,
   createInitialState,
   tournamentReducer,
   Team,
-  INITIAL_TEAMS,
 } from '@/components/lan-manager/types';
 import DashboardView from '@/components/lan-manager/DashboardView';
 import GameView from '@/components/lan-manager/GameView';
 import BroadcastView from '@/components/lan-manager/BroadcastView';
 import ResultsView from '@/components/lan-manager/ResultsView';
 import { supabase } from '@/integrations/supabase/client';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { Loader2, ShieldAlert } from 'lucide-react';
 
 type View = 'dashboard' | 'game' | 'broadcast' | 'results';
 
-// Sync state to localStorage for broadcast tab
 function syncToStorage(state: TournamentState) {
   try {
     localStorage.setItem('lan-tournament-state', JSON.stringify(state));
@@ -23,11 +23,21 @@ function syncToStorage(state: TournamentState) {
 }
 
 export default function LanTournamentManager() {
+  const navigate = useNavigate();
+  const { user, isAdmin, isLoading: authLoading, signOut } = useAdminAuth();
   const [state, dispatch] = useReducer(tournamentReducer, undefined, () => createInitialState());
   const [view, setView] = useState<View>('dashboard');
 
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [authLoading, user, navigate]);
+
   // Fetch registered teams from DB and merge
   useEffect(() => {
+    if (!isAdmin) return;
     async function fetchTeams() {
       try {
         const { data } = await (supabase as any).rpc('get_lan_registered_teams');
@@ -53,7 +63,7 @@ export default function LanTournamentManager() {
       } catch {}
     }
     fetchTeams();
-  }, []);
+  }, [isAdmin]);
 
   // Sync state to localStorage
   useEffect(() => {
@@ -70,6 +80,31 @@ export default function LanTournamentManager() {
   const openBroadcastTab = () => {
     window.open(window.location.origin + '/admin/lan-broadcast', '_blank');
   };
+
+  // Auth loading state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0d0f' }}>
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+      </div>
+    );
+  }
+
+  // Not admin
+  if (user && !isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0d0f' }}>
+        <div className="text-center">
+          <ShieldAlert className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-white text-xl font-bold mb-2">Aðgangur bannaður</h2>
+          <p className="text-gray-400 mb-6">Þú hefur ekki admin réttindi.</p>
+          <button onClick={signOut} className="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">Útskrá</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen text-white" style={{ background: '#0d0d0f', fontFamily: 'Rajdhani, sans-serif' }}>
