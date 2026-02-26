@@ -350,7 +350,13 @@ const AdminPage = () => {
                   {user.email} · Admin
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant="default"
+                  onClick={() => navigate("/admin/lan-manager")}
+                >
+                  🎮 LAN Mótstjóri
+                </Button>
                 <AdminAddRegistrationDialog onAdded={fetchRegistrations} />
                 <Button
                   variant="outline"
