@@ -55,8 +55,9 @@ export default function GameView({ state, dispatch }: Props) {
               }}
             >
               <div>
-                <h3 className="font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>{team.name}</h3>
-                <p className="text-xs text-gray-400">{team.players[0]} & {team.players[1]}</p>
+                <h3 className="font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+                  {team.players[0]} & {team.players[1]}
+                </h3>
                 {team.gameKills > 0 && (
                   <p className="text-xs mt-1" style={{ color: '#e8341c' }}>
                     {team.gameKills} kills ({team.gameKills * 2} stig)
