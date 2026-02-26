@@ -125,6 +125,31 @@ export default function BroadcastView({ state }: Props) {
           </div>
         ))}
       </div>
+
+      {/* Scoring guide */}
+      <div
+        className="fixed bottom-4 right-4 p-3 rounded-lg text-xs leading-relaxed"
+        style={{
+          background: 'rgba(13, 13, 15, 0.85)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(8px)',
+          fontFamily: 'Rajdhani, sans-serif',
+          color: '#888',
+          minWidth: '160px',
+        }}
+      >
+        <p className="font-bold text-gray-400 mb-1" style={{ fontSize: '11px', letterSpacing: '0.05em' }}>
+          🎯 STIGAKERFI
+        </p>
+        <p>Fell (kill): <span style={{ color: '#e8341c' }}>+{state.killPointsPerKill}</span> stig</p>
+        {state.placementPointsConfig.slice(0, 6).map((pts, i) => {
+          const label = i < 5 ? `${i + 1}. sæti` : `6.-${state.placementPointsConfig.length}. sæti`;
+          if (i === 5) {
+            return <p key={i}>{label}: <span style={{ color: '#ffd700' }}>+{pts}</span> stig</p>;
+          }
+          return <p key={i}>{i + 1}. sæti: <span style={{ color: '#ffd700' }}>+{pts}</span> stig</p>;
+        })}
+      </div>
     </div>
   );
 }

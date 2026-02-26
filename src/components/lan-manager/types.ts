@@ -26,6 +26,7 @@ export interface TournamentState {
   teams: Team[];
   gameHistory: GameResult[];
   placementPointsConfig: number[]; // index 0 = 1st place, index 8 = 9th place
+  killPointsPerKill: number; // points awarded per kill (default 2)
   raffleWinners: string[];
   eliminationOrder: string[]; // track order teams were eliminated
 }
@@ -53,6 +54,7 @@ export type TournamentAction =
   | { type: 'REVIVE_PLAYER'; teamId: string; playerIndex: number }
   | { type: 'END_GAME' }
   | { type: 'UPDATE_PLACEMENT_CONFIG'; config: number[] }
+  | { type: 'UPDATE_KILL_POINTS'; killPointsPerKill: number }
   | { type: 'SET_RAFFLE_WINNERS'; winners: string[] }
   | { type: 'SET_TEAMS'; teams: Team[] };
 
@@ -72,6 +74,7 @@ export function createInitialState(teams?: Team[]): TournamentState {
     teams: teams || defaultTeams,
     gameHistory: [],
     placementPointsConfig: DEFAULT_PLACEMENT_POINTS,
+    killPointsPerKill: 2,
     raffleWinners: [],
     eliminationOrder: [],
   };
@@ -98,9 +101,10 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
     }
 
     case 'ELIMINATE_TEAM': {
+      const kpp = state.killPointsPerKill;
       const teams = state.teams.map(t => {
         if (t.id === action.teamId) return { ...t, alive: false, playersAlive: [false, false] as [boolean, boolean] };
-        if (t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + 2, gameKills: t.gameKills + 1 };
+        if (t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + kpp, gameKills: t.gameKills + 1 };
         return t;
       });
       return {
@@ -112,6 +116,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
 
     case 'ELIMINATE_PLAYER': {
       const isStorm = action.killerTeamId === '__storm__';
+      const kpp = state.killPointsPerKill;
       const teams = state.teams.map(t => {
         if (t.id === action.teamId) {
           const newPlayersAlive = [...t.playersAlive] as [boolean, boolean];
@@ -119,7 +124,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
           const teamAlive = newPlayersAlive.some(a => a);
           return { ...t, playersAlive: newPlayersAlive, alive: teamAlive };
         }
-        if (!isStorm && t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + 2, gameKills: t.gameKills + 1 };
+        if (!isStorm && t.id === action.killerTeamId) return { ...t, killPoints: t.killPoints + kpp, gameKills: t.gameKills + 1 };
         return t;
       });
       const eliminatedTeam = teams.find(t => t.id === action.teamId);
@@ -168,7 +173,7 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
         teamId: team.id,
         placement: index + 1,
         kills: team.gameKills,
-        killPoints: team.gameKills * 2,
+        killPoints: team.gameKills * state.killPointsPerKill,
         placementPoints: state.placementPointsConfig[index] || 0,
       }));
 
@@ -203,6 +208,9 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
 
     case 'UPDATE_PLACEMENT_CONFIG':
       return { ...state, placementPointsConfig: action.config };
+
+    case 'UPDATE_KILL_POINTS':
+      return { ...state, killPointsPerKill: action.killPointsPerKill };
 
     case 'SET_RAFFLE_WINNERS':
       return { ...state, raffleWinners: action.winners };
