@@ -49,6 +49,20 @@ export const tournaments: Tournament[] = [
     note: "Skráning opin. Greiðsla fer fram við skráningu.",
     tags: ["LAN", "Duo"],
   },
+  {
+    id: "allt-undir",
+    name: "Allt Undir – Solo",
+    dates: ["5. mars", "12. mars", "19. mars", "26. mars"],
+    category: "Solo",
+    format: "Solo",
+    ageLimit: "13+",
+    location: "Online",
+    description: "Solo keppni á netinu. 1 leikur, verðlaunapottur byggist á fjölda skráðra. Á hverjum fimmtudegi í mars.",
+    entryFee: "3.057 kr",
+    ctaText: "Skrá mig",
+    tags: ["Solo", "Online"],
+    hidden: true,
+  },
 ];
 
 export const trainingGroups = [

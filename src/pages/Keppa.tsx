@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { tournaments } from "@/data/tournaments";
 import { ArenaLanDetails } from "@/components/tournaments/ArenaLanDetails";
 import { ElkoDeildDetails } from "@/components/tournaments/ElkoDeildDetails";
+import { AlltUndirDetails } from "@/components/tournaments/AlltUndirDetails";
 import {
   Trophy, Calendar, MapPin, ArrowLeft, Globe, Gamepad2, ArrowRight,
   TrendingUp, Target, AlertTriangle,
@@ -16,6 +17,7 @@ import {
 const tournamentComponents: Record<string, React.ComponentType<{ onBack?: () => void }>> = {
   "elko-deild-vor-2026": ElkoDeildDetails,
   "arena-lan-coming-soon": ArenaLanDetails,
+  "allt-undir": AlltUndirDetails,
 };
 
 const rankedSections = [
@@ -28,6 +30,7 @@ const rankedSections = [
 const tournamentRoutes: Record<string, string> = {
   "elko-deild-vor-2026": "/keppa/elko-deild",
   "arena-lan-coming-soon": "/keppa/arena-lan",
+  "allt-undir": "/keppa/allt-undir",
 };
 
 const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
