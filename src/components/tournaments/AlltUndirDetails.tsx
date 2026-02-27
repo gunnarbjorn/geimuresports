@@ -40,10 +40,10 @@ const DISCORD_INVITE_URL = "https://discord.gg/AzwK64zz";
 const TWITCH_URL = "https://www.twitch.tv/geimuresports";
 
 const TOURNAMENT_DATES = [
-  { date: "2026-03-05", label: "Fimmtudagur 5. mars", short: "5. mars" },
-  { date: "2026-03-12", label: "Fimmtudagur 12. mars", short: "12. mars" },
-  { date: "2026-03-19", label: "Fimmtudagur 19. mars", short: "19. mars" },
-  { date: "2026-03-26", label: "Fimmtudagur 26. mars", short: "26. mars" },
+  { date: "2026-03-05", label: "Fimmtudagur 5. mars", short: "5. mars", visible: true },
+  { date: "2026-03-12", label: "Fimmtudagur 12. mars", short: "12. mars", visible: false },
+  { date: "2026-03-19", label: "Fimmtudagur 19. mars", short: "19. mars", visible: false },
+  { date: "2026-03-26", label: "Fimmtudagur 26. mars", short: "26. mars", visible: false },
 ];
 
 const TOURNAMENT_CONFIG = {
@@ -469,7 +469,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
 
           {/* Date selector */}
           <div className="flex flex-wrap justify-center gap-2 mb-4">
-            {TOURNAMENT_DATES.map((td) => (
+            {TOURNAMENT_DATES.filter(td => td.visible).map((td) => (
               <Button
                 key={td.date}
                 variant={selectedDate === td.date ? "default" : "outline"}

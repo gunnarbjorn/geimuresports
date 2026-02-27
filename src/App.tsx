@@ -23,6 +23,8 @@ import Vefkokur from "./pages/Vefkokur";
 import Personuvernd from "./pages/Personuvernd";
 import LanTournamentManager from "./pages/LanTournamentManager";
 import LanBroadcast from "./pages/LanBroadcast";
+import AlltUndirManager from "./pages/AlltUndirManager";
+import AlltUndirBroadcast from "./pages/AlltUndirBroadcast";
 import { Navigate } from "react-router-dom";
 const queryClient = new QueryClient();
 
@@ -65,6 +67,8 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/lan-manager" element={<LanTournamentManager />} />
           <Route path="/admin/lan-broadcast" element={<LanBroadcast />} />
+          <Route path="/admin/allt-undir-manager" element={<AlltUndirManager />} />
+          <Route path="/admin/allt-undir-broadcast" element={<AlltUndirBroadcast />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
