@@ -115,6 +115,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_allt_undir_players: {
+        Args: { p_date: string }
+        Returns: {
+          created_at: string
+          fortnite_name: string
+          full_name: string
+          id: string
+        }[]
+      }
       get_lan_order_by_id: {
         Args: { p_order_id: string }
         Returns: {
