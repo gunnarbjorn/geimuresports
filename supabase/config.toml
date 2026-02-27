@@ -9,3 +9,9 @@ verify_jwt = false
 
 [functions.lan-payment-callback]
 verify_jwt = false
+
+[functions.allt-undir-payment-create]
+verify_jwt = false
+
+[functions.allt-undir-payment-callback]
+verify_jwt = false

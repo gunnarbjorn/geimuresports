@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -171,15 +171,38 @@ function RegistrationForm({
   selectedDate: string;
   onSuccess: () => void;
 }) {
+  const [searchParams] = useSearchParams();
+  const statusParam = searchParams.get("status");
   const [fullName, setFullName] = useState("");
   const [kennitala, setKennitala] = useState("");
   const [fortniteName, setFortniteName] = useState("");
   const [gmail, setGmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const registrationClosed = !getCountdown(selectedDate, TOURNAMENT_CONFIG.registrationCloseTime);
+
+  // If returning from successful payment
+  if (statusParam === "success") {
+    return (
+      <Card className="border-[hsl(var(--arena-green)/0.4)] bg-card">
+        <CardContent className="p-6 text-center space-y-3">
+          <div className="text-4xl">🎮</div>
+          <h3 className="font-display text-xl font-bold text-[hsl(var(--arena-green))]">
+            Skráning og greiðsla móttekin!
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Custom matchmaking key verður deilt í{" "}
+            <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline">
+              Geimur Discord
+            </a>{" "}
+            fyrir kl. {TOURNAMENT_CONFIG.gameStartTime}.
+          </p>
+          <p className="text-xs text-muted-foreground">Staðfesting hefur verið send á netfangið þitt.</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,166 +218,174 @@ function RegistrationForm({
     }
 
     try {
-      const { error: insertError } = await supabase.from("registrations").insert({
-        type: `allt-undir-${selectedDate}`,
-        data: {
+      const { data, error: fnError } = await supabase.functions.invoke("allt-undir-payment-create", {
+        body: {
           fullName: fullName.trim(),
           kennitala: kt,
           fortniteName: fortniteName.trim(),
           gmail: gmail.trim(),
           date: selectedDate,
+          baseUrl: window.location.origin,
         },
       });
 
-      if (insertError) {
-        setError("Villa við skráningu — reyndu aftur");
+      if (fnError || !data?.paymentUrl || !data?.fields) {
+        setError(data?.error || "Villa við skráningu — reyndu aftur");
         setIsSubmitting(false);
         return;
       }
 
-      setSuccess(true);
-      onSuccess();
-    } catch {
+      // Submit payment form to Teya/Borgun
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = data.paymentUrl;
+      form.style.display = "none";
+      for (const [key, value] of Object.entries(data.fields)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = String(value);
+        form.appendChild(input);
+      }
+      document.body.appendChild(form);
+      form.submit();
+    } catch (err) {
+      console.error("Payment error:", err);
       setError("Villa — reyndu aftur");
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
-  if (success) {
-    return (
-      <Card className="border-[hsl(var(--arena-green)/0.4)] bg-card">
-        <CardContent className="p-6 text-center space-y-3">
-          <div className="text-4xl">🎮</div>
-          <h3 className="font-display text-xl font-bold text-[hsl(var(--arena-green))]">
-            Skráning móttekin!
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Custom matchmaking key verður deilt í{" "}
-            <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer" className="text-[hsl(var(--arena-green))] underline">
-              Geimur Discord
-            </a>{" "}
-            fyrir kl. {TOURNAMENT_CONFIG.gameStartTime}.
-          </p>
+  return (
+    <>
+      {statusParam === "cancelled" && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Greiðsla hætt við — skráning var ekki kláruð.</AlertDescription>
+        </Alert>
+      )}
+      {statusParam === "error" && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>Villa í greiðslu — prófaðu aftur.</AlertDescription>
+        </Alert>
+      )}
+      <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
+        <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
+              <Trophy className="h-4 w-4 text-[hsl(var(--arena-green))]" />
+            </div>
+            <div>
+              <CardTitle className="font-display text-lg">Skrá og greiða</CardTitle>
+              <p className="text-sm text-muted-foreground">Solo — 1 leikmaður</p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-5 md:p-6">
+          {registrationClosed ? (
+            <div className="text-center py-4">
+              <p className="text-muted-foreground font-medium">Skráning lokað fyrir þennan dag.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="fullName">Fullt nafn</Label>
+                <Input
+                  id="fullName"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Nafnið þitt"
+                  required
+                  maxLength={100}
+                />
+              </div>
+              <div>
+                <Label htmlFor="kennitala">Kennitala</Label>
+                <Input
+                  id="kennitala"
+                  value={kennitala}
+                  onChange={(e) => setKennitala(e.target.value)}
+                  placeholder="0101001234"
+                  required
+                  maxLength={11}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Notað til að greiða út verðlaun. Aldurshámark: 13+.
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="fortniteName">
+                  <Gamepad2 className="inline h-3.5 w-3.5 mr-1" />
+                  Fortnite nafn
+                </Label>
+                <Input
+                  id="fortniteName"
+                  value={fortniteName}
+                  onChange={(e) => setFortniteName(e.target.value)}
+                  placeholder="Fortnite username"
+                  required
+                  maxLength={50}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  ⚠️ Ekki er hægt að breyta Fortnite nafni eftir skráningu.
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="gmail">Gmail</Label>
+                <Input
+                  id="gmail"
+                  type="email"
+                  value={gmail}
+                  onChange={(e) => setGmail(e.target.value)}
+                  placeholder="netfang@gmail.com"
+                  required
+                  maxLength={100}
+                />
+              </div>
+
+              {/* Price note */}
+              <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm text-muted-foreground">
+                <p>
+                  💡 Verðið er{" "}
+                  <span className="font-bold text-foreground">
+                    {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
+                  </span>{" "}
+                  þar sem greiðslugáttin tekur smá hlutfall — allur pottinn (
+                  {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr) fer til leikmanna.
+                </p>
+              </div>
+
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full btn-arena-gradient text-base"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Vinnsla...
+                  </>
+                ) : (
+                  <>
+                    Skrá og greiða — {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
+                  </>
+                )}
+              </Button>
+              <p className="text-xs text-center text-muted-foreground">Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>
+            </form>
+          )}
         </CardContent>
       </Card>
-    );
-  }
-
-  return (
-    <Card className="glass-card border-[hsl(var(--arena-green)/0.3)] overflow-hidden glow-green-sm">
-      <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center">
-            <Trophy className="h-4 w-4 text-[hsl(var(--arena-green))]" />
-          </div>
-          <div>
-            <CardTitle className="font-display text-lg">Skráning</CardTitle>
-            <p className="text-sm text-muted-foreground">Solo — 1 leikmaður</p>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="p-5 md:p-6">
-        {registrationClosed ? (
-          <div className="text-center py-4">
-            <p className="text-muted-foreground font-medium">Skráning lokað fyrir þennan dag.</p>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="fullName">Fullt nafn</Label>
-              <Input
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Nafnið þitt"
-                required
-                maxLength={100}
-              />
-            </div>
-            <div>
-              <Label htmlFor="kennitala">Kennitala</Label>
-              <Input
-                id="kennitala"
-                value={kennitala}
-                onChange={(e) => setKennitala(e.target.value)}
-                placeholder="0101001234"
-                required
-                maxLength={11}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Notað til að greiða út verðlaun. Aldurshámark: 13+.
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="fortniteName">
-                <Gamepad2 className="inline h-3.5 w-3.5 mr-1" />
-                Fortnite nafn
-              </Label>
-              <Input
-                id="fortniteName"
-                value={fortniteName}
-                onChange={(e) => setFortniteName(e.target.value)}
-                placeholder="Fortnite username"
-                required
-                maxLength={50}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                ⚠️ Ekki er hægt að breyta Fortnite nafni eftir skráningu.
-              </p>
-            </div>
-            <div>
-              <Label htmlFor="gmail">Gmail</Label>
-              <Input
-                id="gmail"
-                type="email"
-                value={gmail}
-                onChange={(e) => setGmail(e.target.value)}
-                placeholder="netfang@gmail.com"
-                required
-                maxLength={100}
-              />
-            </div>
-
-            {/* Price note */}
-            <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm text-muted-foreground">
-              <p>
-                💡 Verðið er{" "}
-                <span className="font-bold text-foreground">
-                  {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
-                </span>{" "}
-                þar sem greiðslugáttin tekur smá hlutfall — allur pottinn (
-                {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr) fer til leikmanna.
-              </p>
-            </div>
-
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full btn-arena-gradient text-base"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Vinnsla...
-                </>
-              ) : (
-                <>
-                  Skrá og greiða — {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
-                </>
-              )}
-            </Button>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+    </>
   );
 }
 
