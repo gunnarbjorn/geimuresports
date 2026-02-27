@@ -474,63 +474,54 @@ const AdminPage = () => {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead className="w-12">#</TableHead>
+                              <TableHead className="w-8">#</TableHead>
                               <TableHead>Lið</TableHead>
-                              <TableHead>Spilari 1</TableHead>
-                              <TableHead>Spilari 2</TableHead>
-                              <TableHead>Email</TableHead>
-                              <TableHead>Order ID</TableHead>
+                              <TableHead className="hidden md:table-cell">Spilarar</TableHead>
+                              <TableHead className="hidden lg:table-cell">Email</TableHead>
+                              <TableHead className="hidden lg:table-cell">Order</TableHead>
                               <TableHead>🍕</TableHead>
                               <TableHead>Staða</TableHead>
-                              <TableHead>Skráð</TableHead>
-                              <TableHead className="w-20">Aðgerðir</TableHead>
+                              <TableHead className="w-16"></TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
                             {lanOrders.map((order, index) => (
                               <TableRow key={order.id}>
-                                <TableCell className="font-mono text-muted-foreground">{index + 1}</TableCell>
-                                <TableCell className="font-medium">{order.team_name}</TableCell>
-                                <TableCell>{order.player1}</TableCell>
-                                <TableCell>{order.player2}</TableCell>
+                                <TableCell className="font-mono text-xs text-muted-foreground">{index + 1}</TableCell>
                                 <TableCell>
-                                  <div className="flex items-center gap-1 text-sm">
-                                    <Mail className="h-3 w-3 text-muted-foreground" />
-                                    {order.email}
-                                  </div>
+                                  <div className="font-medium text-sm">{order.team_name}</div>
+                                  <div className="text-xs text-muted-foreground md:hidden">{order.player1} & {order.player2}</div>
                                 </TableCell>
-                                <TableCell>
-                                  <Badge variant="outline" className="font-mono text-xs">{order.order_id}</Badge>
+                                <TableCell className="hidden md:table-cell text-sm">
+                                  {order.player1} & {order.player2}
                                 </TableCell>
-                                <TableCell className="text-center">
+                                <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">{order.email}</TableCell>
+                                <TableCell className="hidden lg:table-cell">
+                                  <Badge variant="outline" className="font-mono text-[10px]">{order.order_id}</Badge>
+                                </TableCell>
+                                <TableCell className="text-center text-xs">
                                   {order.pizza ? "✅" : "—"}
                                 </TableCell>
                                 <TableCell>
-                                  <Badge className={
+                                  <Badge className={`text-[10px] ${
                                     order.status === "PAID"
                                       ? "bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]"
                                       : order.status === "PENDING_PAYMENT"
                                       ? "bg-accent/10 text-accent border-accent/30"
                                       : "bg-destructive/10 text-destructive border-destructive/30"
-                                  }>
+                                  }`}>
                                     {order.status === "PAID" ? "Greitt" : order.status === "PENDING_PAYMENT" ? "Ógreitt" : order.status}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-sm text-muted-foreground">
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    {new Date(order.created_at).toLocaleDateString("is-IS")}
-                                  </div>
-                                </TableCell>
                                 <TableCell>
-                                  <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => handleEditLanOrder(order)}>
-                                      <Pencil className="h-4 w-4" />
+                                  <div className="flex items-center gap-0">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEditLanOrder(order)}>
+                                      <Pencil className="h-3.5 w-3.5" />
                                     </Button>
                                     <AlertDialog>
                                       <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10" disabled={deletingId === order.id}>
-                                          <Trash2 className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10" disabled={deletingId === order.id}>
+                                          <Trash2 className="h-3.5 w-3.5" />
                                         </Button>
                                       </AlertDialogTrigger>
                                       <AlertDialogContent>
