@@ -14,7 +14,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
-import alltUndirBg from "@/assets/allt-undir-bg.jpeg";
+import alltUndirBg from "@/assets/allt-undir-bg.png";
 import {
   ArrowLeft,
   Calendar,
