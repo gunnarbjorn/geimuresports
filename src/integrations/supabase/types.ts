@@ -152,6 +152,10 @@ export type Database = {
         }[]
       }
       get_registration_count: { Args: { _type: string }; Returns: number }
+      get_verified_registration_count: {
+        Args: { _type: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -401,7 +401,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
     try {
       const counts: Record<string, number> = {};
       for (const td of TOURNAMENT_DATES) {
-        const { data } = await supabase.rpc("get_registration_count", {
+        const { data } = await (supabase.rpc as any)("get_verified_registration_count", {
           _type: `allt-undir-${td.date}`,
         });
         counts[td.date] = (data as number) || 0;
