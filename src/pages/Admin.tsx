@@ -94,6 +94,7 @@ const AdminPage = () => {
   const [tournamentRegs, setTournamentRegs] = useState<Registration[]>([]);
   const [trainingRegs, setTrainingRegs] = useState<Registration[]>([]);
   const [lanOrders, setLanOrders] = useState<LanOrder[]>([]);
+  const [alltUndirRegs, setAlltUndirRegs] = useState<Registration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingOrder, setEditingOrder] = useState<LanOrder | null>(null);
@@ -108,7 +109,7 @@ const AdminPage = () => {
   const fetchRegistrations = async () => {
     setIsLoading(true);
     try {
-      const [tournamentRes, trainingRes, lanRes] = await Promise.all([
+      const [tournamentRes, trainingRes, lanRes, alltUndirRes] = await Promise.all([
         supabase
           .from("registrations")
           .select("*")
@@ -122,6 +123,11 @@ const AdminPage = () => {
         supabase
           .from("lan_tournament_orders")
           .select("*")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("registrations")
+          .select("*")
+          .like("type", "allt-undir-%")
           .order("created_at", { ascending: false }),
       ]);
 
@@ -158,6 +164,19 @@ const AdminPage = () => {
         toast.error("Villa við að sækja LAN skráningar");
       } else {
         setLanOrders(lanRes.data as LanOrder[] || []);
+      }
+
+      if (alltUndirRes.error) {
+        console.error("Error fetching Allt Undir registrations:", alltUndirRes.error);
+      } else {
+        setAlltUndirRegs(
+          (alltUndirRes.data || []).map((item: any) => ({
+            id: item.id,
+            created_at: item.created_at,
+            type: item.type,
+            data: item.data as RegistrationData,
+          }))
+        );
       }
     } catch (err) {
       console.error("Error:", err);
@@ -357,6 +376,13 @@ const AdminPage = () => {
                 >
                   🎮 LAN Mótstjóri
                 </Button>
+                <Button
+                  variant="default"
+                  onClick={() => navigate("/admin/allt-undir-manager")}
+                  className="bg-[hsl(var(--arena-green))] hover:bg-[hsl(var(--arena-green))]/90"
+                >
+                  🏆 Allt Undir Mótstjóri
+                </Button>
                 <AdminAddRegistrationDialog onAdded={fetchRegistrations} />
                 <Button
                   variant="outline"
@@ -384,6 +410,10 @@ const AdminPage = () => {
                 <TabsTrigger value="tournament" className="gap-2">
                   <Trophy className="h-4 w-4" />
                   Elko ({tournamentRegs.length})
+                </TabsTrigger>
+                <TabsTrigger value="allt-undir" className="gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Allt Undir ({alltUndirRegs.length})
                 </TabsTrigger>
                 <TabsTrigger value="training" className="gap-2">
                   <GraduationCap className="h-4 w-4" />
@@ -519,6 +549,101 @@ const AdminPage = () => {
                                       </AlertDialogContent>
                                     </AlertDialog>
                                   </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Allt Undir Tab */}
+              <TabsContent value="allt-undir" className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[hsl(var(--arena-green)/0.1)] flex items-center justify-center shrink-0">
+                          <Users className="h-5 w-5 text-[hsl(var(--arena-green))]" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{alltUndirRegs.length}</p>
+                          <p className="text-xs text-muted-foreground">Skráðir leikmenn</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5" />
+                      Allt Undir – Solo – Skráningar
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+                        Hleður...
+                      </div>
+                    ) : alltUndirRegs.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Engar Allt Undir skráningar ennþá
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="w-12">#</TableHead>
+                              <TableHead>Nafn</TableHead>
+                              <TableHead>Fortnite nafn</TableHead>
+                              <TableHead>Gmail</TableHead>
+                              <TableHead>Dagsetning</TableHead>
+                              <TableHead>Skráð</TableHead>
+                              <TableHead className="w-20">Eyða</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {alltUndirRegs.map((reg, index) => (
+                              <TableRow key={reg.id}>
+                                <TableCell className="font-mono text-muted-foreground">{index + 1}</TableCell>
+                                <TableCell className="font-medium">
+                                  <div className="flex items-center gap-1">
+                                    <User className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.fullName || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1">
+                                    <Gamepad2 className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.fortniteName || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-1 text-sm">
+                                    <Mail className="h-3 w-3 text-muted-foreground" />
+                                    {reg.data.email || (reg.data as any).gmail || "—"}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge variant="outline" className="text-xs">
+                                    {reg.type.replace("allt-undir-", "")}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-sm text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {new Date(reg.created_at).toLocaleDateString("is-IS")}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <DeleteButton reg={reg} />
                                 </TableCell>
                               </TableRow>
                             ))}
