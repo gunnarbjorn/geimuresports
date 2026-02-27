@@ -40,6 +40,7 @@ const App = () => (
           <Route path="/fraedast" element={<Fraedast />} />
           <Route path="/keppa/elko-deild" element={<Keppa defaultTournament="elko-deild-vor-2026" />} />
           <Route path="/keppa/arena-lan" element={<Keppa defaultTournament="arena-lan-coming-soon" />} />
+          <Route path="/keppa/allt-undir" element={<Keppa defaultTournament="allt-undir" />} />
           <Route path="/lan-mot" element={<Navigate to="/keppa/arena-lan" replace />} />
           <Route path="/lan-mot/stadfesting" element={<LanMotStadfesting />} />
           {/* Legacy routes */}
