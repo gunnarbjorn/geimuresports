@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { supabase } from "@/integrations/supabase/client";
+import alltUndirBg from "@/assets/allt-undir-bg.jpeg";
 import {
   ArrowLeft,
   Calendar,
@@ -422,6 +423,14 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
 
   return (
     <div className="relative">
+      {/* Background image */}
+      <div className="absolute inset-0 h-screen">
+        <div 
+          className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${alltUndirBg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
+      </div>
       <div className="relative z-10 space-y-6">
         {/* Hero */}
         <div className="text-center">
