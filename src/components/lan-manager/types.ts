@@ -49,7 +49,8 @@ export type TournamentAction =
   | { type: 'SET_RAFFLE_WINNERS'; winners: string[] }
   | { type: 'SET_TEAMS'; teams: Team[] }
   | { type: 'REMOVE_TEAM'; teamId: string }
-  | { type: 'ADJUST_POINTS'; teamId: string; killPointsDelta: number; placementPointsDelta: number };
+  | { type: 'ADJUST_POINTS'; teamId: string; killPointsDelta: number; placementPointsDelta: number }
+  | { type: 'OVERRIDE_GAME_SCORE'; teamId: string; gameNumber: number; kills: number; killPoints: number; placementPoints: number };
 
 export function createInitialState(teams?: Team[]): TournamentState {
   return {

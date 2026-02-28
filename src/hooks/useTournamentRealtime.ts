@@ -89,9 +89,27 @@ function computeStateFromDB(
     .filter(e => e.event_type === 'game_end')
     .sort((a, b) => a.game_number - b.game_number);
 
+  // Game score overrides (last override per team+game wins)
+  const overrides: Record<string, { kills: number; killPoints: number; placementPoints: number }> = {};
+  for (const ev of activeEvents) {
+    if (ev.event_type === 'game_score_override') {
+      const d = ev.event_data;
+      overrides[`${d.team_id}_${d.game_number}`] = {
+        kills: d.kills,
+        killPoints: d.kill_points,
+        placementPoints: d.placement_points,
+      };
+    }
+  }
+
   const gameHistory: GameResult[] = gameEndEvents.map(e => ({
     gameNumber: e.event_data.gameNumber || e.game_number,
-    placements: e.event_data.placements || [],
+    placements: (e.event_data.placements || []).map((p: any) => {
+      const key = `${p.teamId}_${e.event_data.gameNumber || e.game_number}`;
+      const ov = overrides[key];
+      if (ov) return { ...p, kills: ov.kills, killPoints: ov.killPoints, placementPoints: ov.placementPoints };
+      return p;
+    }),
   }));
 
   // Cumulative points from completed games
@@ -552,6 +570,15 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
                 team_id: action.teamId,
                 kill_points_delta: action.killPointsDelta,
                 placement_points_delta: action.placementPointsDelta,
+              });
+              break;
+            case 'OVERRIDE_GAME_SCORE':
+              await insertEv('game_score_override', action.gameNumber, {
+                team_id: action.teamId,
+                game_number: action.gameNumber,
+                kills: action.kills,
+                kill_points: action.killPoints,
+                placement_points: action.placementPoints,
               });
               break;
           }
