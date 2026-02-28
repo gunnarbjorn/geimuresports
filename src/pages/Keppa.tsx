@@ -59,8 +59,8 @@ const StatusBadge = ({ status }: { status: TournamentStatus }) => {
 const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { getStatus } = useTournamentStatuses();
-  const visibleTournaments = tournaments.filter(t => !t.hidden && getStatus(t.id) !== 'upcoming');
+  const { getStatus, isVisible } = useTournamentStatuses();
+  const visibleTournaments = tournaments.filter(t => isVisible(t.id) && getStatus(t.id) !== 'upcoming');
   const effectiveDefault = defaultTournament || null;
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
 

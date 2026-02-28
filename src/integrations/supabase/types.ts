@@ -174,16 +174,19 @@ export type Database = {
       }
       tournament_statuses: {
         Row: {
+          is_visible: boolean
           status: string
           tournament_id: string
           updated_at: string
         }
         Insert: {
+          is_visible?: boolean
           status?: string
           tournament_id: string
           updated_at?: string
         }
         Update: {
+          is_visible?: boolean
           status?: string
           tournament_id?: string
           updated_at?: string

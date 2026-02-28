@@ -1,0 +1,1 @@
+ALTER TABLE public.tournament_statuses ADD COLUMN IF NOT EXISTS is_visible BOOLEAN NOT NULL DEFAULT false;
