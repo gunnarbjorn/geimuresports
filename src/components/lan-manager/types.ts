@@ -47,7 +47,8 @@ export type TournamentAction =
   | { type: 'UPDATE_KILL_POINTS'; killPointsPerKill: number }
   | { type: 'SET_RAFFLE_WINNERS'; winners: string[] }
   | { type: 'SET_TEAMS'; teams: Team[] }
-  | { type: 'REMOVE_TEAM'; teamId: string };
+  | { type: 'REMOVE_TEAM'; teamId: string }
+  | { type: 'ADJUST_POINTS'; teamId: string; killPointsDelta: number; placementPointsDelta: number };
 
 export function createInitialState(teams?: Team[]): TournamentState {
   return {

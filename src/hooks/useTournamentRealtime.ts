@@ -68,6 +68,17 @@ function computeStateFromDB(
   const config = (tournament.placement_config || DEFAULT_PLACEMENT_POINTS) as number[];
   const kpp = tournament.kill_points_per_kill || 2;
 
+  // Manual point adjustments (cumulative across all games)
+  const adjKill: Record<string, number> = {};
+  const adjPlace: Record<string, number> = {};
+  for (const ev of activeEvents) {
+    if (ev.event_type === 'points_adjust') {
+      const d = ev.event_data;
+      adjKill[d.team_id] = (adjKill[d.team_id] || 0) + (d.kill_points_delta || 0);
+      adjPlace[d.team_id] = (adjPlace[d.team_id] || 0) + (d.placement_points_delta || 0);
+    }
+  }
+
   // Removed teams
   const removedTeamIds = new Set(
     activeEvents.filter(e => e.event_type === 'team_remove').map(e => e.event_data.team_id),
@@ -153,8 +164,8 @@ function computeStateFromDB(
           : ([true, true] as [boolean, boolean]),
       alive: tournament.status === 'active' ? (alive[t.id]?.some(a => a) ?? true) : true,
       gameKills: gKills[t.id] || 0,
-      killPoints: (cumKill[t.id] || 0) + (gKillPts[t.id] || 0),
-      placementPoints: cumPlace[t.id] || 0,
+      killPoints: (cumKill[t.id] || 0) + (gKillPts[t.id] || 0) + (adjKill[t.id] || 0),
+      placementPoints: (cumPlace[t.id] || 0) + (adjPlace[t.id] || 0),
     }));
 
   return {
@@ -206,6 +217,14 @@ function buildActivityLog(events: TournamentEvent[], teams: Team[]): ActivityLog
         case 'team_remove':
           desc = 'Fjarlægði lið';
           break;
+        case 'points_adjust': {
+          const at = teams.find(t => t.id === d.team_id);
+          const parts: string[] = [];
+          if (d.kill_points_delta) parts.push(`${d.kill_points_delta > 0 ? '+' : ''}${d.kill_points_delta} kill`);
+          if (d.placement_points_delta) parts.push(`${d.placement_points_delta > 0 ? '+' : ''}${d.placement_points_delta} placement`);
+          desc = `Leiðrétti stig ${at?.name || '?'}: ${parts.join(', ')}`;
+          break;
+        }
         default:
           desc = e.event_type;
       }
@@ -523,6 +542,13 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
               break;
             case 'REMOVE_TEAM':
               await insertEv('team_remove', 0, { team_id: action.teamId });
+              break;
+            case 'ADJUST_POINTS':
+              await insertEv('points_adjust', t.current_game, {
+                team_id: action.teamId,
+                kill_points_delta: action.killPointsDelta,
+                placement_points_delta: action.placementPointsDelta,
+              });
               break;
           }
           setSyncStatus('synced');
