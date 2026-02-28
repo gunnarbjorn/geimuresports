@@ -25,50 +25,46 @@ interface AdminAddRegistrationDialogProps {
   onAdded: () => void;
 }
 
-type RegType = "elko-tournament" | "training" | "lan-tournament";
+type RegType = "elko-tournament" | "training" | "lan-tournament" | "allt-undir";
 
 export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDialogProps) {
   const [open, setOpen] = useState(false);
-  const [regType, setRegType] = useState<RegType>("elko-tournament");
+  const [regType, setRegType] = useState<RegType>("lan-tournament");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Tournament fields
+  // Shared fields
+  const [email, setEmail] = useState("");
+
+  // Duo fields (LAN / Elko)
   const [teamName, setTeamName] = useState("");
   const [player1Name, setPlayer1Name] = useState("");
   const [player2Name, setPlayer2Name] = useState("");
-  const [email, setEmail] = useState("");
   const [orderId, setOrderId] = useState("");
-
-  // LAN fields
-  const [lanTeamName, setLanTeamName] = useState("");
-  const [lanPlayer1, setLanPlayer1] = useState("");
-  const [lanPlayer2, setLanPlayer2] = useState("");
-  const [lanEmail, setLanEmail] = useState("");
   const [lanPizza, setLanPizza] = useState(false);
 
-  // Training fields
+  // Solo fields (Allt Undir)
   const [fullName, setFullName] = useState("");
+  const [fortniteName, setFortniteName] = useState("");
+  const [alltUndirDate, setAlltUndirDate] = useState("2026-03-05");
+
+  // Training fields
   const [age, setAge] = useState("");
   const [group, setGroup] = useState("");
   const [phone, setPhone] = useState("");
-  const [trainingEmail, setTrainingEmail] = useState("");
 
   const resetForm = () => {
+    setEmail("");
     setTeamName("");
     setPlayer1Name("");
     setPlayer2Name("");
-    setEmail("");
     setOrderId("");
-    setLanTeamName("");
-    setLanPlayer1("");
-    setLanPlayer2("");
-    setLanEmail("");
     setLanPizza(false);
     setFullName("");
+    setFortniteName("");
+    setAlltUndirDate("2026-03-05");
     setAge("");
     setGroup("");
     setPhone("");
-    setTrainingEmail("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,24 +73,22 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
 
     try {
       if (regType === "lan-tournament") {
-        if (!lanTeamName || !lanPlayer1 || !lanEmail) {
+        if (!teamName || !player1Name || !email) {
           toast.error("Fylltu út alla nauðsynlega reiti");
           setIsSubmitting(false);
           return;
         }
         const amount = 8880 + (lanPizza ? 2000 : 0);
-
-        // Must match DB constraint order_id_format (e.g. LAN + 9 alphanumeric chars)
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         const adminOrderId = `LAN${Array.from({ length: 9 }, () =>
           chars.charAt(Math.floor(Math.random() * chars.length)),
         ).join("")}`;
 
         const { error } = await supabase.from("lan_tournament_orders").insert({
-          team_name: lanTeamName,
-          player1: lanPlayer1,
-          player2: lanPlayer2 || lanPlayer1, // solo: duplicate name or empty
-          email: lanEmail,
+          team_name: teamName,
+          player1: player1Name,
+          player2: player2Name || player1Name,
+          email,
           pizza: lanPizza,
           amount,
           order_id: adminOrderId,
@@ -108,51 +102,71 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
           return;
         }
         toast.success("LAN skráning bætt við!");
-        resetForm();
-        setOpen(false);
-        onAdded();
-        setIsSubmitting(false);
-        return;
-      }
-
-      let data: Record<string, unknown>;
-
-      if (regType === "elko-tournament") {
+      } else if (regType === "allt-undir") {
+        if (!fortniteName || !email) {
+          toast.error("Fylltu út Fortnite nafn og email");
+          setIsSubmitting(false);
+          return;
+        }
+        const { error } = await supabase.from("registrations").insert({
+          type: `allt-undir-${alltUndirDate}`,
+          data: {
+            fullName: fullName || fortniteName,
+            fortniteName,
+            email,
+          } as any,
+          verified: true,
+        });
+        if (error) {
+          console.error("Insert error:", error);
+          toast.error("Villa við skráningu");
+          setIsSubmitting(false);
+          return;
+        }
+        toast.success("Allt Undir skráning bætt við!");
+      } else if (regType === "elko-tournament") {
         if (!teamName || !player1Name || !player2Name || !email) {
           toast.error("Fylltu út alla nauðsynlega reiti");
           setIsSubmitting(false);
           return;
         }
-        data = { teamName, player1Name, player2Name, email, orderId: orderId || "Admin-skráning" };
+        const { error } = await supabase.from("registrations").insert({
+          type: "elko-tournament",
+          data: { teamName, player1Name, player2Name, email, orderId: orderId || "Admin-skráning" } as any,
+        });
+        if (error) {
+          console.error("Insert error:", error);
+          toast.error("Villa við skráningu");
+          setIsSubmitting(false);
+          return;
+        }
+        toast.success("Elko skráning bætt við!");
       } else {
-        if (!fullName || !trainingEmail || !group) {
+        // Training
+        if (!fullName || !email || !group) {
           toast.error("Fylltu út alla nauðsynlega reiti");
           setIsSubmitting(false);
           return;
         }
-        data = {
-          fullName,
-          age: age ? Number(age) : undefined,
-          email: trainingEmail,
-          phone,
-          group,
-        };
+        const { error } = await supabase.from("registrations").insert({
+          type: "training",
+          data: {
+            fullName,
+            age: age ? Number(age) : undefined,
+            email,
+            phone,
+            group,
+          } as any,
+        });
+        if (error) {
+          console.error("Insert error:", error);
+          toast.error("Villa við skráningu");
+          setIsSubmitting(false);
+          return;
+        }
+        toast.success("Æfingaskráning bætt við!");
       }
 
-      const { error } = await supabase.from("registrations").insert({
-        type: regType,
-        data: data as any,
-      });
-
-      if (error) {
-        console.error("Insert error:", error);
-        toast.error("Villa við skráningu");
-        return;
-      }
-
-      toast.success("Skráning bætt við!");
-
-      toast.success("Skráning bætt við!");
       resetForm();
       setOpen(false);
       onAdded();
@@ -163,6 +177,13 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
       setIsSubmitting(false);
     }
   };
+
+  const alltUndirDates = [
+    { value: "2026-03-05", label: "5. mars" },
+    { value: "2026-03-12", label: "12. mars" },
+    { value: "2026-03-19", label: "19. mars" },
+    { value: "2026-03-26", label: "26. mars" },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -185,39 +206,72 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="elko-tournament">Mót (Elko-deildin)</SelectItem>
-                <SelectItem value="lan-tournament">LAN mót</SelectItem>
+                <SelectItem value="lan-tournament">Fortnite DUO LAN</SelectItem>
+                <SelectItem value="allt-undir">Allt Undir – Solo</SelectItem>
+                <SelectItem value="elko-tournament">Elko-deildin – Duos</SelectItem>
                 <SelectItem value="training">Æfingar</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {regType === "lan-tournament" ? (
+          {regType === "lan-tournament" && (
             <>
               <div className="space-y-2">
                 <Label>Nafn liðs *</Label>
-                <Input value={lanTeamName} onChange={(e) => setLanTeamName(e.target.value)} placeholder="Team Geimur" />
+                <Input value={teamName} onChange={(e) => setTeamName(e.target.value)} placeholder="Team Geimur" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>Spilari 1 *</Label>
-                  <Input value={lanPlayer1} onChange={(e) => setLanPlayer1(e.target.value)} placeholder="Fortnite nafn" />
+                  <Input value={player1Name} onChange={(e) => setPlayer1Name(e.target.value)} placeholder="Fortnite nafn" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Spilari 2 (valfrjálst - einn í liði)</Label>
-                  <Input value={lanPlayer2} onChange={(e) => setLanPlayer2(e.target.value)} placeholder="Fortnite nafn (autt ef einn)" />
+                  <Label>Spilari 2</Label>
+                  <Input value={player2Name} onChange={(e) => setPlayer2Name(e.target.value)} placeholder="Autt ef einn" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Email *</Label>
-                <Input type="email" value={lanEmail} onChange={(e) => setLanEmail(e.target.value)} placeholder="email@example.is" />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.is" />
               </div>
               <div className="flex items-center space-x-2">
                 <Checkbox id="lan-pizza" checked={lanPizza} onCheckedChange={(v) => setLanPizza(v === true)} />
                 <Label htmlFor="lan-pizza">Pizza (+2.000 kr)</Label>
               </div>
             </>
-          ) : regType === "elko-tournament" ? (
+          )}
+
+          {regType === "allt-undir" && (
+            <>
+              <div className="space-y-2">
+                <Label>Fortnite notandanafn *</Label>
+                <Input value={fortniteName} onChange={(e) => setFortniteName(e.target.value)} placeholder="EpicGamer123" />
+              </div>
+              <div className="space-y-2">
+                <Label>Fullt nafn</Label>
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Jón Jónsson" />
+              </div>
+              <div className="space-y-2">
+                <Label>Email *</Label>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.is" />
+              </div>
+              <div className="space-y-2">
+                <Label>Dagsetning</Label>
+                <Select value={alltUndirDate} onValueChange={setAlltUndirDate}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {alltUndirDates.map(d => (
+                      <SelectItem key={d.value} value={d.value}>{d.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
+
+          {regType === "elko-tournament" && (
             <>
               <div className="space-y-2">
                 <Label>Nafn liðs *</Label>
@@ -242,7 +296,9 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
                 <Input value={orderId} onChange={(e) => setOrderId(e.target.value)} placeholder="Valfrjálst" />
               </div>
             </>
-          ) : (
+          )}
+
+          {regType === "training" && (
             <>
               <div className="space-y-2">
                 <Label>Fullt nafn *</Label>
@@ -269,7 +325,7 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
               </div>
               <div className="space-y-2">
                 <Label>Netfang *</Label>
-                <Input type="email" value={trainingEmail} onChange={(e) => setTrainingEmail(e.target.value)} placeholder="email@example.is" />
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.is" />
               </div>
               <div className="space-y-2">
                 <Label>Símanúmer</Label>

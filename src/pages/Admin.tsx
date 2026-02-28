@@ -53,6 +53,7 @@ import {
   Pencil,
   ChevronDown,
   ExternalLink,
+  Copy,
 } from "lucide-react";
 
 interface RegistrationData {
@@ -411,6 +412,10 @@ const AdminPage = () => {
 
             {/* Tournament Status Manager */}
             <div className="mb-6">
+              <h2 className="font-display text-lg font-bold mb-3 flex items-center gap-2">
+                <Trophy className="h-5 w-5" />
+                Mótstöður
+              </h2>
               <TournamentStatusManager />
             </div>
 
@@ -421,17 +426,21 @@ const AdminPage = () => {
                   <Gamepad2 className="h-4 w-4" />
                   LAN ({lanOrders.length})
                 </TabsTrigger>
-                <TabsTrigger value="tournament" className="gap-2">
-                  <Trophy className="h-4 w-4" />
-                  Elko ({tournamentRegs.length})
-                </TabsTrigger>
                 <TabsTrigger value="allt-undir" className="gap-2">
                   <Trophy className="h-4 w-4" />
                   Allt Undir ({alltUndirRegs.length})
                 </TabsTrigger>
+                <TabsTrigger value="tournament" className="gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Elko ({tournamentRegs.length})
+                </TabsTrigger>
                 <TabsTrigger value="training" className="gap-2">
                   <GraduationCap className="h-4 w-4" />
                   Æfingar ({trainingRegs.length})
+                </TabsTrigger>
+                <TabsTrigger value="postur" className="gap-2">
+                  <Mail className="h-4 w-4" />
+                  Póstur
                 </TabsTrigger>
               </TabsList>
 
@@ -1028,6 +1037,127 @@ const AdminPage = () => {
                         </Table>
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Póstur Tab */}
+              <TabsContent value="postur" className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Mail className="h-5 w-5" />
+                      Allir skráðir — Netfangalisti
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {(() => {
+                      // Aggregate all unique email entries
+                      const entries: { name: string; email: string; tournament: string; date: string }[] = [];
+                      const seen = new Set<string>();
+
+                      lanOrders.forEach(o => {
+                        const key = `${o.email.toLowerCase()}-lan`;
+                        if (!seen.has(key)) {
+                          seen.add(key);
+                          entries.push({
+                            name: o.team_name,
+                            email: o.email,
+                            tournament: "Fortnite DUO LAN",
+                            date: new Date(o.created_at).toLocaleDateString("is-IS"),
+                          });
+                        }
+                      });
+
+                      alltUndirRegs.forEach(r => {
+                        const em = r.data.email || (r.data as any).gmail || "";
+                        const key = `${em.toLowerCase()}-allt-undir`;
+                        if (em && !seen.has(key)) {
+                          seen.add(key);
+                          entries.push({
+                            name: r.data.fullName || r.data.fortniteName || "—",
+                            email: em,
+                            tournament: "Allt Undir – Solo",
+                            date: new Date(r.created_at).toLocaleDateString("is-IS"),
+                          });
+                        }
+                      });
+
+                      tournamentRegs.forEach(r => {
+                        const em = r.data.email || "";
+                        const key = `${em.toLowerCase()}-elko`;
+                        if (em && !seen.has(key)) {
+                          seen.add(key);
+                          entries.push({
+                            name: r.data.teamName || r.data.fullName || "—",
+                            email: em,
+                            tournament: "Elko-deildin",
+                            date: new Date(r.created_at).toLocaleDateString("is-IS"),
+                          });
+                        }
+                      });
+
+                      trainingRegs.forEach(r => {
+                        const em = r.data.email || "";
+                        const key = `${em.toLowerCase()}-training`;
+                        if (em && !seen.has(key)) {
+                          seen.add(key);
+                          entries.push({
+                            name: r.data.fullName || "—",
+                            email: em,
+                            tournament: "Æfingar",
+                            date: new Date(r.created_at).toLocaleDateString("is-IS"),
+                          });
+                        }
+                      });
+
+                      const uniqueEmails = [...new Set(entries.map(e => e.email.toLowerCase()))];
+
+                      const handleCopyEmails = () => {
+                        navigator.clipboard.writeText(uniqueEmails.join(", "));
+                        toast.success(`${uniqueEmails.length} netföng afrituð!`);
+                      };
+
+                      return (
+                        <>
+                          <div className="flex items-center justify-between mb-4">
+                            <p className="text-sm text-muted-foreground">
+                              {uniqueEmails.length} einstök netföng · {entries.length} skráningar
+                            </p>
+                            <Button variant="outline" size="sm" onClick={handleCopyEmails}>
+                              <Copy className="h-3.5 w-3.5 mr-1.5" />
+                              Afrita öll netföng
+                            </Button>
+                          </div>
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="w-8">#</TableHead>
+                                  <TableHead>Nafn</TableHead>
+                                  <TableHead>Netfang</TableHead>
+                                  <TableHead>Mót</TableHead>
+                                  <TableHead>Dagsetning</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {entries.map((entry, i) => (
+                                  <TableRow key={`${entry.email}-${i}`}>
+                                    <TableCell className="font-mono text-xs text-muted-foreground">{i + 1}</TableCell>
+                                    <TableCell className="font-medium text-sm">{entry.name}</TableCell>
+                                    <TableCell className="text-sm">{entry.email}</TableCell>
+                                    <TableCell>
+                                      <Badge variant="outline" className="text-xs">{entry.tournament}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{entry.date}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </CardContent>
                 </Card>
               </TabsContent>
