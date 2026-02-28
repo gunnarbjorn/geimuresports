@@ -528,6 +528,10 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
               });
               break;
             }
+            case 'FINISH_TOURNAMENT': {
+              await updateT({ status: 'finished' });
+              break;
+            }
             case 'UPDATE_PLACEMENT_CONFIG':
               await updateT({ placement_config: action.config });
               break;
