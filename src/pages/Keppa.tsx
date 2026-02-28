@@ -60,7 +60,8 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { getStatus, isVisible } = useTournamentStatuses();
-  const visibleTournaments = tournaments.filter(t => isVisible(t.id) && getStatus(t.id) !== 'upcoming');
+  const activeTournaments = tournaments.filter(t => isVisible(t.id) && getStatus(t.id) === 'active');
+  const completedTournaments = tournaments.filter(t => isVisible(t.id) && getStatus(t.id) === 'completed');
   const effectiveDefault = defaultTournament || null;
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
 
@@ -119,19 +120,16 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
             {/* Tournament selector cards */}
             {!selectedId && (
               <>
-                <div className="space-y-4 mb-16">
-                  {visibleTournaments.map((t, i) => (
+                {/* Active tournaments */}
+                <div className="space-y-4 mb-12">
+                  {activeTournaments.map((t, i) => (
                     <FadeInView key={t.id} delay={i * 80}>
                       <Card
                         className="planet-card-tournament rounded-2xl overflow-hidden cursor-pointer hover:border-[hsl(var(--planet-tournament)/0.5)] transition-all hover:shadow-lg hover:shadow-[hsl(var(--planet-tournament)/0.1)]"
                         onClick={() => {
                           const route = tournamentRoutes[t.id];
-                          if (route) {
-                            const status = getStatus(t.id);
-                            navigate(status === 'completed' ? `${route}/nidurstodur` : route);
-                          } else {
-                            setSelectedId(t.id);
-                          }
+                          if (route) navigate(route);
+                          else setSelectedId(t.id);
                         }}
                       >
                         <CardContent className="p-5 md:p-6">
@@ -153,12 +151,6 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
                                     {t.dates[0]}{t.dates.length > 1 ? ` – ${t.dates[t.dates.length - 1]}` : ""}
                                   </span>
                                 )}
-                                {t.entryFee && (
-                                  <span className="flex items-center gap-1.5">
-                                    <Gamepad2 className="h-3.5 w-3.5" />
-                                    {t.entryFee}
-                                  </span>
-                                )}
                               </div>
                               <p className="text-sm text-muted-foreground line-clamp-2">{t.description}</p>
                             </div>
@@ -171,6 +163,52 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
                     </FadeInView>
                   ))}
                 </div>
+
+                {/* Completed tournaments */}
+                {completedTournaments.length > 0 && (
+                  <div className="mb-16">
+                    <div className="section-divider max-w-3xl mx-auto mb-8" />
+                    <h3 className="font-display text-lg font-bold text-muted-foreground mb-4 text-center">Fyrri mót</h3>
+                    <div className="space-y-3">
+                      {completedTournaments.map((t, i) => (
+                        <FadeInView key={t.id} delay={i * 80}>
+                          <Card
+                            className="planet-card-tournament rounded-xl overflow-hidden cursor-pointer hover:border-muted-foreground/30 transition-all opacity-80 hover:opacity-100"
+                            onClick={() => {
+                              const route = tournamentRoutes[t.id];
+                              if (route) navigate(`${route}/nidurstodur`);
+                            }}
+                          >
+                            <CardContent className="p-4">
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                    <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">Lokið</Badge>
+                                    <Badge variant="outline" className="text-xs">{t.category}</Badge>
+                                  </div>
+                                  <h4 className="font-display text-base font-bold">{t.name}</h4>
+                                  <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                                    <span className="flex items-center gap-1">
+                                      {t.location === "Online" ? <Globe className="h-3 w-3" /> : <MapPin className="h-3 w-3" />}
+                                      {t.location}
+                                    </span>
+                                    {t.dates.length > 0 && (
+                                      <span className="flex items-center gap-1">
+                                        <Calendar className="h-3 w-3" />
+                                        {t.dates[0]}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </FadeInView>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Ranked & Competitive section */}
                 <div className="section-divider max-w-3xl mx-auto mb-12" />
