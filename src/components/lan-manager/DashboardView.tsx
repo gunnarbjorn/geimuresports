@@ -23,6 +23,12 @@ export default function DashboardView({ state, dispatch, gameLocked, onToggleLoc
     }
   };
 
+  const handleFinish = () => {
+    if (window.confirm('Ljúka móti núna? Enginn stig verða gefin fyrir núverandi leik.')) {
+      dispatch({ type: 'FINISH_TOURNAMENT' });
+    }
+  };
+
   const handleSaveConfig = () => {
     dispatch({ type: 'UPDATE_PLACEMENT_CONFIG', config });
     dispatch({ type: 'UPDATE_KILL_POINTS', killPointsPerKill: killPts });
@@ -73,8 +79,23 @@ export default function DashboardView({ state, dispatch, gameLocked, onToggleLoc
               color: '#e8341c',
             }}
           >
-            RESET / STOP MÓT
+           RESET / STOP MÓT
           </button>
+
+          {state.status === 'active' && (
+            <button
+              onClick={handleFinish}
+              className="px-8 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105"
+              style={{
+                fontFamily: 'Rajdhani, sans-serif',
+                background: 'rgba(245, 158, 11, 0.2)',
+                border: '1px solid #f59e0b',
+                color: '#f59e0b',
+              }}
+            >
+              🏁 LJÚKA MÓTI
+            </button>
+          )}
 
           {onToggleLock && state.status === 'active' && (
             <button

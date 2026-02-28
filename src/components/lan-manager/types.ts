@@ -38,6 +38,7 @@ export const DEFAULT_PLACEMENT_POINTS = [10, 7, 5, 3, 2, 2, 1, 1, 1, 1];
 export type TournamentAction =
   | { type: 'START_TOURNAMENT' }
   | { type: 'RESET_TOURNAMENT' }
+  | { type: 'FINISH_TOURNAMENT' }
   | { type: 'ELIMINATE_TEAM'; teamId: string; killerTeamId: string }
   | { type: 'ELIMINATE_PLAYER'; teamId: string; playerIndex: number; killerTeamId: string }
   | { type: 'REVIVE_TEAM'; teamId: string }
