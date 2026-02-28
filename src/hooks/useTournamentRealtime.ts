@@ -457,7 +457,7 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
           const uid = user?.id || null;
 
           const insertEv = async (type: string, gn: number, data: Record<string, any>) => {
-            await (supabase as any).from('lan_tournament_events').insert({
+            const { error } = await (supabase as any).from('lan_tournament_events').insert({
               tournament_id: t.id,
               game_number: gn,
               event_type: type,
@@ -465,10 +465,12 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
               admin_user_id: uid,
               admin_email: email,
             });
+            if (error) throw error;
           };
 
           const updateT = async (u: Record<string, any>) => {
-            await (supabase as any).from('lan_tournaments').update(u).eq('id', t.id);
+            const { error } = await (supabase as any).from('lan_tournaments').update(u).eq('id', t.id);
+            if (error) throw error;
           };
 
           switch (action.type) {

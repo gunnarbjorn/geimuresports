@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { TournamentState, TournamentAction, Team, getTeamTotalPoints } from './types';
+import { toast } from 'sonner';
 
 interface Props {
   team: Team;
@@ -67,6 +68,7 @@ export default function PointsAdjustModal({ team, state, dispatch, onClose }: Pr
         placementPointsDelta: adjPlace,
       });
     }
+    toast.success('Stig vistuð');
     onClose();
   };
 
