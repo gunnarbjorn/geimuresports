@@ -344,6 +344,31 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
     return () => { supabase.removeChannel(ch); };
   }, [tournament?.id]);
 
+  // ── Realtime: teams (lan_tournament_orders) ──
+  useEffect(() => {
+    const ch = supabase
+      .channel('lan-orders-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lan_tournament_orders' }, async () => {
+        const { data: teamData } = await (supabase as any).rpc('get_lan_registered_teams');
+        if (teamData) {
+          setTeams(
+            teamData.map((r: any) => ({
+              id: r.id,
+              name: r.team_name,
+              players: [r.player1, r.player2] as [string, string],
+              playersAlive: [true, true] as [boolean, boolean],
+              killPoints: 0,
+              placementPoints: 0,
+              alive: true,
+              gameKills: 0,
+            })),
+          );
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
+
   // ── Presence ──
   useEffect(() => {
     if (!tournament?.id || !userEmail || readOnly) return;
