@@ -102,15 +102,32 @@ function computeStateFromDB(
     }
   }
 
-  const gameHistory: GameResult[] = gameEndEvents.map(e => ({
-    gameNumber: e.event_data.gameNumber || e.game_number,
-    placements: (e.event_data.placements || []).map((p: any) => {
-      const key = `${p.teamId}_${e.event_data.gameNumber || e.game_number}`;
+  const gameHistory: GameResult[] = gameEndEvents.map(e => {
+    const gameNum = e.event_data.gameNumber || e.game_number;
+    const placements = (e.event_data.placements || []).map((p: any) => {
+      const key = `${p.teamId}_${gameNum}`;
       const ov = overrides[key];
       if (ov) return { ...p, kills: ov.kills, killPoints: ov.killPoints, placementPoints: ov.placementPoints };
       return p;
-    }),
-  }));
+    });
+
+    // Add override entries for teams NOT in the original placements (e.g. teams added after game was played)
+    const existingTeamIds = new Set(placements.map((p: any) => p.teamId));
+    for (const [key, ov] of Object.entries(overrides)) {
+      const [teamId, gn] = key.split('_');
+      if (parseInt(gn) === gameNum && !existingTeamIds.has(teamId)) {
+        placements.push({
+          teamId,
+          placement: placements.length + 1,
+          kills: ov.kills,
+          killPoints: ov.killPoints,
+          placementPoints: ov.placementPoints,
+        });
+      }
+    }
+
+    return { gameNumber: gameNum, placements };
+  });
 
   // Cumulative points from completed games
   const cumKill: Record<string, number> = {};
