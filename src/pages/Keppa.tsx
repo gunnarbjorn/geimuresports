@@ -9,6 +9,7 @@ import { tournaments } from "@/data/tournaments";
 import { ArenaLanDetails } from "@/components/tournaments/ArenaLanDetails";
 import { ElkoDeildDetails } from "@/components/tournaments/ElkoDeildDetails";
 import { AlltUndirDetails } from "@/components/tournaments/AlltUndirDetails";
+import { useTournamentStatuses, type TournamentStatus } from "@/hooks/useTournamentStatuses";
 import {
   Trophy, Calendar, MapPin, ArrowLeft, Globe, Gamepad2, ArrowRight,
   TrendingUp, Target, AlertTriangle,
@@ -33,9 +34,32 @@ const tournamentRoutes: Record<string, string> = {
   "allt-undir": "/keppa/allt-undir",
 };
 
+const StatusBadge = ({ status }: { status: TournamentStatus }) => {
+  if (status === 'upcoming') {
+    return (
+      <Badge className="text-xs bg-yellow-500/15 text-yellow-500 border-yellow-500/30 hover:bg-yellow-500/20">
+        Væntanlegt
+      </Badge>
+    );
+  }
+  if (status === 'completed') {
+    return (
+      <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground">
+        Lokið
+      </Badge>
+    );
+  }
+  return (
+    <Badge className="text-xs bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)] hover:bg-[hsl(var(--arena-green)/0.2)]">
+      Skráning opin
+    </Badge>
+  );
+};
+
 const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { getStatus } = useTournamentStatuses();
   const visibleTournaments = tournaments.filter(t => !t.hidden);
   const effectiveDefault = defaultTournament || null;
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
@@ -113,13 +137,7 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                {t.isComingSoon ? (
-                                  <Badge variant="outline" className="text-xs bg-muted/50">Bráðum</Badge>
-                                ) : (
-                                  <Badge className="text-xs bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)] hover:bg-[hsl(var(--arena-green)/0.2)]">
-                                    Skráning opin
-                                  </Badge>
-                                )}
+                                <StatusBadge status={getStatus(t.id)} />
                                 <Badge variant="outline" className="text-xs">{t.category}</Badge>
                               </div>
                               <h2 className="font-display text-xl md:text-2xl font-bold mb-1.5">{t.name}</h2>

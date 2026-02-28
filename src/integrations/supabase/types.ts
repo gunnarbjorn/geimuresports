@@ -172,6 +172,24 @@ export type Database = {
         }
         Relationships: []
       }
+      tournament_statuses: {
+        Row: {
+          status: string
+          tournament_id: string
+          updated_at: string
+        }
+        Insert: {
+          status?: string
+          tournament_id: string
+          updated_at?: string
+        }
+        Update: {
+          status?: string
+          tournament_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

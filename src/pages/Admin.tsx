@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { AdminAddRegistrationDialog } from "@/components/admin/AdminAddRegistrationDialog";
+import { TournamentStatusManager } from "@/components/admin/TournamentStatusManager";
 import {
   Table,
   TableBody,
@@ -398,6 +399,11 @@ const AdminPage = () => {
                   Útskrá
                 </Button>
               </div>
+            </div>
+
+            {/* Tournament Status Manager */}
+            <div className="mb-6">
+              <TournamentStatusManager />
             </div>
 
             {/* Tabs */}
