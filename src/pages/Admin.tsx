@@ -8,11 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { AdminAddRegistrationDialog } from "@/components/admin/AdminAddRegistrationDialog";
 import { TournamentStatusManager } from "@/components/admin/TournamentStatusManager";
+import { useTournamentStatuses } from "@/hooks/useTournamentStatuses";
 import {
   Table,
   TableBody,
@@ -49,6 +51,8 @@ import {
   Gamepad2,
   CreditCard,
   Pencil,
+  ChevronDown,
+  ExternalLink,
 } from "lucide-react";
 
 interface RegistrationData {
@@ -92,6 +96,7 @@ interface LanOrder {
 const AdminPage = () => {
   const navigate = useNavigate();
   const { user, isAdmin, isLoading: authLoading, signOut } = useAdminAuth();
+  const { getStatus } = useTournamentStatuses();
   const [tournamentRegs, setTournamentRegs] = useState<Registration[]>([]);
   const [trainingRegs, setTrainingRegs] = useState<Registration[]>([]);
   const [lanOrders, setLanOrders] = useState<LanOrder[]>([]);
@@ -101,6 +106,9 @@ const AdminPage = () => {
   const [editingOrder, setEditingOrder] = useState<LanOrder | null>(null);
   const [editForm, setEditForm] = useState({ team_name: "", player1: "", player2: "", email: "" });
   const [isSaving, setIsSaving] = useState(false);
+  const [lanRegsOpen, setLanRegsOpen] = useState(false);
+  const [elkoRegsOpen, setElkoRegsOpen] = useState(false);
+  const [alltUndirRegsOpen, setAlltUndirRegsOpen] = useState(false);
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
@@ -458,6 +466,62 @@ const AdminPage = () => {
                   </Card>
                 </div>
 
+                {getStatus('arena-lan-coming-soon') === 'completed' ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Gamepad2 className="h-5 w-5" />
+                        Fortnite Duos LAN
+                        <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground ml-1">Lokið</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => navigate('/keppa/arena-lan/nidurstodur')}>
+                          <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Sýna niðurstöður
+                        </Button>
+                      </div>
+                      <Collapsible open={lanRegsOpen} onOpenChange={setLanRegsOpen}>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-muted-foreground">
+                            <ChevronDown className={`h-4 w-4 mr-1.5 transition-transform ${lanRegsOpen ? 'rotate-180' : ''}`} />
+                            Sýna skráningar ({lanOrders.length})
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="w-8">#</TableHead>
+                                  <TableHead>Lið</TableHead>
+                                  <TableHead className="hidden md:table-cell">Spilarar</TableHead>
+                                  <TableHead className="hidden lg:table-cell">Email</TableHead>
+                                  <TableHead>Staða</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {lanOrders.map((order, index) => (
+                                  <TableRow key={order.id}>
+                                    <TableCell className="font-mono text-xs text-muted-foreground">{index + 1}</TableCell>
+                                    <TableCell className="font-medium text-sm">{order.team_name}</TableCell>
+                                    <TableCell className="hidden md:table-cell text-sm">{order.player1} & {order.player2}</TableCell>
+                                    <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">{order.email}</TableCell>
+                                    <TableCell>
+                                      <Badge className={`text-[10px] ${order.status === "PAID" ? "bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]" : "bg-accent/10 text-accent border-accent/30"}`}>
+                                        {order.status === "PAID" ? "Greitt" : "Ógreitt"}
+                                      </Badge>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </CardContent>
+                  </Card>
+                ) : (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -555,6 +619,7 @@ const AdminPage = () => {
                     )}
                   </CardContent>
                 </Card>
+                )}
               </TabsContent>
 
               {/* Allt Undir Tab */}
@@ -575,6 +640,58 @@ const AdminPage = () => {
                   </Card>
                 </div>
 
+                {getStatus('allt-undir') === 'completed' ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5" />
+                        Allt Undir – Solo
+                        <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground ml-1">Lokið</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => navigate('/keppa/allt-undir/nidurstodur')}>
+                          <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Sýna niðurstöður
+                        </Button>
+                      </div>
+                      <Collapsible open={alltUndirRegsOpen} onOpenChange={setAlltUndirRegsOpen}>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-muted-foreground">
+                            <ChevronDown className={`h-4 w-4 mr-1.5 transition-transform ${alltUndirRegsOpen ? 'rotate-180' : ''}`} />
+                            Sýna skráningar ({alltUndirRegs.length})
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="w-12">#</TableHead>
+                                  <TableHead>Nafn</TableHead>
+                                  <TableHead>Fortnite nafn</TableHead>
+                                  <TableHead>Dagsetning</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {alltUndirRegs.map((reg, index) => (
+                                  <TableRow key={reg.id}>
+                                    <TableCell className="font-mono text-muted-foreground">{index + 1}</TableCell>
+                                    <TableCell className="font-medium">{reg.data.fullName || "—"}</TableCell>
+                                    <TableCell>{reg.data.fortniteName || "—"}</TableCell>
+                                    <TableCell>
+                                      <Badge variant="outline" className="text-xs">{reg.type.replace("allt-undir-", "")}</Badge>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </CardContent>
+                  </Card>
+                ) : (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -650,6 +767,7 @@ const AdminPage = () => {
                     )}
                   </CardContent>
                 </Card>
+                )}
               </TabsContent>
 
               {/* Tournament Tab */}
@@ -685,6 +803,58 @@ const AdminPage = () => {
                 </div>
 
                 {/* Tournament Table */}
+                {getStatus('elko-deild-vor-2026') === 'completed' ? (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Shield className="h-5 w-5" />
+                        Elko-deildin
+                        <Badge variant="outline" className="text-xs bg-muted/50 text-muted-foreground ml-1">Lokið</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={() => navigate('/keppa/elko-deild/nidurstodur')}>
+                          <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Sýna niðurstöður
+                        </Button>
+                      </div>
+                      <Collapsible open={elkoRegsOpen} onOpenChange={setElkoRegsOpen}>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-muted-foreground">
+                            <ChevronDown className={`h-4 w-4 mr-1.5 transition-transform ${elkoRegsOpen ? 'rotate-180' : ''}`} />
+                            Sýna skráningar ({tournamentRegs.length})
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-3">
+                          <div className="overflow-x-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="w-12">#</TableHead>
+                                  <TableHead>Lið</TableHead>
+                                  <TableHead>Spilari 1</TableHead>
+                                  <TableHead>Spilari 2</TableHead>
+                                  <TableHead>Email</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {tournamentRegs.map((reg, index) => (
+                                  <TableRow key={reg.id}>
+                                    <TableCell className="font-mono text-muted-foreground">{index + 1}</TableCell>
+                                    <TableCell className="font-medium">{reg.data.teamName || "Óþekkt lið"}</TableCell>
+                                    <TableCell>{reg.data.player1Name || reg.data.fullName || "—"}</TableCell>
+                                    <TableCell>{reg.data.player2Name || reg.data.teammateName || "—"}</TableCell>
+                                    <TableCell className="text-sm text-muted-foreground">{reg.data.email || "—"}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    </CardContent>
+                  </Card>
+                ) : (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -760,6 +930,7 @@ const AdminPage = () => {
                     )}
                   </CardContent>
                 </Card>
+                )}
               </TabsContent>
 
               {/* Training Tab */}
