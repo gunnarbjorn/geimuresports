@@ -144,14 +144,23 @@ export default function BroadcastView({ state }: Props) {
         </p>
         <p className="font-bold">Fell (kill): <span style={{ color: '#e8341c' }}>+{state.killPointsPerKill}</span> stig</p>
         <div className="mt-2 flex flex-col gap-0.5">
-          {state.placementPointsConfig.slice(0, 6).map((pts, i) => {
-            const label = i < 5 ? `${i + 1}. sæti` : `6.-${state.placementPointsConfig.length}. sæti`;
-            return (
-              <p key={i} className="font-semibold">
-                {label}: <span style={{ color: '#ffd700' }}>+{pts}</span> stig
+          {(() => {
+            const config = state.placementPointsConfig;
+            const lines: { label: string; pts: number }[] = [];
+            let i = 0;
+            while (i < config.length) {
+              let j = i;
+              while (j < config.length - 1 && config[j + 1] === config[i]) j++;
+              const label = i === j ? `${i + 1}. sæti` : `${i + 1}.-${j + 1}. sæti`;
+              lines.push({ label, pts: config[i] });
+              i = j + 1;
+            }
+            return lines.map((line, idx) => (
+              <p key={idx} className="font-semibold">
+                {line.label}: <span style={{ color: '#ffd700' }}>+{line.pts}</span> stig
               </p>
-            );
-          })}
+            ));
+          })()}
         </div>
       </div>
     </div>
