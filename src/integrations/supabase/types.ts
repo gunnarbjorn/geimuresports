@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      lan_tournament_events: {
+        Row: {
+          admin_email: string
+          admin_user_id: string | null
+          created_at: string
+          event_data: Json
+          event_type: string
+          game_number: number
+          id: string
+          tournament_id: string
+          undone: boolean
+        }
+        Insert: {
+          admin_email?: string
+          admin_user_id?: string | null
+          created_at?: string
+          event_data?: Json
+          event_type: string
+          game_number?: number
+          id?: string
+          tournament_id: string
+          undone?: boolean
+        }
+        Update: {
+          admin_email?: string
+          admin_user_id?: string | null
+          created_at?: string
+          event_data?: Json
+          event_type?: string
+          game_number?: number
+          id?: string
+          tournament_id?: string
+          undone?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lan_tournament_events_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "lan_tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lan_tournament_orders: {
         Row: {
           amount: number
@@ -64,6 +108,42 @@ export type Database = {
           player2?: string
           status?: Database["public"]["Enums"]["lan_order_status"]
           team_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lan_tournaments: {
+        Row: {
+          created_at: string
+          current_game: number
+          game_locked: boolean
+          id: string
+          kill_points_per_kill: number
+          placement_config: Json
+          raffle_winners: Json
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_game?: number
+          game_locked?: boolean
+          id?: string
+          kill_points_per_kill?: number
+          placement_config?: Json
+          raffle_winners?: Json
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_game?: number
+          game_locked?: boolean
+          id?: string
+          kill_points_per_kill?: number
+          placement_config?: Json
+          raffle_winners?: Json
+          status?: string
           updated_at?: string
         }
         Relationships: []

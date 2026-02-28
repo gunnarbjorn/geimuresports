@@ -1,43 +1,21 @@
-import { useEffect, useState } from 'react';
-import { TournamentState, createInitialState } from '@/components/lan-manager/types';
+import { useTournamentRealtime } from '@/hooks/useTournamentRealtime';
 import BroadcastView from '@/components/lan-manager/BroadcastView';
+import { Loader2 } from 'lucide-react';
 
 /**
- * Standalone broadcast page that reads tournament state from localStorage.
- * Open this in a separate tab/window for stream overlay.
+ * Standalone broadcast page powered by Supabase Realtime.
+ * Open in a separate tab/window for stream overlay — no auth required (public read).
  */
 export default function LanBroadcast() {
-  const [state, setState] = useState<TournamentState>(createInitialState());
+  const { state, isLoading } = useTournamentRealtime({ readOnly: true });
 
-  useEffect(() => {
-    // Initial load
-    const stored = localStorage.getItem('lan-tournament-state');
-    if (stored) {
-      try { setState(JSON.parse(stored)); } catch {}
-    }
-
-    // Listen for changes from the manager tab
-    const handler = (e: StorageEvent) => {
-      if (e.key === 'lan-tournament-state' && e.newValue) {
-        try { setState(JSON.parse(e.newValue)); } catch {}
-      }
-    };
-
-    window.addEventListener('storage', handler);
-    
-    // Also poll every 2s as fallback
-    const interval = setInterval(() => {
-      const s = localStorage.getItem('lan-tournament-state');
-      if (s) {
-        try { setState(JSON.parse(s)); } catch {}
-      }
-    }, 2000);
-
-    return () => {
-      window.removeEventListener('storage', handler);
-      clearInterval(interval);
-    };
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0d0f' }}>
+        <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+      </div>
+    );
+  }
 
   return <BroadcastView state={state} />;
 }

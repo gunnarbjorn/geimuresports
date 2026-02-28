@@ -4,9 +4,11 @@ import { useState } from 'react';
 interface Props {
   state: TournamentState;
   dispatch: React.Dispatch<TournamentAction>;
+  gameLocked?: boolean;
+  onToggleLock?: () => void;
 }
 
-export default function DashboardView({ state, dispatch }: Props) {
+export default function DashboardView({ state, dispatch, gameLocked, onToggleLock }: Props) {
   const [showSettings, setShowSettings] = useState(false);
   const [config, setConfig] = useState(state.placementPointsConfig);
   const [killPts, setKillPts] = useState(state.killPointsPerKill);
@@ -38,9 +40,7 @@ export default function DashboardView({ state, dispatch }: Props) {
           Lau 28. feb · 13:00–16:00
         </p>
         {state.gameHistory.length > 0 && (
-          <p className="text-sm text-gray-500 mt-1">
-            {state.gameHistory.length} leikir kláraðir
-          </p>
+          <p className="text-sm text-gray-500 mt-1">{state.gameHistory.length} leikir kláraðir</p>
         )}
       </div>
 
@@ -59,18 +59,35 @@ export default function DashboardView({ state, dispatch }: Props) {
           🎮 BYRJA MÓT
         </button>
 
-        <button
-          onClick={handleReset}
-          className="px-8 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105"
-          style={{
-            fontFamily: 'Rajdhani, sans-serif',
-            background: 'rgba(232, 52, 28, 0.2)',
-            border: '1px solid #e8341c',
-            color: '#e8341c',
-          }}
-        >
-          RESET / STOP MÓT
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleReset}
+            className="px-8 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105"
+            style={{
+              fontFamily: 'Rajdhani, sans-serif',
+              background: 'rgba(232, 52, 28, 0.2)',
+              border: '1px solid #e8341c',
+              color: '#e8341c',
+            }}
+          >
+            RESET / STOP MÓT
+          </button>
+
+          {onToggleLock && state.status === 'active' && (
+            <button
+              onClick={onToggleLock}
+              className="px-4 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105"
+              style={{
+                fontFamily: 'Rajdhani, sans-serif',
+                background: gameLocked ? '#f59e0b22' : '#2a2a30',
+                border: gameLocked ? '1px solid #f59e0b' : '1px solid #2a2a30',
+                color: gameLocked ? '#f59e0b' : '#888',
+              }}
+            >
+              {gameLocked ? '🔒 OPNA LEIK' : '🔓 LÆSA LEIK'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Settings toggle */}
@@ -83,7 +100,6 @@ export default function DashboardView({ state, dispatch }: Props) {
 
       {showSettings && (
         <div className="p-4 rounded-xl w-full max-w-md" style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}>
-          {/* Kill points config */}
           <h3 className="text-sm font-bold mb-3 text-gray-300" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
             STIG FYRIR FELL (KILL)
           </h3>
@@ -152,9 +168,10 @@ export default function DashboardView({ state, dispatch }: Props) {
               className="p-4 rounded-xl transition-all hover:scale-[1.02]"
               style={{
                 background: '#1a1a1f',
-                border: hasPoints && i < 3
-                  ? `1px solid ${i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : '#cd7f32'}`
-                  : '1px solid #2a2a30',
+                border:
+                  hasPoints && i < 3
+                    ? `1px solid ${i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : '#cd7f32'}`
+                    : '1px solid #2a2a30',
               }}
             >
               <div className="flex items-start justify-between">
@@ -170,7 +187,10 @@ export default function DashboardView({ state, dispatch }: Props) {
                 <div className="flex items-center gap-2">
                   {hasPoints && (
                     <div className="text-right">
-                      <span className="text-xl font-bold" style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}>
+                      <span
+                        className="text-xl font-bold"
+                        style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}
+                      >
                         {getTeamTotalPoints(team)}
                       </span>
                       <p className="text-xs text-gray-500">stig</p>

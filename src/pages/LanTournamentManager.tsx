@@ -1,80 +1,41 @@
-import { useReducer, useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  TournamentState,
-  createInitialState,
-  tournamentReducer,
-  Team,
-} from '@/components/lan-manager/types';
 import DashboardView from '@/components/lan-manager/DashboardView';
 import GameView from '@/components/lan-manager/GameView';
 import BroadcastView from '@/components/lan-manager/BroadcastView';
 import ResultsView from '@/components/lan-manager/ResultsView';
-import { supabase } from '@/integrations/supabase/client';
+import SyncIndicator from '@/components/lan-manager/SyncIndicator';
+import ActiveAdmins from '@/components/lan-manager/ActiveAdmins';
+import ActivityLog from '@/components/lan-manager/ActivityLog';
+import { useTournamentRealtime } from '@/hooks/useTournamentRealtime';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Loader2, ShieldAlert } from 'lucide-react';
 
 type View = 'dashboard' | 'game' | 'broadcast' | 'results';
 
-function syncToStorage(state: TournamentState) {
-  try {
-    localStorage.setItem('lan-tournament-state', JSON.stringify(state));
-  } catch {}
-}
-
 export default function LanTournamentManager() {
   const navigate = useNavigate();
   const { user, isAdmin, isLoading: authLoading, signOut } = useAdminAuth();
-  const [state, dispatch] = useReducer(tournamentReducer, undefined, () => createInitialState());
   const [view, setView] = useState<View>('dashboard');
+  const [showLog, setShowLog] = useState(false);
+
+  const {
+    state,
+    dispatch,
+    syncStatus,
+    activeAdmins,
+    activityLog,
+    undoLastAction,
+    canUndo,
+    gameLocked,
+    toggleGameLock,
+    isLoading: tournamentLoading,
+  } = useTournamentRealtime({ userEmail: user?.email || undefined });
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
+    if (!authLoading && !user) navigate('/auth');
   }, [authLoading, user, navigate]);
-
-  // Fetch registered teams from DB and set them
-  useEffect(() => {
-    if (!isAdmin) return;
-    async function fetchTeams() {
-      try {
-        const { data } = await (supabase as any).rpc('get_lan_registered_teams');
-        if (data && data.length > 0) {
-          const dbTeams: Team[] = data.map((row: any) => ({
-            id: row.id,
-            name: row.team_name,
-            players: [row.player1, row.player2] as [string, string],
-            playersAlive: [true, true] as [boolean, boolean],
-            killPoints: 0,
-            placementPoints: 0,
-            alive: true,
-            gameKills: 0,
-          }));
-          // Merge: keep existing teams that have points (in-progress tournament), add new DB teams
-          const existingIds = new Set(state.teams.map(t => t.id));
-          const newTeams = dbTeams.filter(t => !existingIds.has(t.id));
-          const existingWithPoints = state.teams.filter(t => t.killPoints > 0 || t.placementPoints > 0);
-          if (existingWithPoints.length > 0) {
-            // Tournament in progress — only add new teams
-            if (newTeams.length > 0) {
-              dispatch({ type: 'SET_TEAMS', teams: [...state.teams, ...newTeams] });
-            }
-          } else {
-            // No tournament in progress — replace with DB teams
-            dispatch({ type: 'SET_TEAMS', teams: dbTeams });
-          }
-        }
-      } catch {}
-    }
-    fetchTeams();
-  }, [isAdmin]);
-
-  // Sync state to localStorage
-  useEffect(() => {
-    syncToStorage(state);
-  }, [state]);
 
   // Auto-switch views based on state
   useEffect(() => {
@@ -87,8 +48,7 @@ export default function LanTournamentManager() {
     window.open(window.location.origin + '/admin/lan-broadcast', '_blank');
   };
 
-  // Auth loading state
-  if (authLoading) {
+  if (authLoading || tournamentLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0d0f' }}>
         <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
@@ -96,7 +56,6 @@ export default function LanTournamentManager() {
     );
   }
 
-  // Not admin
   if (user && !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#0d0d0f' }}>
@@ -104,7 +63,9 @@ export default function LanTournamentManager() {
           <ShieldAlert className="h-16 w-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-white text-xl font-bold mb-2">Aðgangur bannaður</h2>
           <p className="text-gray-400 mb-6">Þú hefur ekki admin réttindi.</p>
-          <button onClick={signOut} className="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">Útskrá</button>
+          <button onClick={signOut} className="px-4 py-2 rounded bg-gray-800 text-gray-300 hover:bg-gray-700">
+            Útskrá
+          </button>
         </div>
       </div>
     );
@@ -140,12 +101,25 @@ export default function LanTournamentManager() {
         </div>
 
         <div className="flex items-center gap-3">
+          <SyncIndicator status={syncStatus} />
+          <ActiveAdmins admins={activeAdmins} />
+          <button
+            onClick={() => setShowLog(!showLog)}
+            className="px-3 py-1.5 text-xs font-bold rounded-lg"
+            style={{
+              background: showLog ? '#e8341c22' : '#1a1a1f',
+              color: showLog ? '#e8341c' : '#888',
+              border: '1px solid #2a2a30',
+            }}
+          >
+            📋 Log
+          </button>
           <button
             onClick={openBroadcastTab}
             className="px-3 py-1.5 text-xs font-bold rounded-lg"
             style={{ background: '#1a1a1f', color: '#888', border: '1px solid #2a2a30' }}
           >
-            📺 Opna útsendingu í nýjum flipa
+            📺 Opna útsendingu
           </button>
           <span className="text-xs text-gray-600">
             {state.status === 'lobby' && 'Lobby'}
@@ -155,10 +129,17 @@ export default function LanTournamentManager() {
         </div>
       </nav>
 
+      {/* Activity Log sidebar */}
+      <ActivityLog entries={activityLog} isOpen={showLog} onToggle={() => setShowLog(false)} />
+
       {/* Views */}
       <main className={view === 'game' ? 'pb-20' : ''}>
-        {view === 'dashboard' && <DashboardView state={state} dispatch={dispatch} />}
-        {view === 'game' && <GameView state={state} dispatch={dispatch} />}
+        {view === 'dashboard' && (
+          <DashboardView state={state} dispatch={dispatch} gameLocked={gameLocked} onToggleLock={toggleGameLock} />
+        )}
+        {view === 'game' && (
+          <GameView state={state} dispatch={dispatch} gameLocked={gameLocked} onUndo={undoLastAction} canUndo={canUndo} />
+        )}
         {view === 'broadcast' && <BroadcastView state={state} />}
         {view === 'results' && <ResultsView state={state} dispatch={dispatch} />}
       </main>
