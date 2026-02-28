@@ -31,7 +31,7 @@ export interface TournamentState {
   eliminationOrder: string[]; // track order teams were eliminated
 }
 
-export const DEFAULT_PLACEMENT_POINTS = [10, 7, 5, 3, 2, 1, 1, 1, 1];
+export const DEFAULT_PLACEMENT_POINTS = [10, 7, 5, 3, 2, 2, 1, 1, 1, 1];
 
 // No more hardcoded teams — all teams come from the database
 
