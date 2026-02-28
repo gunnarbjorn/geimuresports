@@ -261,41 +261,50 @@ export default function ResultsView({ state, dispatch }: Props) {
       </div>
 
       {/* Full Leaderboard */}
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-4xl">
         <h2 className="text-2xl font-bold mb-4 text-center" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
           FULL STIGATAFLA
         </h2>
-        <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}>
-          {ranked.map((team, i) => {
-            const medalColor = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : undefined;
-            return (
-              <div
-                key={team.id}
-                className="flex items-center justify-between px-4 py-3"
-                style={{
-                  borderBottom: i < ranked.length - 1 ? '1px solid #2a2a30' : undefined,
-                  borderLeft: medalColor ? `3px solid ${medalColor}` : '3px solid transparent',
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="font-bold w-6 text-center" style={{ color: medalColor || '#666', fontFamily: 'Rajdhani, sans-serif' }}>
-                    {i + 1}
-                  </span>
-                  <div>
-                    <span className="font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>{team.name}</span>
-                    <p className="text-xs text-gray-500">{team.players.join(' & ')}</p>
-                  </div>
-                </div>
-                <div className="flex gap-4 text-sm items-center">
-                  <span className="text-gray-500">{team.killPoints}k</span>
-                  <span className="text-gray-500">{team.placementPoints}p</span>
-                  <span className="text-xl font-black" style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}>
-                    {getTeamTotalPoints(team)}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+        <div className="rounded-xl overflow-hidden overflow-x-auto" style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}>
+          <table className="w-full text-sm" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #2a2a30' }}>
+                <th className="text-left px-4 py-3 text-gray-500 font-bold text-xs">#</th>
+                <th className="text-left px-2 py-3 text-gray-500 font-bold text-xs">LIÐ</th>
+                {state.gameHistory.map(g => (
+                  <th key={g.gameNumber} className="text-center px-2 py-3 text-gray-500 font-bold text-xs">L{g.gameNumber}</th>
+                ))}
+                <th className="text-center px-2 py-3 text-gray-500 font-bold text-xs">Kills</th>
+                <th className="text-center px-2 py-3 text-gray-500 font-bold text-xs">Place</th>
+                <th className="text-right px-4 py-3 text-gray-500 font-bold text-xs">SAMTALS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ranked.map((team, i) => {
+                const medalColor = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : undefined;
+                return (
+                  <tr key={team.id} style={{ borderBottom: i < ranked.length - 1 ? '1px solid #2a2a30' : undefined, borderLeft: medalColor ? `3px solid ${medalColor}` : '3px solid transparent' }}>
+                    <td className="px-4 py-3 font-bold" style={{ color: medalColor || '#666' }}>{i + 1}</td>
+                    <td className="px-2 py-3">
+                      <span className="font-bold">{team.name}</span>
+                      <p className="text-xs text-gray-500">{team.players.join(' & ')}</p>
+                    </td>
+                    {state.gameHistory.map(g => {
+                      const p = g.placements.find(pl => pl.teamId === team.id);
+                      return (
+                        <td key={g.gameNumber} className="text-center px-2 py-3 text-gray-400">
+                          {p ? p.killPoints + p.placementPoints : '-'}
+                        </td>
+                      );
+                    })}
+                    <td className="text-center px-2 py-3 text-gray-500">{team.killPoints}</td>
+                    <td className="text-center px-2 py-3 text-gray-500">{team.placementPoints}</td>
+                    <td className="text-right px-4 py-3 text-xl font-black" style={{ color: '#e8341c' }}>{getTeamTotalPoints(team)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 

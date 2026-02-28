@@ -234,7 +234,7 @@ export default function DashboardView({ state, dispatch, gameLocked, onToggleLoc
           onClick={() => setAdjustingTeam(null)}
         >
           <div
-            className="p-6 rounded-2xl w-full max-w-sm mx-4"
+            className="p-6 rounded-2xl w-full max-w-md mx-4 max-h-[85vh] overflow-auto"
             style={{ background: '#1a1a1f', border: '1px solid #3b82f6' }}
             onClick={e => e.stopPropagation()}
           >
@@ -244,6 +244,40 @@ export default function DashboardView({ state, dispatch, gameLocked, onToggleLoc
             <p className="text-sm text-gray-400 mb-4">
               {adjustingTeam.name} — núv. {getTeamTotalPoints(adjustingTeam)} stig
             </p>
+
+            {/* Per-game breakdown */}
+            {state.gameHistory.length > 0 && (
+              <div className="mb-4 rounded-lg overflow-hidden" style={{ background: '#0d0d0f', border: '1px solid #2a2a30' }}>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #2a2a30' }}>
+                      <th className="text-left px-3 py-2 text-gray-500 font-bold text-xs">Leikur</th>
+                      <th className="text-center px-2 py-2 text-gray-500 font-bold text-xs">Sæti</th>
+                      <th className="text-center px-2 py-2 text-gray-500 font-bold text-xs">Kills</th>
+                      <th className="text-center px-2 py-2 text-gray-500 font-bold text-xs">K-stig</th>
+                      <th className="text-center px-2 py-2 text-gray-500 font-bold text-xs">P-stig</th>
+                      <th className="text-right px-3 py-2 text-gray-500 font-bold text-xs">Samtals</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {state.gameHistory.map(game => {
+                      const p = game.placements.find(pl => pl.teamId === adjustingTeam.id);
+                      if (!p) return null;
+                      return (
+                        <tr key={game.gameNumber} style={{ borderBottom: '1px solid #1a1a1f' }}>
+                          <td className="px-3 py-1.5 text-gray-300 font-bold">#{game.gameNumber}</td>
+                          <td className="text-center px-2 py-1.5 text-gray-400">{p.placement}.</td>
+                          <td className="text-center px-2 py-1.5 text-gray-400">{p.kills}</td>
+                          <td className="text-center px-2 py-1.5 text-gray-400">{p.killPoints}</td>
+                          <td className="text-center px-2 py-1.5 text-gray-400">{p.placementPoints}</td>
+                          <td className="text-right px-3 py-1.5 font-bold" style={{ color: '#e8341c' }}>{p.killPoints + p.placementPoints}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             <div className="space-y-4">
               <div>
