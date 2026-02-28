@@ -276,8 +276,8 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
             teamData.map((r: any) => ({
               id: r.id,
               name: r.team_name,
-              players: [r.player1, r.player2] as [string, string],
-              playersAlive: [true, true] as [boolean, boolean],
+              players: [r.player1, r.player2 || ''] as [string, string],
+              playersAlive: [true, r.player2 ? true : false] as [boolean, boolean],
               killPoints: 0,
               placementPoints: 0,
               alive: true,
@@ -351,18 +351,26 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'lan_tournament_orders' }, async () => {
         const { data: teamData } = await (supabase as any).rpc('get_lan_registered_teams');
         if (teamData) {
-          setTeams(
-            teamData.map((r: any) => ({
-              id: r.id,
-              name: r.team_name,
-              players: [r.player1, r.player2] as [string, string],
-              playersAlive: [true, true] as [boolean, boolean],
-              killPoints: 0,
-              placementPoints: 0,
-              alive: true,
-              gameKills: 0,
-            })),
-          );
+          setTeams(prev => {
+            const prevMap = new Map(prev.map(t => [t.id, t]));
+            return teamData.map((r: any) => {
+              const existing = prevMap.get(r.id);
+              if (existing) {
+                // Only update name/players, preserve game state
+                return { ...existing, name: r.team_name, players: [r.player1, r.player2 || ''] as [string, string] };
+              }
+              return {
+                id: r.id,
+                name: r.team_name,
+                players: [r.player1, r.player2 || ''] as [string, string],
+                playersAlive: [true, r.player2 ? true : false] as [boolean, boolean],
+                killPoints: 0,
+                placementPoints: 0,
+                alive: true,
+                gameKills: 0,
+              };
+            });
+          });
         }
       })
       .subscribe();
@@ -450,16 +458,20 @@ export function useTournamentRealtime(options?: UseTournamentOptions) {
             }
             case 'ELIMINATE_TEAM': {
               if (t.game_locked) { toast.error('Leikur er læstur'); return; }
+              const team = teamsRef.current.find(tm => tm.id === action.teamId);
               await insertEv('player_eliminate', t.current_game, {
                 victim_team_id: action.teamId,
                 victim_player_index: 0,
                 killer_team_id: action.killerTeamId,
               });
-              await insertEv('player_eliminate', t.current_game, {
-                victim_team_id: action.teamId,
-                victim_player_index: 1,
-                killer_team_id: '__storm__',
-              });
+              // Only eliminate player 2 if they exist (not solo)
+              if (team && team.players[1]) {
+                await insertEv('player_eliminate', t.current_game, {
+                  victim_team_id: action.teamId,
+                  victim_player_index: 1,
+                  killer_team_id: '__storm__',
+                });
+              }
               break;
             }
             case 'REVIVE_TEAM': {

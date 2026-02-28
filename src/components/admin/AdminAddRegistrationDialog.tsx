@@ -77,7 +77,7 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
 
     try {
       if (regType === "lan-tournament") {
-        if (!lanTeamName || !lanPlayer1 || !lanPlayer2 || !lanEmail) {
+        if (!lanTeamName || !lanPlayer1 || !lanEmail) {
           toast.error("Fylltu út alla nauðsynlega reiti");
           setIsSubmitting(false);
           return;
@@ -93,7 +93,7 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
         const { error } = await supabase.from("lan_tournament_orders").insert({
           team_name: lanTeamName,
           player1: lanPlayer1,
-          player2: lanPlayer2,
+          player2: lanPlayer2 || lanPlayer1, // solo: duplicate name or empty
           email: lanEmail,
           pizza: lanPizza,
           amount,
@@ -204,8 +204,8 @@ export function AdminAddRegistrationDialog({ onAdded }: AdminAddRegistrationDial
                   <Input value={lanPlayer1} onChange={(e) => setLanPlayer1(e.target.value)} placeholder="Fortnite nafn" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Spilari 2 *</Label>
-                  <Input value={lanPlayer2} onChange={(e) => setLanPlayer2(e.target.value)} placeholder="Fortnite nafn" />
+                  <Label>Spilari 2 (valfrjálst - einn í liði)</Label>
+                  <Input value={lanPlayer2} onChange={(e) => setLanPlayer2(e.target.value)} placeholder="Fortnite nafn (autt ef einn)" />
                 </div>
               </div>
               <div className="space-y-2">

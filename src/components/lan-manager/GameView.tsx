@@ -25,6 +25,7 @@ export default function GameView({ state, dispatch, gameLocked, onUndo, canUndo 
 
   state.teams.forEach(team => {
     team.players.forEach((name, idx) => {
+      if (!name) return; // skip empty solo player slot
       const ref: PlayerRef = { teamId: team.id, playerIndex: idx, name, teamName: team.name };
       if (team.playersAlive[idx]) alivePlayers.push(ref);
       else eliminatedPlayers.push(ref);
