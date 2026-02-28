@@ -25,6 +25,7 @@ import LanTournamentManager from "./pages/LanTournamentManager";
 import LanBroadcast from "./pages/LanBroadcast";
 import AlltUndirManager from "./pages/AlltUndirManager";
 import AlltUndirBroadcast from "./pages/AlltUndirBroadcast";
+import TournamentResults from "./pages/TournamentResults";
 import { Navigate } from "react-router-dom";
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/keppa/elko-deild" element={<Keppa defaultTournament="elko-deild-vor-2026" />} />
           <Route path="/keppa/arena-lan" element={<Keppa defaultTournament="arena-lan-coming-soon" />} />
           <Route path="/keppa/allt-undir" element={<Keppa defaultTournament="allt-undir" />} />
+          <Route path="/keppa/:slug/nidurstodur" element={<TournamentResults />} />
           <Route path="/lan-mot" element={<Navigate to="/keppa/arena-lan" replace />} />
           <Route path="/lan-mot/stadfesting" element={<LanMotStadfesting />} />
           {/* Legacy routes */}

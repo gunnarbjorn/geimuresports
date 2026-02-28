@@ -127,7 +127,8 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
                         onClick={() => {
                           const route = tournamentRoutes[t.id];
                           if (route) {
-                            navigate(route);
+                            const status = getStatus(t.id);
+                            navigate(status === 'completed' ? `${route}/nidurstodur` : route);
                           } else {
                             setSelectedId(t.id);
                           }
