@@ -41,6 +41,8 @@ export type SoloTournamentAction =
   | { type: 'ELIMINATE_PLAYER'; playerId: string; killerPlayerId: string }
   | { type: 'REVIVE_PLAYER'; playerId: string }
   | { type: 'END_GAME' }
+  | { type: 'SUBMIT_GAME_RESULTS'; results: { playerId: string; kills: number; placement: number }[] }
+  | { type: 'EDIT_GAME_RESULTS'; gameNumber: number; results: { playerId: string; kills: number; placement: number }[] }
   | { type: 'UPDATE_PLACEMENT_CONFIG'; config: number[] }
   | { type: 'UPDATE_KILL_POINTS'; killPointsPerKill: number }
   | { type: 'SET_RAFFLE_WINNERS'; winners: string[] }
@@ -141,6 +143,53 @@ export function soloTournamentReducer(state: SoloTournamentState, action: SoloTo
       };
     }
 
+    case 'SUBMIT_GAME_RESULTS': {
+      const { results } = action;
+      const placements = results.map(r => ({
+        playerId: r.playerId,
+        placement: r.placement,
+        kills: r.kills,
+        killPoints: r.kills * state.killPointsPerKill,
+        placementPoints: state.placementPointsConfig[r.placement - 1] || 0,
+      }));
+
+      const gameResult: SoloGameResult = {
+        gameNumber: state.currentGame,
+        placements,
+      };
+
+      const newHistory = [...state.gameHistory, gameResult];
+      const players = recalcPlayersFromHistory(state.players, newHistory, state.killPointsPerKill, state.placementPointsConfig);
+      const isFinished = state.currentGame >= state.totalGames;
+
+      return {
+        ...state,
+        players,
+        gameHistory: newHistory,
+        currentGame: isFinished ? state.currentGame : state.currentGame + 1,
+        status: isFinished ? 'finished' : 'active',
+        eliminationOrder: [],
+      };
+    }
+
+    case 'EDIT_GAME_RESULTS': {
+      const { gameNumber, results } = action;
+      const placements = results.map(r => ({
+        playerId: r.playerId,
+        placement: r.placement,
+        kills: r.kills,
+        killPoints: r.kills * state.killPointsPerKill,
+        placementPoints: state.placementPointsConfig[r.placement - 1] || 0,
+      }));
+
+      const newHistory = state.gameHistory.map(g =>
+        g.gameNumber === gameNumber ? { ...g, placements } : g
+      );
+      const players = recalcPlayersFromHistory(state.players, newHistory, state.killPointsPerKill, state.placementPointsConfig);
+
+      return { ...state, players, gameHistory: newHistory };
+    }
+
     case 'UPDATE_PLACEMENT_CONFIG':
       return { ...state, placementPointsConfig: action.config };
     case 'UPDATE_KILL_POINTS':
@@ -156,10 +205,44 @@ export function soloTournamentReducer(state: SoloTournamentState, action: SoloTo
   }
 }
 
+function recalcPlayersFromHistory(
+  players: SoloPlayer[],
+  history: SoloGameResult[],
+  killPointsPerKill: number,
+  placementConfig: number[]
+): SoloPlayer[] {
+  return players.map(p => {
+    let killPoints = 0;
+    let placementPoints = 0;
+    for (const game of history) {
+      const pl = game.placements.find(x => x.playerId === p.id);
+      if (pl) {
+        killPoints += pl.kills * killPointsPerKill;
+        placementPoints += placementConfig[pl.placement - 1] || 0;
+      }
+    }
+    return { ...p, killPoints, placementPoints, alive: true, gameKills: 0 };
+  });
+}
+
 export function getSoloPlayerTotalPoints(player: SoloPlayer): number {
   return player.killPoints + player.placementPoints;
 }
 
 export function getRankedSoloPlayers(players: SoloPlayer[]): SoloPlayer[] {
   return [...players].sort((a, b) => getSoloPlayerTotalPoints(b) - getSoloPlayerTotalPoints(a));
+}
+
+export function getPlayerWins(playerId: string, gameHistory: SoloGameResult[]): number {
+  return gameHistory.filter(g => {
+    const first = g.placements.find(p => p.placement === 1);
+    return first?.playerId === playerId;
+  }).length;
+}
+
+export function getPlayerTotalKills(playerId: string, gameHistory: SoloGameResult[]): number {
+  return gameHistory.reduce((sum, g) => {
+    const pl = g.placements.find(p => p.playerId === playerId);
+    return sum + (pl?.kills || 0);
+  }, 0);
 }

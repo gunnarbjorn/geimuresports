@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { SoloTournamentState, SoloTournamentAction, getRankedSoloPlayers, getSoloPlayerTotalPoints } from './types';
+import { SoloTournamentState, SoloTournamentAction, getRankedSoloPlayers, getSoloPlayerTotalPoints, getPlayerWins, getPlayerTotalKills } from './types';
 
 interface Props {
   state: SoloTournamentState;
@@ -165,8 +165,22 @@ export default function SoloResultsView({ state, dispatch }: Props) {
           FULL STIGATAFLA
         </h2>
         <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}>
+          {/* Header */}
+          <div
+            className="flex items-center justify-between px-4 py-2 text-xs text-gray-500 font-bold"
+            style={{ borderBottom: '1px solid #2a2a30', fontFamily: 'Rajdhani, sans-serif' }}
+          >
+            <span>Leikmaður</span>
+            <div className="flex items-center gap-4">
+              <span className="w-12 text-center">Sigrar</span>
+              <span className="w-12 text-center">Fellur</span>
+              <span className="w-14 text-center">Stig</span>
+            </div>
+          </div>
           {ranked.map((player, i) => {
             const medalColor = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : undefined;
+            const wins = getPlayerWins(player.id, state.gameHistory);
+            const totalKills = getPlayerTotalKills(player.id, state.gameHistory);
             return (
               <div
                 key={player.id}
@@ -183,9 +197,9 @@ export default function SoloResultsView({ state, dispatch }: Props) {
                   <span className="font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>{player.name}</span>
                 </div>
                 <div className="flex gap-4 text-sm items-center">
-                  <span className="text-gray-500">{player.killPoints}k</span>
-                  <span className="text-gray-500">{player.placementPoints}p</span>
-                  <span className="text-xl font-black" style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}>
+                  <span className="w-12 text-center text-yellow-500">{wins > 0 ? `${wins}🏆` : '—'}</span>
+                  <span className="w-12 text-center text-gray-500">{totalKills}</span>
+                  <span className="w-14 text-center text-xl font-black" style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}>
                     {getSoloPlayerTotalPoints(player)}
                   </span>
                 </div>
