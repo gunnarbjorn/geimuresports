@@ -35,29 +35,35 @@ export default function LanTournamentManager() {
     }
   }, [authLoading, user, navigate]);
 
-  // Fetch registered teams from DB and merge
+  // Fetch registered teams from DB and set them
   useEffect(() => {
     if (!isAdmin) return;
     async function fetchTeams() {
       try {
         const { data } = await (supabase as any).rpc('get_lan_registered_teams');
         if (data && data.length > 0) {
-          const existingNames = new Set(state.teams.map(t => t.name.toLowerCase()));
-          const dbTeams: Team[] = data
-            .filter((row: any) => !existingNames.has(row.team_name.toLowerCase()))
-            .map((row: any) => ({
-              id: row.id,
-              name: row.team_name,
-              players: [row.player1, row.player2] as [string, string],
-              playersAlive: [true, true] as [boolean, boolean],
-              killPoints: 0,
-              placementPoints: 0,
-              alive: true,
-              gameKills: 0,
-            }));
-
-          if (dbTeams.length > 0) {
-            dispatch({ type: 'SET_TEAMS', teams: [...state.teams, ...dbTeams] });
+          const dbTeams: Team[] = data.map((row: any) => ({
+            id: row.id,
+            name: row.team_name,
+            players: [row.player1, row.player2] as [string, string],
+            playersAlive: [true, true] as [boolean, boolean],
+            killPoints: 0,
+            placementPoints: 0,
+            alive: true,
+            gameKills: 0,
+          }));
+          // Merge: keep existing teams that have points (in-progress tournament), add new DB teams
+          const existingIds = new Set(state.teams.map(t => t.id));
+          const newTeams = dbTeams.filter(t => !existingIds.has(t.id));
+          const existingWithPoints = state.teams.filter(t => t.killPoints > 0 || t.placementPoints > 0);
+          if (existingWithPoints.length > 0) {
+            // Tournament in progress — only add new teams
+            if (newTeams.length > 0) {
+              dispatch({ type: 'SET_TEAMS', teams: [...state.teams, ...newTeams] });
+            }
+          } else {
+            // No tournament in progress — replace with DB teams
+            dispatch({ type: 'SET_TEAMS', teams: dbTeams });
           }
         }
       } catch {}

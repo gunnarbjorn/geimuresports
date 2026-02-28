@@ -158,7 +158,7 @@ export default function DashboardView({ state, dispatch }: Props) {
               }}
             >
               <div className="flex items-start justify-between">
-                <div>
+                <div className="min-w-0 flex-1">
                   <h3 className="font-bold text-lg" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
                     {hasPoints && <span className="text-gray-500 mr-2">#{i + 1}</span>}
                     {team.name}
@@ -167,14 +167,29 @@ export default function DashboardView({ state, dispatch }: Props) {
                     {team.players[0]} & {team.players[1]}
                   </p>
                 </div>
-                {hasPoints && (
-                  <div className="text-right">
-                    <span className="text-xl font-bold" style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}>
-                      {getTeamTotalPoints(team)}
-                    </span>
-                    <p className="text-xs text-gray-500">stig</p>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  {hasPoints && (
+                    <div className="text-right">
+                      <span className="text-xl font-bold" style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}>
+                        {getTeamTotalPoints(team)}
+                      </span>
+                      <p className="text-xs text-gray-500">stig</p>
+                    </div>
+                  )}
+                  {state.status === 'lobby' && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Fjarlægja ${team.name} úr mótinu?`)) {
+                          dispatch({ type: 'REMOVE_TEAM', teamId: team.id });
+                        }
+                      }}
+                      className="ml-2 p-1.5 rounded-lg text-gray-600 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                      title="Fjarlægja lið"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}

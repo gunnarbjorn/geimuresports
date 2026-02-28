@@ -33,17 +33,7 @@ export interface TournamentState {
 
 export const DEFAULT_PLACEMENT_POINTS = [10, 7, 5, 3, 2, 1, 1, 1, 1];
 
-export const INITIAL_TEAMS: Omit<Team, 'killPoints' | 'placementPoints' | 'alive' | 'gameKills' | 'playersAlive'>[] = [
-  { id: 't1', name: 'Bumburnar', players: ['Breki', 'Kristófer'] },
-  { id: 't2', name: 'Bucket Boys', players: ['Gísli Bucket', 'Veigz In A Bucket'] },
-  { id: 't3', name: 'Sveittir', players: ['Kisi', 'K-ófer'] },
-  { id: 't4', name: 'Ronald', players: ['Axel Máni', 'Aron Elí'] },
-  { id: 't5', name: 'The Nation Of Tomainia', players: ['olinoi', 'ari_eagle'] },
-  { id: 't6', name: 'FH Bræðurnir', players: ['FH thorri', 'FH Veltric'] },
-  { id: 't7', name: 'FH Bræðurnir 2', players: ['FH Looter!', 'FH alex!'] },
-  { id: 't8', name: 'Skagfírska Mafían', players: ['AtliStefansson', 'MattiMegaPixel'] },
-  { id: 't9', name: 'Gleraugu', players: ['UGGXXINN22', '82.Capt.Joker.'] },
-];
+// No more hardcoded teams — all teams come from the database
 
 export type TournamentAction =
   | { type: 'START_TOURNAMENT' }
@@ -56,22 +46,14 @@ export type TournamentAction =
   | { type: 'UPDATE_PLACEMENT_CONFIG'; config: number[] }
   | { type: 'UPDATE_KILL_POINTS'; killPointsPerKill: number }
   | { type: 'SET_RAFFLE_WINNERS'; winners: string[] }
-  | { type: 'SET_TEAMS'; teams: Team[] };
+  | { type: 'SET_TEAMS'; teams: Team[] }
+  | { type: 'REMOVE_TEAM'; teamId: string };
 
 export function createInitialState(teams?: Team[]): TournamentState {
-  const defaultTeams: Team[] = INITIAL_TEAMS.map(t => ({
-    ...t,
-    killPoints: 0,
-    placementPoints: 0,
-    alive: true,
-    playersAlive: [true, true] as [boolean, boolean],
-    gameKills: 0,
-  }));
-
   return {
     status: 'lobby',
     currentGame: 0,
-    teams: teams || defaultTeams,
+    teams: teams || [],
     gameHistory: [],
     placementPointsConfig: DEFAULT_PLACEMENT_POINTS,
     killPointsPerKill: 2,
@@ -217,6 +199,9 @@ export function tournamentReducer(state: TournamentState, action: TournamentActi
 
     case 'SET_TEAMS':
       return { ...state, teams: action.teams };
+
+    case 'REMOVE_TEAM':
+      return { ...state, teams: state.teams.filter(t => t.id !== action.teamId) };
 
     default:
       return state;
