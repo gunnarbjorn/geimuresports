@@ -25,13 +25,19 @@ const StatusBadge = ({ status }: { status: TournamentStatus }) => {
 };
 
 export function TournamentStatusManager() {
-  const { statuses, isLoading, getStatus, updateStatus } = useTournamentStatuses();
+  const { statuses, isLoading, getStatus, updateStatus, updateVisibility, isVisible } = useTournamentStatuses();
   const [updating, setUpdating] = useState<string | null>(null);
   const allTournaments = tournaments;
 
   const handleStatusChange = async (id: string, newStatus: TournamentStatus) => {
     setUpdating(id);
     await updateStatus(id, newStatus);
+    setUpdating(null);
+  };
+
+  const handleVisibilityChange = async (id: string, visible: boolean) => {
+    setUpdating(id);
+    await updateVisibility(id, visible);
     setUpdating(null);
   };
 
@@ -48,6 +54,7 @@ export function TournamentStatusManager() {
 
   const TournamentCard = ({ t }: { t: typeof allTournaments[0] }) => {
     const status = getStatus(t.id);
+    const visible = isVisible(t.id);
     const isUpdating = updating === t.id;
 
     return (
@@ -58,7 +65,7 @@ export function TournamentStatusManager() {
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="font-display text-base font-bold truncate">{t.name}</h3>
                 <StatusBadge status={status} />
-                {t.hidden && <Badge variant="outline" className="text-[10px]">Falið</Badge>}
+                {!visible && <Badge variant="outline" className="text-[10px]">Falið</Badge>}
               </div>
               <p className="text-xs text-muted-foreground">{t.category} · {t.location}</p>
             </div>
@@ -68,7 +75,10 @@ export function TournamentStatusManager() {
                   size="sm"
                   className="bg-[hsl(var(--arena-green))] hover:bg-[hsl(var(--arena-green))]/90 text-primary-foreground"
                   disabled={isUpdating}
-                  onClick={() => handleStatusChange(t.id, 'active')}
+                  onClick={async () => {
+                    await handleVisibilityChange(t.id, true);
+                    await handleStatusChange(t.id, 'active');
+                  }}
                 >
                   {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3 mr-1" />}
                   Birta mót
@@ -76,11 +86,25 @@ export function TournamentStatusManager() {
               )}
               {status === 'active' && (
                 <div className="flex items-center gap-2">
+                  {!visible && (
+                    <Button
+                      size="sm"
+                      className="bg-[hsl(var(--arena-green))] hover:bg-[hsl(var(--arena-green))]/90 text-primary-foreground"
+                      disabled={isUpdating}
+                      onClick={() => handleVisibilityChange(t.id, true)}
+                    >
+                      {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3 mr-1" />}
+                      Birta mót
+                    </Button>
+                  )}
                   <Button
                     size="sm"
                     variant="outline"
                     disabled={isUpdating}
-                    onClick={() => handleStatusChange(t.id, 'upcoming')}
+                    onClick={() => {
+                      handleVisibilityChange(t.id, false);
+                      handleStatusChange(t.id, 'upcoming');
+                    }}
                   >
                     {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <EyeOff className="h-3 w-3 mr-1" />}
                     Taka af lofti
