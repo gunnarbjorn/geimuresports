@@ -4,6 +4,9 @@ import { TournamentState, TournamentAction, getRankedTeams, getTeamTotalPoints }
 interface Props {
   state: TournamentState;
   dispatch: React.Dispatch<TournamentAction>;
+  gameLocked?: boolean;
+  onUndo?: () => void;
+  canUndo?: boolean;
 }
 
 interface PlayerRef {
@@ -13,22 +16,18 @@ interface PlayerRef {
   teamName: string;
 }
 
-export default function GameView({ state, dispatch }: Props) {
+export default function GameView({ state, dispatch, gameLocked, onUndo, canUndo }: Props) {
   const [eliminatingPlayer, setEliminatingPlayer] = useState<PlayerRef | null>(null);
   const ranked = getRankedTeams(state.teams);
 
-  // Build flat lists of alive/eliminated players
   const alivePlayers: PlayerRef[] = [];
   const eliminatedPlayers: PlayerRef[] = [];
 
   state.teams.forEach(team => {
     team.players.forEach((name, idx) => {
       const ref: PlayerRef = { teamId: team.id, playerIndex: idx, name, teamName: team.name };
-      if (team.playersAlive[idx]) {
-        alivePlayers.push(ref);
-      } else {
-        eliminatedPlayers.push(ref);
-      }
+      if (team.playersAlive[idx]) alivePlayers.push(ref);
+      else eliminatedPlayers.push(ref);
     });
   });
 
@@ -36,6 +35,7 @@ export default function GameView({ state, dispatch }: Props) {
   eliminatedPlayers.sort((a, b) => a.name.localeCompare(b.name, 'is'));
 
   const handleEliminate = (player: PlayerRef) => {
+    if (gameLocked) return;
     setEliminatingPlayer(player);
   };
 
@@ -62,10 +62,12 @@ export default function GameView({ state, dispatch }: Props) {
   };
 
   const handleRevive = (player: PlayerRef) => {
+    if (gameLocked) return;
     dispatch({ type: 'REVIVE_PLAYER', teamId: player.teamId, playerIndex: player.playerIndex });
   };
 
   const handleEndGame = () => {
+    if (gameLocked) return;
     if (window.confirm(`Ljúka leik ${state.currentGame}? Placement stig verða reiknuð sjálfkrafa.`)) {
       dispatch({ type: 'END_GAME' });
     }
@@ -79,6 +81,15 @@ export default function GameView({ state, dispatch }: Props) {
           🟢 SPILARAR Á LÍFI ({alivePlayers.length})
         </h2>
 
+        {gameLocked && (
+          <div
+            className="p-3 rounded-lg text-sm font-bold text-center"
+            style={{ background: '#f59e0b22', color: '#f59e0b', border: '1px solid #f59e0b44' }}
+          >
+            🔒 Leikur er læstur — aðgerðir eru óvirkar
+          </div>
+        )}
+
         <div className="grid gap-3 grid-cols-2">
           {alivePlayers.map(p => (
             <div
@@ -88,6 +99,7 @@ export default function GameView({ state, dispatch }: Props) {
                 background: '#1a1a1f',
                 border: '1px solid #22c55e33',
                 boxShadow: '0 0 8px rgba(34, 197, 94, 0.08)',
+                opacity: gameLocked ? 0.5 : 1,
               }}
             >
               <div className="min-w-0">
@@ -98,7 +110,8 @@ export default function GameView({ state, dispatch }: Props) {
               </div>
               <button
                 onClick={() => handleEliminate(p)}
-                className="ml-3 px-6 py-3 text-sm font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95"
+                disabled={gameLocked}
+                className="ml-3 px-6 py-3 text-sm font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{
                   background: 'rgba(232, 52, 28, 0.2)',
                   border: '1px solid #e8341c',
@@ -126,14 +139,18 @@ export default function GameView({ state, dispatch }: Props) {
                   style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}
                 >
                   <div className="min-w-0">
-                    <h3 className="font-bold text-sm line-through truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+                    <h3
+                      className="font-bold text-sm line-through truncate"
+                      style={{ fontFamily: 'Rajdhani, sans-serif' }}
+                    >
                       {p.name}
                     </h3>
                     <p className="text-xs text-gray-600 truncate">{p.teamName}</p>
                   </div>
                   <button
                     onClick={() => handleRevive(p)}
-                    className="ml-2 px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all hover:scale-105"
+                    disabled={gameLocked}
+                    className="ml-2 px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all hover:scale-105 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:scale-100"
                     style={{
                       background: 'rgba(34, 197, 94, 0.2)',
                       border: '1px solid #22c55e',
@@ -155,7 +172,6 @@ export default function GameView({ state, dispatch }: Props) {
         <h2 className="text-xl font-bold text-center" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
           📊 STIGATAFLA
         </h2>
-
         <div className="rounded-xl overflow-hidden" style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}>
           {ranked.map((team, i) => {
             const medalColor = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : undefined;
@@ -202,21 +218,43 @@ export default function GameView({ state, dispatch }: Props) {
         className="fixed bottom-0 left-0 right-0 flex items-center justify-between px-6 py-4 z-50"
         style={{ background: '#0d0d0fee', borderTop: '1px solid #2a2a30' }}
       >
-        <span className="text-lg font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-          LEIKUR {state.currentGame} AF 5
-        </span>
-        <button
-          onClick={handleEndGame}
-          className="px-8 py-3 font-bold rounded-xl transition-all hover:scale-105 active:scale-95"
-          style={{
-            fontFamily: 'Rajdhani, sans-serif',
-            background: 'linear-gradient(135deg, #e8341c, #c62a17)',
-            color: '#fff',
-            boxShadow: '0 0 20px rgba(232, 52, 28, 0.3)',
-          }}
-        >
-          LJÚKA LEIK
-        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-lg font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+            LEIKUR {state.currentGame} AF 5
+          </span>
+          {gameLocked && (
+            <span
+              className="px-2 py-1 text-xs font-bold rounded"
+              style={{ background: '#f59e0b22', color: '#f59e0b', border: '1px solid #f59e0b44' }}
+            >
+              🔒 LÆST
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {canUndo && onUndo && (
+            <button
+              onClick={onUndo}
+              className="px-4 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105 active:scale-95"
+              style={{ background: '#2a2a30', color: '#aaa', fontFamily: 'Rajdhani, sans-serif' }}
+            >
+              ↩ UNDO
+            </button>
+          )}
+          <button
+            onClick={handleEndGame}
+            disabled={gameLocked}
+            className="px-8 py-3 font-bold rounded-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            style={{
+              fontFamily: 'Rajdhani, sans-serif',
+              background: gameLocked ? '#333' : 'linear-gradient(135deg, #e8341c, #c62a17)',
+              color: '#fff',
+              boxShadow: gameLocked ? 'none' : '0 0 20px rgba(232, 52, 28, 0.3)',
+            }}
+          >
+            LJÚKA LEIK
+          </button>
+        </div>
       </div>
 
       {/* Elimination Modal */}
@@ -238,7 +276,6 @@ export default function GameView({ state, dispatch }: Props) {
               {eliminatingPlayer.name} ({eliminatingPlayer.teamName}) var felld/ur
             </p>
             <div className="grid gap-2">
-              {/* Storm / Fall damage option */}
               <button
                 onClick={handleStormKill}
                 className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"

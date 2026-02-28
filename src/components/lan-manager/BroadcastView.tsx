@@ -84,7 +84,7 @@ export default function BroadcastView({ state }: Props) {
               <div className="flex items-center gap-6">
                 <div className="text-center">
                   <p className="text-xs text-gray-600 uppercase">Kills</p>
-                  <p className="text-lg font-bold text-gray-400">{team.killPoints / 2}</p>
+                  <p className="text-lg font-bold text-gray-400">{state.killPointsPerKill > 0 ? Math.round(team.killPoints / state.killPointsPerKill) : 0}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-gray-600 uppercase">Placement</p>
