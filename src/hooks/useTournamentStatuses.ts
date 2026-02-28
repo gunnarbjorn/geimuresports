@@ -48,15 +48,16 @@ export function useTournamentStatuses() {
 
     setStatuses(prev => ({ ...prev, [tournamentId]: newStatus }));
     toast.success(
-      newStatus === 'active' ? 'Skráning opnuð!' :
+      newStatus === 'active' ? 'Mót birt!' :
       newStatus === 'completed' ? 'Móti lokað!' :
+      newStatus === 'upcoming' ? 'Mót tekið af lofti!' :
       'Staða uppfærð!'
     );
     return true;
   }, []);
 
   const getStatus = useCallback((tournamentId: string): TournamentStatus => {
-    return statuses[tournamentId] || 'active';
+    return statuses[tournamentId] || 'upcoming';
   }, [statuses]);
 
   return { statuses, isLoading, getStatus, updateStatus, refetch: fetchStatuses };

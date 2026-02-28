@@ -60,7 +60,7 @@ const Keppa = ({ defaultTournament }: { defaultTournament?: string }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { getStatus } = useTournamentStatuses();
-  const visibleTournaments = tournaments.filter(t => !t.hidden);
+  const visibleTournaments = tournaments.filter(t => !t.hidden && getStatus(t.id) !== 'upcoming');
   const effectiveDefault = defaultTournament || null;
   const [selectedId, setSelectedId] = useState<string | null>(effectiveDefault);
 
