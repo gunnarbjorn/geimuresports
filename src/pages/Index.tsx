@@ -1,15 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { FadeInView } from "@/components/layout/FadeInView";
 import { Card, CardContent } from "@/components/ui/card";
 import { Trophy, Target, Users, BookOpen, ArrowRight } from "lucide-react";
+import { tournaments } from "@/data/tournaments";
+import { useTournamentStatuses } from "@/hooks/useTournamentStatuses";
 
-const paths = [
+const tournamentRoutes: Record<string, string> = {
+  "elko-deild-vor-2026": "/keppa/elko-deild",
+  "arena-lan-coming-soon": "/keppa/arena-lan",
+  "allt-undir": "/keppa/allt-undir",
+};
+
+const basePaths = [
   {
     title: "KEPPA",
     description: "Mót & keppni",
-    href: "/keppa/arena-lan",
+    href: "/keppa", // dynamic, overridden below
     icon: Trophy,
     cardClass: "planet-card-tournament",
     iconBg: "bg-[hsl(var(--planet-tournament)/0.12)]",
@@ -49,7 +57,18 @@ const paths = [
 ];
 
 const Index = () => {
+  const { getStatus, isVisible } = useTournamentStatuses();
   useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, []);
+
+  const paths = useMemo(() => {
+    const activeTournaments = tournaments.filter(
+      t => getStatus(t.id) === 'active' && isVisible(t.id) && tournamentRoutes[t.id]
+    );
+    const keppaHref = activeTournaments.length === 1
+      ? tournamentRoutes[activeTournaments[0].id]
+      : "/keppa";
+    return basePaths.map(p => p.title === "KEPPA" ? { ...p, href: keppaHref } : p);
+  }, [getStatus, isVisible]);
 
   return (
     <Layout>
