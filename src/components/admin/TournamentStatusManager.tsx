@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Trophy, Loader2, Lock, Unlock } from "lucide-react";
+import { Trophy, Loader2, Lock, Unlock, Eye, EyeOff } from "lucide-react";
 
 const StatusBadge = ({ status }: { status: TournamentStatus }) => {
   if (status === 'upcoming') return <Badge className="text-xs bg-yellow-500/15 text-yellow-500 border-yellow-500/30">Væntanlegt</Badge>;
@@ -70,36 +70,47 @@ export function TournamentStatusManager() {
                   disabled={isUpdating}
                   onClick={() => handleStatusChange(t.id, 'active')}
                 >
-                  {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Unlock className="h-3 w-3 mr-1" />}
-                  Opna skráningu
+                  {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3 mr-1" />}
+                  Birta mót
                 </Button>
               )}
               {status === 'active' && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="destructive" disabled={isUpdating}>
-                      {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Lock className="h-3 w-3 mr-1" />}
-                      Loka móti
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Loka móti?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Ertu viss? Þetta lokar skráningu og móti <strong>{t.name}</strong>. Mótið færist í „Lokið" flipa.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Hætta við</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleStatusChange(t.id, 'completed')}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Já, loka móti
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={isUpdating}
+                    onClick={() => handleStatusChange(t.id, 'upcoming')}
+                  >
+                    {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <EyeOff className="h-3 w-3 mr-1" />}
+                    Taka af lofti
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="sm" variant="destructive" disabled={isUpdating}>
+                        {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Lock className="h-3 w-3 mr-1" />}
+                        Loka móti
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Loka móti?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Ertu viss? Þetta lokar skráningu og móti <strong>{t.name}</strong>. Mótið færist í „Lokið" flipa.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Hætta við</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleStatusChange(t.id, 'completed')}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Já, loka móti
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               )}
               {status === 'completed' && (
                 <Button
