@@ -374,7 +374,9 @@ function RegistrationForm({
                     <button
                       type="button"
                       className="text-[hsl(var(--arena-green))] underline"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         const item = document.querySelector('[data-value="reglur"]');
                         if (item) {
                           const trigger = item.querySelector('button[data-radix-collection-item]');
