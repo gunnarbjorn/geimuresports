@@ -778,45 +778,55 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
           </AccordionItem>
         </Accordion>
 
-        {/* How to compete - step by step */}
-        <Card className={`border-[hsl(var(--${accent})/0.3)] bg-card overflow-hidden`}>
-          <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
-            <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
-                <Gamepad2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+        {/* How to compete - step by step (collapsible) */}
+        <Accordion type="single" collapsible>
+          <AccordionItem
+            value="hvernig-keppa"
+            className="bg-card border border-border rounded-xl overflow-hidden"
+          >
+            <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center shrink-0`}>
+                  <Gamepad2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+                </div>
+                <span className="font-display font-semibold text-left">
+                  Hvernig á að keppa
+                </span>
               </div>
-              <CardTitle className="font-display text-lg">Hvernig á að keppa</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-5 md:p-6 space-y-5">
-            {/* Video placeholder */}
-            <div className="aspect-video rounded-lg bg-muted/50 border border-border flex items-center justify-center overflow-hidden">
-              <div className="text-center space-y-2">
-                <Tv className="h-10 w-10 text-muted-foreground mx-auto" />
-                <p className="text-sm text-muted-foreground">Leiðbeiningamyndband kemur fljótlega</p>
+            </AccordionTrigger>
+            <AccordionContent className="px-5 pb-5 space-y-5">
+              {/* Tutorial video */}
+              <div className="aspect-video rounded-lg overflow-hidden border border-border bg-muted/30">
+                <video
+                  src="/clips/geimur-tutorial.mp4"
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-contain"
+                />
               </div>
-            </div>
 
-            {/* Steps */}
-            <ol className="space-y-3">
-              {[
-                "Opnaðu Fortnite",
-                "Scrollaðu niður og leitaðu að Tournament",
-                "Smelltu á Battle Royale Tournament Settings",
-                "Ýttu á Select",
-                "Scrollaðu niður og ýttu á Custom Key — sláðu inn lyklinn sem kemur á Discord",
-                "Ýttu á Play og bíddu eftir að Geimur byrjar leikinn",
-              ].map((step, i) => (
-                <li key={i} className="flex items-start gap-3">
-                  <span className={`flex-shrink-0 w-7 h-7 rounded-full bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))] flex items-center justify-center text-sm font-bold`}>
-                    {i + 1}
-                  </span>
-                  <span className="text-sm text-muted-foreground pt-1">{step}</span>
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
+              {/* Steps */}
+              <ol className="space-y-3">
+                {[
+                  "Opnaðu Fortnite",
+                  "Scrollaðu niður og leitaðu að Tournament",
+                  "Smelltu á Battle Royale Tournament Settings",
+                  "Ýttu á Select",
+                  "Scrollaðu niður og ýttu á Custom Key — sláðu inn lyklinn sem kemur á Discord",
+                  "Ýttu á Play og bíddu eftir að Geimur byrjar leikinn",
+                ].map((step, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className={`flex-shrink-0 w-7 h-7 rounded-full bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))] flex items-center justify-center text-sm font-bold`}>
+                      {i + 1}
+                    </span>
+                    <span className="text-sm text-muted-foreground pt-1">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
 
         {/* Registration form */}
         <div id="skraning-allt-undir" className="scroll-mt-24">
