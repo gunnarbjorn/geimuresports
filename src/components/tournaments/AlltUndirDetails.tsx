@@ -42,10 +42,10 @@ const DISCORD_INVITE_URL = "https://discord.gg/AzwK64zz";
 const TWITCH_URL = "https://www.twitch.tv/geimuresports";
 
 const TOURNAMENT_DATES = [
-  { date: "2026-03-06", label: "Fimmtudagur 6. mars", short: "6. mars" },
-  { date: "2026-03-13", label: "Fimmtudagur 13. mars", short: "13. mars" },
-  { date: "2026-03-20", label: "Fimmtudagur 20. mars", short: "20. mars" },
-  { date: "2026-03-27", label: "Fimmtudagur 27. mars", short: "27. mars" },
+  { date: "2026-03-05", label: "Fimmtudagur 5. mars", short: "5. mars" },
+  { date: "2026-03-12", label: "Fimmtudagur 12. mars", short: "12. mars" },
+  { date: "2026-03-19", label: "Fimmtudagur 19. mars", short: "19. mars" },
+  { date: "2026-03-26", label: "Fimmtudagur 26. mars", short: "26. mars" },
 ];
 
 const TOURNAMENT_CONFIG = {

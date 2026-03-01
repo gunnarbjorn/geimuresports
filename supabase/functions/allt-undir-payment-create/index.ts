@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
     }
 
     // Validate date format
-    const validDates = ["2026-03-06", "2026-03-13", "2026-03-20", "2026-03-27"];
+    const validDates = ["2026-03-05", "2026-03-12", "2026-03-19", "2026-03-26"];
     for (const date of dates) {
       if (!validDates.includes(date)) {
         return new Response(JSON.stringify({ error: `Ógild dagsetning: ${date}` }), {
