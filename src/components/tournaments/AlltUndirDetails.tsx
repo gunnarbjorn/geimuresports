@@ -345,8 +345,8 @@ function RegistrationForm({
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              {/* Step 1: Date selection */}
-              {step === 1 && (
+              {/* Step 1: Date selection (only shown when multiple dates) */}
+              {step === 1 && TOURNAMENT_DATES.length > 1 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold">Veldu daga</Label>
@@ -431,22 +431,26 @@ function RegistrationForm({
               {/* Step 2: Personal info */}
               {step === 2 && (
                 <div className="space-y-4">
-                  <button
-                    type="button"
-                    className={`text-sm text-[hsl(var(--${accent}))] hover:underline flex items-center gap-1`}
-                    onClick={() => setStep(1)}
-                  >
-                    <ArrowLeft className="h-3.5 w-3.5" /> Til baka
-                  </button>
+                  {TOURNAMENT_DATES.length > 1 && (
+                    <button
+                      type="button"
+                      className={`text-sm text-[hsl(var(--${accent}))] hover:underline flex items-center gap-1`}
+                      onClick={() => setStep(1)}
+                    >
+                      <ArrowLeft className="h-3.5 w-3.5" /> Til baka
+                    </button>
+                  )}
 
-                  <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
-                    <span className="text-muted-foreground">
-                      {selectedDates.length} {selectedDates.length === 1 ? 'dagur' : 'dagar'} ·{" "}
-                    </span>
-                    <span className="font-bold text-foreground">
-                      {totalPrice.toLocaleString("is-IS")} kr
-                    </span>
-                  </div>
+                  {TOURNAMENT_DATES.length > 1 && (
+                    <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
+                      <span className="text-muted-foreground">
+                        {selectedDates.length} {selectedDates.length === 1 ? 'dagur' : 'dagar'} ·{" "}
+                      </span>
+                      <span className="font-bold text-foreground">
+                        {totalPrice.toLocaleString("is-IS")} kr
+                      </span>
+                    </div>
+                  )}
 
                   <div>
                     <Label htmlFor="fullName">Fullt nafn</Label>
