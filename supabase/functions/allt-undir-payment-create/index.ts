@@ -45,10 +45,19 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { fullName, kennitala, fortniteName, gmail, date, baseUrl } = await req.json();
+    const body = await req.json();
+    const { fullName, kennitala, fortniteName, gmail, baseUrl } = body;
+    
+    // Support both single date (legacy) and multiple dates
+    let dates: string[] = [];
+    if (body.dates && Array.isArray(body.dates)) {
+      dates = body.dates;
+    } else if (body.date) {
+      dates = [body.date];
+    }
 
     // Validate required fields
-    if (!fullName?.trim() || !kennitala?.trim() || !fortniteName?.trim() || !gmail?.trim() || !date?.trim()) {
+    if (!fullName?.trim() || !kennitala?.trim() || !fortniteName?.trim() || !gmail?.trim() || dates.length === 0) {
       return new Response(JSON.stringify({ error: "Ógild gögn — öll svæði eru nauðsynleg" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -74,12 +83,14 @@ Deno.serve(async (req) => {
     }
 
     // Validate date format
-    const validDates = ["2026-03-05", "2026-03-12", "2026-03-19", "2026-03-26"];
-    if (!validDates.includes(date)) {
-      return new Response(JSON.stringify({ error: "Ógild dagsetning" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    const validDates = ["2026-03-06", "2026-03-13", "2026-03-20", "2026-03-27"];
+    for (const date of dates) {
+      if (!validDates.includes(date)) {
+        return new Response(JSON.stringify({ error: `Ógild dagsetning: ${date}` }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const MERCHANT_ID = Deno.env.get("TEYA_MERCHANT_ID")!;
@@ -101,46 +112,52 @@ Deno.serve(async (req) => {
     }
 
     const orderId = generateOrderId();
-    const amount = ENTRY_FEE_ISK;
+    const amount = ENTRY_FEE_ISK * dates.length;
     const amountFormatted = amount.toFixed(2);
 
-    // Insert registration with verified=false (pending payment)
-    const { error: insertError } = await supabase.from("registrations").insert({
-      type: `allt-undir-${date}`,
-      verified: false,
-      data: {
-        fullName: fullName.trim(),
-        kennitala: kt,
-        fortniteName: fortniteName.trim(),
-        gmail: gmail.trim(),
-        date,
-        orderId,
-        amount,
-      },
-    });
-
-    if (insertError) {
-      console.error("Insert error:", insertError);
-      return new Response(JSON.stringify({ error: "Villa við skráningu" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // Insert a registration for each selected date, all sharing the same orderId
+    for (const date of dates) {
+      const { error: insertError } = await supabase.from("registrations").insert({
+        type: `allt-undir-${date}`,
+        verified: false,
+        data: {
+          fullName: fullName.trim(),
+          kennitala: kt,
+          fortniteName: fortniteName.trim(),
+          gmail: gmail.trim(),
+          date,
+          orderId,
+          amount: ENTRY_FEE_ISK,
+          allDates: dates,
+        },
       });
+
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        return new Response(JSON.stringify({ error: "Villa við skráningu" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Build return URLs
     const fnBase = `${SUPABASE_URL}/functions/v1/allt-undir-payment-callback`;
     const baseParam = encodeURIComponent(clientBaseUrl);
-    const dateParam = encodeURIComponent(date);
-    const returnurlsuccess = `${fnBase}?type=success&base=${baseParam}&date=${dateParam}`;
+    const returnurlsuccess = `${fnBase}?type=success&base=${baseParam}`;
     const returnurlsuccessserver = `${fnBase}?type=success-server`;
-    const returnurlcancel = `${fnBase}?type=cancel&base=${baseParam}&date=${dateParam}`;
-    const returnurlerror = `${fnBase}?type=error&base=${baseParam}&date=${dateParam}`;
+    const returnurlcancel = `${fnBase}?type=cancel&base=${baseParam}`;
+    const returnurlerror = `${fnBase}?type=error&base=${baseParam}`;
 
     // Compute checkhash
     const hashMessage = `${MERCHANT_ID}|${returnurlsuccess}|${returnurlsuccessserver}|${orderId}|${amountFormatted}|ISK`;
     const checkhash = await hmacSha256Hex(SECRET_KEY, hashMessage);
 
-    const paymentFields = {
+    const dateLabel = dates.length === 1 
+      ? dates[0] 
+      : `${dates.length} dagar`;
+
+    const paymentFields: Record<string, string> = {
       merchantid: MERCHANT_ID,
       paymentgatewayid: GATEWAY_ID,
       checkhash,
@@ -153,9 +170,9 @@ Deno.serve(async (req) => {
       returnurlsuccessserver,
       returnurlcancel,
       returnurlerror,
-      itemdescription_0: "Allt Undir – Solo mót",
-      itemcount_0: "1",
-      itemunitamount_0: amountFormatted,
+      itemdescription_0: `ALLT UNDIR – Solo mót (${dateLabel})`,
+      itemcount_0: String(dates.length),
+      itemunitamount_0: ENTRY_FEE_ISK.toFixed(2),
       itemamount_0: amountFormatted,
       skipreceiptpage: "1",
       pagetype: "0",

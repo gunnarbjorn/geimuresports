@@ -64,8 +64,7 @@ Deno.serve(async (req) => {
         const expectedHash = await hmacSha256Hex(SECRET_KEY, `${orderid}|${amount}|${currency}`);
 
         if (expectedHash.toLowerCase() === orderhash.toLowerCase()) {
-          // Find the registration with this orderId and mark as verified
-          // We need to search registrations where data->>'orderId' matches
+          // Find ALL registrations with this orderId and mark as verified
           const { data: registrations, error: fetchError } = await supabase
             .from("registrations")
             .select("id, data, type")
@@ -75,22 +74,26 @@ Deno.serve(async (req) => {
           if (fetchError) {
             console.error("Fetch error:", fetchError);
           } else if (registrations) {
-            const match = registrations.find(
+            const matches = registrations.filter(
               (r: any) => (r.data as any)?.orderId === orderid
             );
 
-            if (match) {
+            if (matches.length > 0) {
+              // Mark all matching registrations as verified
+              const matchIds = matches.map((m: any) => m.id);
               const { error: updateError } = await supabase
                 .from("registrations")
                 .update({ verified: true })
-                .eq("id", match.id);
+                .in("id", matchIds);
 
               if (updateError) console.error("Update error:", updateError);
-              else console.log(`[allt-undir-callback] Registration ${match.id} marked verified (paid)`);
+              else console.log(`[allt-undir-callback] ${matches.length} registration(s) marked verified for order ${orderid}`);
 
-              // Send confirmation email
+              // Send confirmation email (use first match for data)
               try {
-                const regData = match.data as any;
+                const regData = matches[0].data as any;
+                const allDates = regData?.allDates || [regData?.date];
+                const dateList = allDates.join(", ");
                 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
                 if (RESEND_API_KEY && regData?.gmail) {
                   await fetch("https://api.resend.com/emails", {
@@ -102,17 +105,18 @@ Deno.serve(async (req) => {
                     body: JSON.stringify({
                       from: "Geimur Esports <no-reply@geimuresports.is>",
                       to: [regData.gmail],
-                      subject: "Skráning staðfest – Allt Undir ✅",
+                      subject: "Skráning staðfest – ALLT UNDIR ✅",
                       html: `
                         <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:20px;">
                           <h1 style="color:#22c55e;">Skráning staðfest! ✅</h1>
-                          <p><strong>${regData.fortniteName}</strong> er skráð(ur) á <strong>Allt Undir</strong> mótið.</p>
+                          <p><strong>${regData.fortniteName}</strong> er skráð(ur) á <strong>ALLT UNDIR</strong> mótið.</p>
                           <table style="width:100%;border-collapse:collapse;margin:16px 0;">
-                            <tr><td style="padding:8px;color:#888;">Dagsetning:</td><td style="padding:8px;">${regData.date}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Dagsetningar:</td><td style="padding:8px;">${dateList}</td></tr>
                             <tr><td style="padding:8px;color:#888;">Fortnite nafn:</td><td style="padding:8px;">${regData.fortniteName}</td></tr>
                             <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Fjöldi daga:</td><td style="padding:8px;">${matches.length}</td></tr>
                           </table>
-                          <p style="color:#888;font-size:14px;">Custom matchmaking key verður deilt í Geimur Discord fyrir kl. 18:00.</p>
+                          <p style="color:#888;font-size:14px;">Custom matchmaking key verður deilt í Geimur Discord fyrir kl. 18:00 á hverjum mótsdegi.</p>
                           <hr style="border:none;border-top:1px solid #333;margin:20px 0;">
                           <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
                         </div>
@@ -131,15 +135,16 @@ Deno.serve(async (req) => {
                     body: JSON.stringify({
                       from: "Geimur Esports <no-reply@geimuresports.is>",
                       to: ["rafgeimur@gmail.com"],
-                      subject: `🎮 Allt Undir skráning: ${regData.fortniteName} (${regData.date})`,
+                      subject: `🎮 ALLT UNDIR skráning: ${regData.fortniteName} (${dateList})`,
                       html: `
                         <div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:20px;">
-                          <h1 style="color:#22c55e;">Ný greidd skráning – Allt Undir</h1>
+                          <h1 style="color:#22c55e;">Ný greidd skráning – ALLT UNDIR</h1>
                           <table style="width:100%;border-collapse:collapse;margin:16px 0;">
                             <tr><td style="padding:8px;color:#888;">Nafn:</td><td style="padding:8px;">${regData.fullName}</td></tr>
                             <tr><td style="padding:8px;color:#888;">Fortnite:</td><td style="padding:8px;">${regData.fortniteName}</td></tr>
                             <tr><td style="padding:8px;color:#888;">Gmail:</td><td style="padding:8px;">${regData.gmail}</td></tr>
-                            <tr><td style="padding:8px;color:#888;">Dagsetning:</td><td style="padding:8px;">${regData.date}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Dagsetningar:</td><td style="padding:8px;">${dateList}</td></tr>
+                            <tr><td style="padding:8px;color:#888;">Fjöldi daga:</td><td style="padding:8px;">${matches.length}</td></tr>
                             <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
                           </table>
                           <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
@@ -168,8 +173,7 @@ Deno.serve(async (req) => {
 
     if (type === "success") {
       const base = url.searchParams.get("base") || APP_BASE_URL;
-      const date = url.searchParams.get("date") || "";
-      const redirectUrl = `${base}/keppa/allt-undir?status=success&date=${encodeURIComponent(date)}`;
+      const redirectUrl = `${base}/keppa/allt-undir?status=success`;
       return new Response(null, { status: 302, headers: { Location: redirectUrl } });
     }
 

@@ -13,6 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import alltUndirBg from "@/assets/allt-undir-bg.jpeg";
 import {
@@ -34,16 +35,17 @@ import {
   Timer,
   Tv,
   Ban,
+  Check,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.gg/AzwK64zz";
 const TWITCH_URL = "https://www.twitch.tv/geimuresports";
 
 const TOURNAMENT_DATES = [
-  { date: "2026-03-05", label: "Fimmtudagur 5. mars", short: "5. mars", visible: true },
-  { date: "2026-03-12", label: "Fimmtudagur 12. mars", short: "12. mars", visible: false },
-  { date: "2026-03-19", label: "Fimmtudagur 19. mars", short: "19. mars", visible: false },
-  { date: "2026-03-26", label: "Fimmtudagur 26. mars", short: "26. mars", visible: false },
+  { date: "2026-03-06", label: "Fimmtudagur 6. mars", short: "6. mars" },
+  { date: "2026-03-13", label: "Fimmtudagur 13. mars", short: "13. mars" },
+  { date: "2026-03-20", label: "Fimmtudagur 20. mars", short: "20. mars" },
+  { date: "2026-03-27", label: "Fimmtudagur 27. mars", short: "27. mars" },
 ];
 
 const TOURNAMENT_CONFIG = {
@@ -67,6 +69,8 @@ const PRIZE_DIST = {
   third: 0.0833,
   elimPool: 0.3333,
 };
+
+type DateStatus = 'upcoming' | 'active' | 'completed';
 
 function getCountdown(targetDate: string, closeTime: string) {
   const [hours, mins] = closeTime.split(":").map(Number);
@@ -167,9 +171,11 @@ function PrizePoolWidget({ playerCount }: { playerCount: number }) {
 
 function RegistrationForm({
   selectedDate,
+  dateStatuses,
   onSuccess,
 }: {
   selectedDate: string;
+  dateStatuses: Record<string, DateStatus>;
   onSuccess: () => void;
 }) {
   const [searchParams] = useSearchParams();
@@ -182,8 +188,31 @@ function RegistrationForm({
   const [error, setError] = useState<string | null>(null);
   const [acceptRules, setAcceptRules] = useState(false);
   const [confirmUsername, setConfirmUsername] = useState(false);
+  const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
-  const registrationClosed = !getCountdown(selectedDate, TOURNAMENT_CONFIG.registrationCloseTime);
+  // Initialize selectedDates with available (non-completed) dates when they load
+  useEffect(() => {
+    const availableDates = TOURNAMENT_DATES
+      .filter(td => dateStatuses[td.date] !== 'completed')
+      .map(td => td.date);
+    // Auto-select the currently selected date if available
+    if (availableDates.includes(selectedDate)) {
+      setSelectedDates([selectedDate]);
+    } else if (availableDates.length > 0) {
+      setSelectedDates([availableDates[0]]);
+    }
+  }, [selectedDate, dateStatuses]);
+
+  const toggleDate = (date: string) => {
+    setSelectedDates(prev =>
+      prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]
+    );
+  };
+
+  const totalPrice = selectedDates.length * TOURNAMENT_CONFIG.entryFee;
+  const allCompleted = TOURNAMENT_DATES.every(td => dateStatuses[td.date] === 'completed');
+
+  const registrationClosed = allCompleted || selectedDates.every(d => !getCountdown(d, TOURNAMENT_CONFIG.registrationCloseTime));
 
   // If returning from successful payment
   if (statusParam === "success") {
@@ -210,6 +239,12 @@ function RegistrationForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (selectedDates.length === 0) {
+      setError("Veldu a.m.k. einn dag");
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Basic validation
@@ -227,7 +262,7 @@ function RegistrationForm({
           kennitala: kt,
           fortniteName: fortniteName.trim(),
           gmail: gmail.trim(),
-          date: selectedDate,
+          dates: selectedDates,
           baseUrl: window.location.origin,
         },
       });
@@ -286,9 +321,9 @@ function RegistrationForm({
           </div>
         </CardHeader>
         <CardContent className="p-5 md:p-6">
-          {registrationClosed ? (
+          {allCompleted ? (
             <div className="text-center py-4">
-              <p className="text-muted-foreground font-medium">Skráning lokað fyrir þennan dag.</p>
+              <p className="text-muted-foreground font-medium">Öllum leikjum lokið fyrir þetta tímabil.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -347,15 +382,63 @@ function RegistrationForm({
                 />
               </div>
 
-              {/* Price note */}
-              <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm text-muted-foreground">
-                <p>
-                  💡 Verðið er{" "}
-                  <span className="font-bold text-foreground">
-                    {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
-                  </span>{" "}
-                  þar sem greiðslugáttin tekur smá hlutfall — allur pottinn (
-                  {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr) fer til leikmanna.
+              {/* Date selection checkboxes */}
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold">Veldu daga</Label>
+                <div className="space-y-2">
+                  {TOURNAMENT_DATES.map((td) => {
+                    const isCompleted = dateStatuses[td.date] === 'completed';
+                    const isSelected = selectedDates.includes(td.date);
+                    return (
+                      <label
+                        key={td.date}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
+                          isCompleted
+                            ? 'opacity-50 cursor-not-allowed border-border bg-muted/20'
+                            : isSelected
+                            ? 'border-[hsl(var(--arena-green)/0.5)] bg-[hsl(var(--arena-green)/0.05)]'
+                            : 'border-border hover:border-[hsl(var(--arena-green)/0.3)] hover:bg-muted/30'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            disabled={isCompleted}
+                            onChange={() => !isCompleted && toggleDate(td.date)}
+                            className="h-4 w-4 rounded border-border accent-[hsl(var(--arena-green))]"
+                          />
+                          <span className={`text-sm font-medium ${isCompleted ? 'text-muted-foreground line-through' : ''}`}>
+                            {td.short}
+                          </span>
+                          {isCompleted && (
+                            <Badge variant="secondary" className="text-[10px] px-2 py-0.5">
+                              <Check className="h-3 w-3 mr-1" />
+                              Lokið
+                            </Badge>
+                          )}
+                        </div>
+                        <span className={`text-sm font-mono ${isCompleted ? 'text-muted-foreground' : 'text-foreground'}`}>
+                          {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Price summary */}
+              <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">
+                    {selectedDates.length} {selectedDates.length === 1 ? 'dagur' : 'dagar'} valdir
+                  </span>
+                  <span className="font-bold text-foreground text-lg">
+                    {totalPrice.toLocaleString("is-IS")} kr
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  💡 {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr á leikmann fer í pottinn á hverjum degi.
                 </p>
               </div>
 
@@ -422,7 +505,7 @@ function RegistrationForm({
                 type="submit"
                 size="lg"
                 className="w-full btn-arena-gradient text-base"
-                disabled={isSubmitting || !acceptRules || !confirmUsername}
+                disabled={isSubmitting || !acceptRules || !confirmUsername || selectedDates.length === 0}
               >
                 {isSubmitting ? (
                   <>
@@ -431,7 +514,7 @@ function RegistrationForm({
                   </>
                 ) : (
                   <>
-                    Skrá og greiða — {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
+                    Skrá og greiða — {totalPrice.toLocaleString("is-IS")} kr
                   </>
                 )}
               </Button>
@@ -445,11 +528,47 @@ function RegistrationForm({
 }
 
 export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
-  const [selectedDate, setSelectedDate] = useState(TOURNAMENT_DATES[0].date);
+  const [dateStatuses, setDateStatuses] = useState<Record<string, DateStatus>>({});
   const [registrationCounts, setRegistrationCounts] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  // Auto-select first non-completed date
+  const selectedDate = useMemo(() => {
+    const firstOpen = TOURNAMENT_DATES.find(td => dateStatuses[td.date] !== 'completed');
+    return firstOpen?.date || TOURNAMENT_DATES[0].date;
+  }, [dateStatuses]);
+
+  const [activeDate, setActiveDate] = useState(selectedDate);
+
+  // Update activeDate when selectedDate changes (after statuses load)
+  useEffect(() => {
+    setActiveDate(selectedDate);
+  }, [selectedDate]);
+
   const accent = "arena-green";
+
+  // Fetch date statuses from tournament_statuses table
+  const fetchDateStatuses = async () => {
+    try {
+      const statusMap: Record<string, DateStatus> = {};
+      for (const td of TOURNAMENT_DATES) {
+        const statusId = `allt-undir-${td.date}`;
+        const { data } = await (supabase as any)
+          .from('tournament_statuses')
+          .select('status')
+          .eq('tournament_id', statusId)
+          .maybeSingle();
+        if (data?.status === 'completed') {
+          statusMap[td.date] = 'completed';
+        } else {
+          statusMap[td.date] = 'active';
+        }
+      }
+      setDateStatuses(statusMap);
+    } catch (err) {
+      console.error("Error fetching date statuses:", err);
+    }
+  };
 
   const fetchCounts = async () => {
     setIsLoading(true);
@@ -469,11 +588,13 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
   };
 
   useEffect(() => {
+    fetchDateStatuses();
     fetchCounts();
   }, []);
 
-  const currentCount = registrationCounts[selectedDate] || 0;
-  const selectedDateObj = TOURNAMENT_DATES.find((d) => d.date === selectedDate)!;
+  const currentCount = registrationCounts[activeDate] || 0;
+  const selectedDateObj = TOURNAMENT_DATES.find((d) => d.date === activeDate)!;
+  const isActiveDateCompleted = dateStatuses[activeDate] === 'completed';
 
   return (
     <div className="relative">
@@ -521,48 +642,68 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
             {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format} · {TOURNAMENT_CONFIG.ageLimit}
           </p>
 
-          {/* Date selector */}
+          {/* Date selector pills */}
           <div className="flex flex-wrap justify-center gap-2 mb-4">
-            {TOURNAMENT_DATES.filter(td => td.visible).map((td) => (
-              <Button
-                key={td.date}
-                variant={selectedDate === td.date ? "default" : "outline"}
-                size="sm"
-                className={
-                  selectedDate === td.date
-                    ? "btn-arena-gradient"
-                    : ""
-                }
-                onClick={() => setSelectedDate(td.date)}
-              >
-                <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                {td.short}
-              </Button>
-            ))}
+            {TOURNAMENT_DATES.map((td) => {
+              const isCompleted = dateStatuses[td.date] === 'completed';
+              const isActive = activeDate === td.date;
+              return (
+                <Button
+                  key={td.date}
+                  variant={isActive ? "default" : "outline"}
+                  size="sm"
+                  className={
+                    isCompleted
+                      ? "opacity-60 cursor-pointer"
+                      : isActive
+                      ? "btn-arena-gradient"
+                      : ""
+                  }
+                  onClick={() => setActiveDate(td.date)}
+                >
+                  <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                  {td.short}
+                  {isCompleted && (
+                    <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0">
+                      Lokið
+                    </Badge>
+                  )}
+                </Button>
+              );
+            })}
           </div>
 
-          {/* Countdown */}
+          {/* Countdown or completed notice */}
           <div className="flex flex-wrap justify-center gap-2 mb-4">
-            <CountdownTimer targetDate={selectedDate} />
+            {isActiveDateCompleted ? (
+              <Badge variant="secondary" className="text-sm px-4 py-2">
+                <Check className="h-4 w-4 mr-2" />
+                Þessum leik er lokið
+              </Badge>
+            ) : (
+              <CountdownTimer targetDate={activeDate} />
+            )}
             <Badge variant="secondary" className="text-sm px-4 py-2">
               <Clock className="h-4 w-4 mr-2 text-[hsl(var(--planet-tournament))]" />
               Leikur kl. {TOURNAMENT_CONFIG.gameStartTime}
             </Badge>
           </div>
 
-          <Button
-            size="lg"
-            className="btn-arena-gradient text-base"
-            onClick={() => {
-              const el = document.getElementById("skraning-allt-undir");
-              if (el) {
-                const offset = el.getBoundingClientRect().top + window.scrollY - 104;
-                window.scrollTo({ top: offset, behavior: "smooth" });
-              }
-            }}
-          >
-            Skrá mig <ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
+          {!isActiveDateCompleted && (
+            <Button
+              size="lg"
+              className="btn-arena-gradient text-base"
+              onClick={() => {
+                const el = document.getElementById("skraning-allt-undir");
+                if (el) {
+                  const offset = el.getBoundingClientRect().top + window.scrollY - 104;
+                  window.scrollTo({ top: offset, behavior: "smooth" });
+                }
+              }}
+            >
+              Skrá mig <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         {/* Live prize pool */}
@@ -577,9 +718,15 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                 <span className="font-semibold">
                   {selectedDateObj.short}
                 </span>
+                {isActiveDateCompleted && (
+                  <Badge variant="secondary" className="text-[10px]">Lokið</Badge>
+                )}
               </div>
               <span className="text-sm text-muted-foreground">
-                {TOURNAMENT_CONFIG.maxPlayers - currentCount} laus pláss
+                {isActiveDateCompleted
+                  ? `${currentCount} keppendur`
+                  : `${TOURNAMENT_CONFIG.maxPlayers - currentCount} laus pláss`
+                }
               </span>
             </div>
             <Progress
@@ -842,7 +989,8 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
         {/* Registration form */}
         <div id="skraning-allt-undir" className="scroll-mt-24">
           <RegistrationForm
-            selectedDate={selectedDate}
+            selectedDate={activeDate}
+            dateStatuses={dateStatuses}
             onSuccess={fetchCounts}
           />
         </div>
