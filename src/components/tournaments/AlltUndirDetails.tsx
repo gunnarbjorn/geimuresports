@@ -518,7 +518,9 @@ function RegistrationForm({
                   </>
                 )}
               </Button>
-              <p className="text-xs text-center text-muted-foreground">Þú verður vísað á örugg greiðslusíðu Teya/Borgun</p>
+              <p className="text-xs text-center text-muted-foreground">
+                {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr fara í verðlaunapott + kortaþóknun · Örugg greiðsla hjá Teya/Borgun
+              </p>
             </form>
           )}
         </CardContent>
