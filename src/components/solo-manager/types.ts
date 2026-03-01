@@ -57,7 +57,7 @@ export function createSoloInitialState(date?: string): SoloTournamentState {
     players: [],
     gameHistory: [],
     placementPointsConfig: DEFAULT_SOLO_PLACEMENT_POINTS,
-    killPointsPerKill: 1,
+    killPointsPerKill: 2,
     raffleWinners: [],
     eliminationOrder: [],
     tournamentDate: date || '2026-03-05',
