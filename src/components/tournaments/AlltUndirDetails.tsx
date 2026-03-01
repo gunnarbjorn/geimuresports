@@ -44,9 +44,6 @@ const TWITCH_URL = "https://www.twitch.tv/geimuresports";
 
 const TOURNAMENT_DATES = [
   { date: "2026-03-05", label: "Fimmtudagur 5. mars", short: "5. mars" },
-  { date: "2026-03-12", label: "Fimmtudagur 12. mars", short: "12. mars" },
-  { date: "2026-03-19", label: "Fimmtudagur 19. mars", short: "19. mars" },
-  { date: "2026-03-26", label: "Fimmtudagur 26. mars", short: "26. mars" },
 ];
 
 const TOURNAMENT_CONFIG = {
@@ -194,7 +191,7 @@ function RegistrationForm({
 }) {
   const [searchParams] = useSearchParams();
   const statusParam = searchParams.get("status");
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(TOURNAMENT_DATES.length > 1 ? 1 : 2);
   const [fullName, setFullName] = useState("");
   const [kennitala, setKennitala] = useState("");
   const [fortniteName, setFortniteName] = useState("");
@@ -206,6 +203,10 @@ function RegistrationForm({
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
   useEffect(() => {
+    if (TOURNAMENT_DATES.length === 1) {
+      setSelectedDates([TOURNAMENT_DATES[0].date]);
+      return;
+    }
     const availableDates = TOURNAMENT_DATES
       .filter(td => dateStatuses[td.date] !== 'completed')
       .map(td => td.date);
@@ -329,7 +330,7 @@ function RegistrationForm({
               <CardTitle className="font-display text-lg">Skrá og greiða</CardTitle>
               <p className="text-sm text-muted-foreground">Solo — 1 leikmaður</p>
             </div>
-            {!allCompleted && (
+            {!allCompleted && TOURNAMENT_DATES.length > 1 && (
               <div className="ml-auto flex items-center gap-1.5">
                 <span className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-[hsl(var(--arena-green))]' : 'bg-muted-foreground/30'}`} />
                 <span className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-[hsl(var(--arena-green))]' : 'bg-muted-foreground/30'}`} />
@@ -790,40 +791,47 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">
             {TOURNAMENT_CONFIG.name}
           </h2>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-2">
             {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format} · {TOURNAMENT_CONFIG.ageLimit}
           </p>
+          {TOURNAMENT_DATES.length === 1 && (
+            <p className="text-sm text-muted-foreground mb-4 flex items-center justify-center gap-1.5">
+              <Calendar className="h-4 w-4" />
+              {TOURNAMENT_DATES[0].label} · kl. {TOURNAMENT_CONFIG.gameStartTime}
+            </p>
+          )}
 
-          {/* Date selector pills */}
-          <div className="grid grid-cols-2 justify-center gap-2 mb-4 max-w-xs mx-auto sm:flex sm:max-w-none">
-            {TOURNAMENT_DATES.map((td) => {
-              const isCompleted = dateStatuses[td.date] === 'completed';
-              const isActive = activeDate === td.date;
-              return (
-                <Button
-                  key={td.date}
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  className={
-                    isCompleted
-                      ? "opacity-60 cursor-pointer"
-                      : isActive
-                      ? "btn-arena-gradient"
-                      : ""
-                  }
-                  onClick={() => setActiveDate(td.date)}
-                >
-                  <Calendar className="h-3.5 w-3.5 mr-1.5" />
-                  {td.short}
-                  {isCompleted && (
-                    <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0">
-                      Lokið
-                    </Badge>
-                  )}
-                </Button>
-              );
-            })}
-          </div>
+          {TOURNAMENT_DATES.length > 1 && (
+            <div className="grid grid-cols-2 justify-center gap-2 mb-4 max-w-xs mx-auto sm:flex sm:max-w-none">
+              {TOURNAMENT_DATES.map((td) => {
+                const isCompleted = dateStatuses[td.date] === 'completed';
+                const isActive = activeDate === td.date;
+                return (
+                  <Button
+                    key={td.date}
+                    variant={isActive ? "default" : "outline"}
+                    size="sm"
+                    className={
+                      isCompleted
+                        ? "opacity-60 cursor-pointer"
+                        : isActive
+                        ? "btn-arena-gradient"
+                        : ""
+                    }
+                    onClick={() => setActiveDate(td.date)}
+                  >
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    {td.short}
+                    {isCompleted && (
+                      <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0">
+                        Lokið
+                      </Badge>
+                    )}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Countdown or completed notice */}
           <div className="flex flex-wrap justify-center gap-2 mb-4">
