@@ -140,7 +140,7 @@ export default function SeasonView() {
           🏆 SEASON LEADERBOARD
         </h1>
         <p className="text-gray-400 mt-2" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-          Allt Undir – Solo · {history.length} mót kláruð
+          ALLT UNDIR – Solo · {history.length} mót kláruð
         </p>
         {totalPrizeAll > 0 && (
           <p className="text-lg font-bold mt-1" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>

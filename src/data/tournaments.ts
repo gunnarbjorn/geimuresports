@@ -51,7 +51,7 @@ export const tournaments: Tournament[] = [
   },
   {
     id: "allt-undir",
-    name: "Allt Undir – Solo",
+    name: "ALLT UNDIR – Solo",
     dates: ["5. mars", "12. mars", "19. mars", "26. mars"],
     category: "Solo",
     format: "Solo",
