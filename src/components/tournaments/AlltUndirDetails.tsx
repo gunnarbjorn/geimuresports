@@ -588,6 +588,100 @@ function RegistrationForm({
   );
 }
 
+function RegisteredPlayersCard({
+  activeDate,
+  selectedDateObj,
+  currentCount,
+  isActiveDateCompleted,
+  accent,
+}: {
+  activeDate: string;
+  selectedDateObj: { short: string };
+  currentCount: number;
+  isActiveDateCompleted: boolean;
+  accent: string;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const [players, setPlayers] = useState<{ id: string; fortnite_name: string }[]>([]);
+  const [loadingPlayers, setLoadingPlayers] = useState(false);
+
+  useEffect(() => {
+    if (!expanded) return;
+    setLoadingPlayers(true);
+    (supabase.rpc as any)('get_allt_undir_players', { p_date: activeDate })
+      .then(({ data }: any) => {
+        setPlayers(data || []);
+      })
+      .catch(() => setPlayers([]))
+      .finally(() => setLoadingPlayers(false));
+  }, [expanded, activeDate]);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [activeDate]);
+
+  return (
+    <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
+      <CardContent className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Users className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
+            <span className="font-semibold">
+              {selectedDateObj.short}
+            </span>
+            {isActiveDateCompleted && (
+              <Badge variant="secondary" className="text-[10px]">Lokið</Badge>
+            )}
+          </div>
+          <DynamicSlotCounter count={currentCount} max={TOURNAMENT_CONFIG.maxPlayers} isCompleted={isActiveDateCompleted} />
+        </div>
+        <Progress
+          value={(currentCount / TOURNAMENT_CONFIG.maxPlayers) * 100}
+          className="h-3 mb-3"
+        />
+        <div className="flex justify-between items-center text-sm">
+          <span className={`text-[hsl(var(--${accent}))] font-bold`}>
+            {currentCount} / {TOURNAMENT_CONFIG.maxPlayers} skráðir
+          </span>
+          {currentCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className={`text-sm text-[hsl(var(--${accent}))] hover:underline flex items-center gap-1 transition-colors`}
+            >
+              {expanded ? 'Fela lista' : 'Sjá skráða'}
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+            </button>
+          )}
+        </div>
+        {expanded && (
+          <div className="mt-4 pt-4 border-t border-border">
+            {loadingPlayers ? (
+              <div className="flex justify-center py-4">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : players.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-2">Enginn skráður ennþá.</p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {players.map((p, i) => (
+                  <div
+                    key={p.id}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border text-sm"
+                  >
+                    <span className="text-muted-foreground text-xs font-mono w-5 shrink-0">{i + 1}.</span>
+                    <span className="truncate font-medium">{p.fortnite_name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
   const [dateStatuses, setDateStatuses] = useState<Record<string, DateStatus>>({});
   const [registrationCounts, setRegistrationCounts] = useState<Record<string, number>>({});
@@ -766,32 +860,14 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
         {/* Live prize pool */}
         <PrizePoolWidget playerCount={currentCount} />
 
-        {/* Registration status with dynamic counter */}
-        <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Users className={`h-5 w-5 text-[hsl(var(--${accent}))]`} />
-                <span className="font-semibold">
-                  {selectedDateObj.short}
-                </span>
-                {isActiveDateCompleted && (
-                  <Badge variant="secondary" className="text-[10px]">Lokið</Badge>
-                )}
-              </div>
-              <DynamicSlotCounter count={currentCount} max={TOURNAMENT_CONFIG.maxPlayers} isCompleted={isActiveDateCompleted} />
-            </div>
-            <Progress
-              value={(currentCount / TOURNAMENT_CONFIG.maxPlayers) * 100}
-              className="h-3 mb-3"
-            />
-            <div className="flex justify-between text-sm">
-              <span className={`text-[hsl(var(--${accent}))] font-bold`}>
-                {currentCount} / {TOURNAMENT_CONFIG.maxPlayers} skráðir
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Registration status with dynamic counter + player list */}
+        <RegisteredPlayersCard
+          activeDate={activeDate}
+          selectedDateObj={selectedDateObj}
+          currentCount={currentCount}
+          isActiveDateCompleted={isActiveDateCompleted}
+          accent={accent}
+        />
 
         {/* Registration form */}
         <div id="skraning-allt-undir" className="scroll-mt-24">
