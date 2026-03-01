@@ -546,7 +546,7 @@ function RegistrationForm({
                         required
                       />
                       <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                        Ég staðfesti að Fortnite notandanafnið mitt sé rétt og mun ekki breyta því fyrir mótið byrjar — annars fæ ég mögulega ekki stig
+                        Ég staðfesti að Fortnite notendanafnið mitt sé rétt skráð og mun ekki breyta því fyrir mótið
                       </span>
                     </label>
                   </div>
