@@ -15,7 +15,10 @@ interface Props {
 }
 
 export default function SoloGameView({ state, dispatch }: Props) {
-  const [eliminatingPlayer, setEliminatingPlayer] = useState<SoloPlayer | null>(null);
+  // killerPlayer = the player who GOT a kill (clicked + FELLA)
+  const [killerPlayer, setKillerPlayer] = useState<SoloPlayer | null>(null);
+  // For storm/fall deaths where no one gets kill credit
+  const [showDeathDialog, setShowDeathDialog] = useState<'storm' | 'fall' | null>(null);
   const [showWinner, setShowWinner] = useState(false);
 
   const alivePlayers = state.players
@@ -36,18 +39,31 @@ export default function SoloGameView({ state, dispatch }: Props) {
     }
   }, [alivePlayers.length, state.players.length]);
 
-  const handleEliminate = (player: SoloPlayer) => {
-    setEliminatingPlayer(player);
+  // Player clicked + FELLA → they got a kill, now pick victim
+  const handleKillClick = (player: SoloPlayer) => {
+    setKillerPlayer(player);
   };
 
-  const handleSelectKiller = (killerId: string) => {
-    if (!eliminatingPlayer) return;
+  // Select victim from dialog → victim dies, killer gets +1
+  const handleSelectVictim = (victimId: string) => {
+    if (!killerPlayer) return;
     dispatch({
       type: 'ELIMINATE_PLAYER',
-      playerId: eliminatingPlayer.id,
-      killerPlayerId: killerId,
+      playerId: victimId,
+      killerPlayerId: killerPlayer.id,
     });
-    setEliminatingPlayer(null);
+    setKillerPlayer(null);
+  };
+
+  // Storm/Fall death → select who died, no kill credit
+  const handleStormFallDeath = (victimId: string) => {
+    const deathType = showDeathDialog === 'storm' ? '__storm__' : '__fall_damage__';
+    dispatch({
+      type: 'ELIMINATE_PLAYER',
+      playerId: victimId,
+      killerPlayerId: deathType,
+    });
+    setShowDeathDialog(null);
   };
 
   const handleRevive = (player: SoloPlayer) => {
@@ -66,9 +82,37 @@ export default function SoloGameView({ state, dispatch }: Props) {
     <div className="flex flex-col lg:flex-row gap-6 p-4 h-full">
       {/* Left Panel: Players */}
       <div className="flex-1 flex flex-col gap-4">
-        <h2 className="text-xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>
-          🟢 Á LÍFI ({alivePlayers.length})
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>
+            🟢 Á LÍFI ({alivePlayers.length})
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowDeathDialog('storm')}
+              className="px-4 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105"
+              style={{
+                background: 'rgba(245, 158, 11, 0.15)',
+                border: '1px solid #f59e0b55',
+                color: '#f59e0b',
+                fontFamily: 'Rajdhani, sans-serif',
+              }}
+            >
+              🌪️ STORMUR
+            </button>
+            <button
+              onClick={() => setShowDeathDialog('fall')}
+              className="px-4 py-2 text-sm font-bold rounded-lg transition-all hover:scale-105"
+              style={{
+                background: 'rgba(245, 158, 11, 0.15)',
+                border: '1px solid #f59e0b55',
+                color: '#f59e0b',
+                fontFamily: 'Rajdhani, sans-serif',
+              }}
+            >
+              💥 FALL DAMAGE
+            </button>
+          </div>
+        </div>
 
         <div className="grid gap-3 grid-cols-2">
           {alivePlayers.map(p => (
@@ -93,7 +137,7 @@ export default function SoloGameView({ state, dispatch }: Props) {
                 )}
               </div>
               <button
-                onClick={() => handleEliminate(p)}
+                onClick={() => handleKillClick(p)}
                 className="ml-3 px-6 py-3 text-sm font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95"
                 style={{
                   background: 'rgba(34, 197, 94, 0.15)',
@@ -115,7 +159,7 @@ export default function SoloGameView({ state, dispatch }: Props) {
               FALLNIR ({eliminatedPlayers.length})
             </h3>
             <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
-              {eliminatedPlayers.map((p, i) => {
+              {eliminatedPlayers.map(p => {
                 const placement = state.players.length - state.eliminationOrder.indexOf(p.id);
                 return (
                   <div
@@ -190,7 +234,6 @@ export default function SoloGameView({ state, dispatch }: Props) {
           className="rounded-xl overflow-hidden max-h-[70vh] overflow-y-auto"
           style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}
         >
-          {/* Leaderboard header */}
           <div
             className="flex items-center justify-between px-4 py-2 text-xs text-gray-500 font-bold"
             style={{ borderBottom: '1px solid #2a2a30', fontFamily: 'Rajdhani, sans-serif' }}
@@ -276,63 +319,29 @@ export default function SoloGameView({ state, dispatch }: Props) {
         </div>
       </div>
 
-      {/* Elimination Dialog */}
-      {eliminatingPlayer && (
+      {/* Kill Dialog: "Hvern felldi [nafn]?" — select victim */}
+      {killerPlayer && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center"
           style={{ background: 'rgba(0,0,0,0.8)' }}
-          onClick={() => setEliminatingPlayer(null)}
+          onClick={() => setKillerPlayer(null)}
         >
           <div
             className="p-6 rounded-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-auto"
-            style={{ background: '#1a1a1f', border: '1px solid #e8341c' }}
+            style={{ background: '#1a1a1f', border: '1px solid #22c55e' }}
             onClick={e => e.stopPropagation()}
           >
             <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-              HVER FELLDI {eliminatingPlayer.name.toUpperCase()}?
+              HVERN FELLDI {killerPlayer.name.toUpperCase()}?
             </h3>
 
             <div className="grid gap-2">
-              {/* Storm */}
-              <button
-                onClick={() => handleSelectKiller('__storm__')}
-                className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
-                style={{
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  border: '1px solid #f59e0b',
-                  color: '#f59e0b',
-                  fontFamily: 'Rajdhani, sans-serif',
-                }}
-              >
-                🌪️ STORMUR
-                <span className="text-xs ml-2 opacity-60">— enginn fær fell-stig</span>
-              </button>
-
-              {/* Fall Damage */}
-              <button
-                onClick={() => handleSelectKiller('__fall_damage__')}
-                className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
-                style={{
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  border: '1px solid #f59e0b',
-                  color: '#f59e0b',
-                  fontFamily: 'Rajdhani, sans-serif',
-                }}
-              >
-                💥 FALL DAMAGE
-                <span className="text-xs ml-2 opacity-60">— enginn fær fell-stig</span>
-              </button>
-
-              {/* Divider */}
-              <div className="my-1 border-t" style={{ borderColor: '#2a2a30' }} />
-
-              {/* Alive players as killers */}
               {alivePlayers
-                .filter(p => p.id !== eliminatingPlayer.id)
+                .filter(p => p.id !== killerPlayer.id)
                 .map(p => (
                   <button
                     key={p.id}
-                    onClick={() => handleSelectKiller(p.id)}
+                    onClick={() => handleSelectVictim(p.id)}
                     className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       background: '#0d0d0f',
@@ -341,12 +350,59 @@ export default function SoloGameView({ state, dispatch }: Props) {
                     }}
                   >
                     {p.name}
+                    <span className="text-xs text-gray-500 ml-2">{p.fullName}</span>
                   </button>
                 ))}
             </div>
 
             <button
-              onClick={() => setEliminatingPlayer(null)}
+              onClick={() => setKillerPlayer(null)}
+              className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-white transition-colors"
+            >
+              Hætta við
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Storm/Fall Damage Dialog: select who died */}
+      {showDeathDialog && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.8)' }}
+          onClick={() => setShowDeathDialog(null)}
+        >
+          <div
+            className="p-6 rounded-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-auto"
+            style={{ background: '#1a1a1f', border: '1px solid #f59e0b' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#f59e0b' }}>
+              {showDeathDialog === 'storm' ? '🌪️ STORMUR' : '💥 FALL DAMAGE'}
+            </h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Hver dó? Enginn fær fell-stig.
+            </p>
+
+            <div className="grid gap-2">
+              {alivePlayers.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => handleStormFallDeath(p.id)}
+                  className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  style={{
+                    background: '#0d0d0f',
+                    border: '1px solid #2a2a30',
+                    fontFamily: 'Rajdhani, sans-serif',
+                  }}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowDeathDialog(null)}
               className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-white transition-colors"
             >
               Hætta við
