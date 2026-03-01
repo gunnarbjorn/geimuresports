@@ -47,7 +47,7 @@ const TOURNAMENT_DATES = [
 ];
 
 const TOURNAMENT_CONFIG = {
-  name: "Allt Undir",
+  name: "ALLT UNDIR",
   game: "Fortnite",
   format: "Solo",
   formatLabel: "1 leikmaður",

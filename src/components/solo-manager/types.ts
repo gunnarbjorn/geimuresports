@@ -61,7 +61,7 @@ export function createSoloInitialState(date?: string): SoloTournamentState {
     raffleWinners: [],
     eliminationOrder: [],
     tournamentDate: date || '2026-03-05',
-    tournamentName: 'Allt Undir – Solo',
+    tournamentName: 'ALLT UNDIR – Solo',
   };
 }
 
