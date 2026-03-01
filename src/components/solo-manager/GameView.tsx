@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   SoloTournamentState,
   SoloTournamentAction,
+  SoloPlayer,
   getRankedSoloPlayers,
   getSoloPlayerTotalPoints,
   getPlayerWins,
@@ -13,138 +14,142 @@ interface Props {
   dispatch: React.Dispatch<SoloTournamentAction>;
 }
 
-interface PlayerInput {
-  playerId: string;
-  kills: number;
-  placement: number;
-}
-
 export default function SoloGameView({ state, dispatch }: Props) {
+  const [eliminatingPlayer, setEliminatingPlayer] = useState<SoloPlayer | null>(null);
+  const [showWinner, setShowWinner] = useState(false);
+
+  const alivePlayers = state.players
+    .filter(p => p.alive)
+    .sort((a, b) => a.name.localeCompare(b.name, 'is'));
+
+  const eliminatedPlayers = [...state.eliminationOrder]
+    .reverse()
+    .map(id => state.players.find(p => p.id === id)!)
+    .filter(Boolean);
+
   const ranked = getRankedSoloPlayers(state.players);
-  const [editingGame, setEditingGame] = useState<number | null>(null);
 
-  const createEmptyInputs = (): PlayerInput[] =>
-    state.players.map((p, i) => ({ playerId: p.id, kills: 0, placement: i + 1 }));
-
-  const [inputs, setInputs] = useState<PlayerInput[]>(createEmptyInputs);
-
-  const updateInput = (playerId: string, field: 'kills' | 'placement', value: number) => {
-    setInputs(prev => prev.map(inp => (inp.playerId === playerId ? { ...inp, [field]: value } : inp)));
-  };
-
-  const getPreviewPoints = (inp: PlayerInput) => {
-    const killPts = inp.kills * state.killPointsPerKill;
-    const placePts = state.placementPointsConfig[inp.placement - 1] || 0;
-    return { killPts, placePts, total: killPts + placePts };
-  };
-
-  const handleSubmit = () => {
-    const hasValidPlacements = inputs.every(inp => inp.placement >= 1);
-    if (!hasValidPlacements) return;
-
-    if (editingGame !== null) {
-      dispatch({ type: 'EDIT_GAME_RESULTS', gameNumber: editingGame, results: inputs });
-      setEditingGame(null);
-    } else {
-      dispatch({ type: 'SUBMIT_GAME_RESULTS', results: inputs });
+  // Detect winner
+  useEffect(() => {
+    if (alivePlayers.length === 1 && state.players.length > 1 && !showWinner) {
+      setShowWinner(true);
     }
-    setInputs(createEmptyInputs());
+  }, [alivePlayers.length, state.players.length]);
+
+  const handleEliminate = (player: SoloPlayer) => {
+    setEliminatingPlayer(player);
   };
 
-  const handleEditGame = (gameNumber: number) => {
-    const game = state.gameHistory.find(g => g.gameNumber === gameNumber);
-    if (!game) return;
-    setEditingGame(gameNumber);
-    setInputs(
-      state.players.map(p => {
-        const pl = game.placements.find(x => x.playerId === p.id);
-        return { playerId: p.id, kills: pl?.kills || 0, placement: pl?.placement || 0 };
-      })
-    );
+  const handleSelectKiller = (killerId: string) => {
+    if (!eliminatingPlayer) return;
+    dispatch({
+      type: 'ELIMINATE_PLAYER',
+      playerId: eliminatingPlayer.id,
+      killerPlayerId: killerId,
+    });
+    setEliminatingPlayer(null);
   };
 
-  const cancelEdit = () => {
-    setEditingGame(null);
-    setInputs(createEmptyInputs());
+  const handleRevive = (player: SoloPlayer) => {
+    dispatch({ type: 'REVIVE_PLAYER', playerId: player.id });
+    setShowWinner(false);
   };
 
-  const sortedInputs = [...inputs].sort((a, b) => a.placement - b.placement);
+  const handleEndGame = () => {
+    dispatch({ type: 'END_GAME' });
+    setShowWinner(false);
+  };
+
+  const winnerPlayer = alivePlayers.length === 1 ? alivePlayers[0] : null;
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4 h-full">
-      {/* Left Panel: Game Input Form */}
+      {/* Left Panel: Players */}
       <div className="flex-1 flex flex-col gap-4">
-        <h2
-          className="text-xl font-bold"
-          style={{ fontFamily: 'Rajdhani, sans-serif', color: editingGame ? '#f59e0b' : '#22c55e' }}
-        >
-          {editingGame ? `✏️ BREYTA LEIK ${editingGame}` : `🎮 LEIKUR ${state.currentGame} — NIÐURSTÖÐUR`}
+        <h2 className="text-xl font-bold" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>
+          🟢 Á LÍFI ({alivePlayers.length})
         </h2>
 
-        <div
-          className="rounded-xl overflow-hidden"
-          style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}
-        >
-          {/* Header */}
-          <div
-            className="grid grid-cols-[1fr_80px_80px_60px_60px_60px] gap-2 px-4 py-2 text-xs font-bold text-gray-500"
-            style={{ fontFamily: 'Rajdhani, sans-serif', borderBottom: '1px solid #2a2a30' }}
-          >
-            <span>Leikmaður</span>
-            <span className="text-center">Fellur</span>
-            <span className="text-center">Sæti</span>
-            <span className="text-center text-gray-600">K-stig</span>
-            <span className="text-center text-gray-600">P-stig</span>
-            <span className="text-center text-gray-600">Samt.</span>
-          </div>
-
-          {/* Rows */}
-          <div className="max-h-[60vh] overflow-y-auto">
-            {sortedInputs.map(inp => {
-              const player = state.players.find(p => p.id === inp.playerId);
-              if (!player) return null;
-              const preview = getPreviewPoints(inp);
-              return (
-                <div
-                  key={inp.playerId}
-                  className="grid grid-cols-[1fr_80px_80px_60px_60px_60px] gap-2 px-4 py-2.5 items-center"
-                  style={{ borderBottom: '1px solid #1f1f25' }}
-                >
-                  <span className="font-bold text-sm truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-                    {player.name}
-                  </span>
-                  <input
-                    type="number"
-                    min={0}
-                    value={inp.kills}
-                    onChange={e => updateInput(inp.playerId, 'kills', Math.max(0, parseInt(e.target.value) || 0))}
-                    className="w-full px-2 py-1.5 text-sm rounded text-white text-center"
-                    style={{ background: '#0d0d0f', border: '1px solid #2a2a30' }}
-                  />
-                  <input
-                    type="number"
-                    min={1}
-                    max={state.players.length}
-                    value={inp.placement}
-                    onChange={e =>
-                      updateInput(inp.playerId, 'placement', Math.max(1, parseInt(e.target.value) || 1))
-                    }
-                    className="w-full px-2 py-1.5 text-sm rounded text-white text-center"
-                    style={{ background: '#0d0d0f', border: '1px solid #2a2a30' }}
-                  />
-                  <span className="text-center text-xs text-gray-500">{preview.killPts}</span>
-                  <span className="text-center text-xs text-gray-500">{preview.placePts}</span>
-                  <span
-                    className="text-center text-sm font-bold"
-                    style={{ color: '#e8341c', fontFamily: 'Rajdhani, sans-serif' }}
-                  >
-                    {preview.total}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+        <div className="grid gap-3 grid-cols-2">
+          {alivePlayers.map(p => (
+            <div
+              key={p.id}
+              className="p-5 rounded-xl flex items-center justify-between transition-all min-h-[80px]"
+              style={{
+                background: '#1a1a1f',
+                border: '1px solid #22c55e33',
+                boxShadow: '0 0 8px rgba(34, 197, 94, 0.08)',
+              }}
+            >
+              <div className="min-w-0">
+                <h3 className="font-bold text-xl truncate" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+                  {p.name}
+                </h3>
+                <p className="text-sm text-gray-500 truncate">{p.fullName}</p>
+                {p.gameKills > 0 && (
+                  <p className="text-xs mt-0.5" style={{ color: '#e8341c' }}>
+                    {p.gameKills} fell í þessum leik
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => handleEliminate(p)}
+                className="ml-3 px-6 py-3 text-sm font-bold rounded-lg shrink-0 transition-all hover:scale-105 active:scale-95"
+                style={{
+                  background: 'rgba(34, 197, 94, 0.15)',
+                  border: '1px solid #22c55e',
+                  color: '#22c55e',
+                  fontFamily: 'Rajdhani, sans-serif',
+                }}
+              >
+                + FELLA
+              </button>
+            </div>
+          ))}
         </div>
+
+        {/* Eliminated players */}
+        {eliminatedPlayers.length > 0 && (
+          <>
+            <h3 className="text-lg font-bold text-gray-500 mt-4" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+              FALLNIR ({eliminatedPlayers.length})
+            </h3>
+            <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+              {eliminatedPlayers.map((p, i) => {
+                const placement = state.players.length - state.eliminationOrder.indexOf(p.id);
+                return (
+                  <div
+                    key={p.id}
+                    className="p-3 rounded-xl flex items-center justify-between opacity-50"
+                    style={{ background: '#1a1a1f', border: '1px solid #2a2a30' }}
+                  >
+                    <div className="min-w-0">
+                      <h3
+                        className="font-bold text-sm line-through truncate"
+                        style={{ fontFamily: 'Rajdhani, sans-serif' }}
+                      >
+                        {p.name}
+                      </h3>
+                      <p className="text-xs text-gray-600">#{placement}. sæti</p>
+                    </div>
+                    <button
+                      onClick={() => handleRevive(p)}
+                      className="ml-2 px-3 py-1.5 text-xs font-bold rounded-lg shrink-0 transition-all hover:scale-105"
+                      style={{
+                        background: 'rgba(34, 197, 94, 0.2)',
+                        border: '1px solid #22c55e',
+                        color: '#22c55e',
+                        fontFamily: 'Rajdhani, sans-serif',
+                      }}
+                    >
+                      REVIVE
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         {/* Game History */}
         {state.gameHistory.length > 0 && (
@@ -169,18 +174,6 @@ export default function SoloGameView({ state, dispatch }: Props) {
                         ?.name || '—'}
                     </span>
                   </div>
-                  <button
-                    onClick={() => handleEditGame(game.gameNumber)}
-                    className="px-3 py-1.5 text-xs font-bold rounded-lg transition-all hover:scale-105"
-                    style={{
-                      background: 'rgba(245, 158, 11, 0.15)',
-                      border: '1px solid #f59e0b55',
-                      color: '#f59e0b',
-                      fontFamily: 'Rajdhani, sans-serif',
-                    }}
-                  >
-                    ✏️ BREYTA
-                  </button>
                 </div>
               ))}
             </div>
@@ -212,7 +205,8 @@ export default function SoloGameView({ state, dispatch }: Props) {
           {ranked.map((player, i) => {
             const medalColor = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : undefined;
             const wins = getPlayerWins(player.id, state.gameHistory);
-            const totalKills = getPlayerTotalKills(player.id, state.gameHistory);
+            const totalKills = getPlayerTotalKills(player.id, state.gameHistory) + player.gameKills;
+            const isAlive = player.alive;
             return (
               <div
                 key={player.id}
@@ -220,6 +214,7 @@ export default function SoloGameView({ state, dispatch }: Props) {
                 style={{
                   borderBottom: i < ranked.length - 1 ? '1px solid #2a2a30' : undefined,
                   borderLeft: medalColor ? `3px solid ${medalColor}` : '3px solid transparent',
+                  opacity: isAlive ? 1 : 0.4,
                 }}
               >
                 <div className="flex items-center gap-3">
@@ -232,6 +227,12 @@ export default function SoloGameView({ state, dispatch }: Props) {
                   <span className="font-bold text-sm" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
                     {player.name}
                   </span>
+                  {isAlive && (
+                    <span
+                      className="inline-block w-2 h-2 rounded-full"
+                      style={{ background: '#22c55e', boxShadow: '0 0 6px #22c55e' }}
+                    />
+                  )}
                 </div>
                 <div className="flex items-center gap-3 text-sm">
                   <span className="w-10 text-center text-yellow-500">{wins > 0 ? `${wins}🏆` : '—'}</span>
@@ -255,42 +256,157 @@ export default function SoloGameView({ state, dispatch }: Props) {
         style={{ background: '#0d0d0fee', borderTop: '1px solid #2a2a30' }}
       >
         <span className="text-lg font-bold" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
-          {editingGame
-            ? `BREYTA LEIK ${editingGame}`
-            : `LEIKUR ${state.currentGame} AF ${state.totalGames}`}
+          LEIKUR {state.currentGame} AF {state.totalGames} — {alivePlayers.length} á lífi
         </span>
         <div className="flex gap-3">
-          {editingGame && (
+          {winnerPlayer && (
             <button
-              onClick={cancelEdit}
-              className="px-6 py-3 font-bold rounded-xl transition-all hover:scale-105"
+              onClick={handleEndGame}
+              className="px-8 py-3 font-bold rounded-xl transition-all hover:scale-105 active:scale-95"
               style={{
                 fontFamily: 'Rajdhani, sans-serif',
-                background: '#2a2a30',
-                color: '#888',
+                background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                color: '#fff',
+                boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)',
               }}
             >
-              HÆTTA VIÐ
+              ✅ VISTA LEIK
             </button>
           )}
-          <button
-            onClick={handleSubmit}
-            className="px-8 py-3 font-bold rounded-xl transition-all hover:scale-105 active:scale-95"
-            style={{
-              fontFamily: 'Rajdhani, sans-serif',
-              background: editingGame
-                ? 'linear-gradient(135deg, #f59e0b, #d97706)'
-                : 'linear-gradient(135deg, #22c55e, #16a34a)',
-              color: '#fff',
-              boxShadow: editingGame
-                ? '0 0 20px rgba(245, 158, 11, 0.3)'
-                : '0 0 20px rgba(34, 197, 94, 0.3)',
-            }}
-          >
-            {editingGame ? '💾 VISTA BREYTINGAR' : '✅ VISTA LEIK'}
-          </button>
         </div>
       </div>
+
+      {/* Elimination Dialog */}
+      {eliminatingPlayer && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.8)' }}
+          onClick={() => setEliminatingPlayer(null)}
+        >
+          <div
+            className="p-6 rounded-2xl w-full max-w-md mx-4 max-h-[80vh] overflow-auto"
+            style={{ background: '#1a1a1f', border: '1px solid #e8341c' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold mb-4" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+              HVER FELLDI {eliminatingPlayer.name.toUpperCase()}?
+            </h3>
+
+            <div className="grid gap-2">
+              {/* Storm */}
+              <button
+                onClick={() => handleSelectKiller('__storm__')}
+                className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid #f59e0b',
+                  color: '#f59e0b',
+                  fontFamily: 'Rajdhani, sans-serif',
+                }}
+              >
+                🌪️ STORMUR
+                <span className="text-xs ml-2 opacity-60">— enginn fær fell-stig</span>
+              </button>
+
+              {/* Fall Damage */}
+              <button
+                onClick={() => handleSelectKiller('__fall_damage__')}
+                className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                style={{
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid #f59e0b',
+                  color: '#f59e0b',
+                  fontFamily: 'Rajdhani, sans-serif',
+                }}
+              >
+                💥 FALL DAMAGE
+                <span className="text-xs ml-2 opacity-60">— enginn fær fell-stig</span>
+              </button>
+
+              {/* Divider */}
+              <div className="my-1 border-t" style={{ borderColor: '#2a2a30' }} />
+
+              {/* Alive players as killers */}
+              {alivePlayers
+                .filter(p => p.id !== eliminatingPlayer.id)
+                .map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSelectKiller(p.id)}
+                    className="w-full p-3 text-left rounded-xl font-bold transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{
+                      background: '#0d0d0f',
+                      border: '1px solid #2a2a30',
+                      fontFamily: 'Rajdhani, sans-serif',
+                    }}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+            </div>
+
+            <button
+              onClick={() => setEliminatingPlayer(null)}
+              className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-white transition-colors"
+            >
+              Hætta við
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Winner Popup */}
+      {showWinner && winnerPlayer && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.85)' }}
+        >
+          <div
+            className="p-8 rounded-2xl text-center max-w-sm mx-4"
+            style={{
+              background: '#1a1a1f',
+              border: '2px solid #ffd700',
+              boxShadow: '0 0 60px rgba(255, 215, 0, 0.3)',
+            }}
+          >
+            <span className="text-6xl mb-4 block">🏆</span>
+            <h2
+              className="text-3xl font-black mb-2"
+              style={{ fontFamily: 'Rajdhani, sans-serif', color: '#ffd700' }}
+            >
+              {winnerPlayer.name.toUpperCase()}
+            </h2>
+            <p className="text-gray-400 mb-6" style={{ fontFamily: 'Rajdhani, sans-serif' }}>
+              VANN LEIKINN!
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setShowWinner(false)}
+                className="px-6 py-3 font-bold rounded-xl transition-all hover:scale-105"
+                style={{
+                  fontFamily: 'Rajdhani, sans-serif',
+                  background: '#2a2a30',
+                  color: '#888',
+                }}
+              >
+                LOKA
+              </button>
+              <button
+                onClick={handleEndGame}
+                className="px-8 py-3 font-bold rounded-xl transition-all hover:scale-105 active:scale-95"
+                style={{
+                  fontFamily: 'Rajdhani, sans-serif',
+                  background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+                  color: '#fff',
+                  boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)',
+                }}
+              >
+                ✅ VISTA LEIK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
