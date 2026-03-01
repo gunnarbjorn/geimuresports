@@ -6,12 +6,12 @@ import {
   soloTournamentReducer,
   SoloPlayer,
 } from '@/components/solo-manager/types';
+import { supabase } from '@/integrations/supabase/client';
 import SoloDashboardView from '@/components/solo-manager/DashboardView';
 import SoloGameView from '@/components/solo-manager/GameView';
 import SoloBroadcastView from '@/components/solo-manager/BroadcastView';
 import SoloResultsView from '@/components/solo-manager/ResultsView';
 import SeasonView, { saveSeasonRecord } from '@/components/solo-manager/SeasonView';
-import { supabase } from '@/integrations/supabase/client';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Loader2, ShieldAlert } from 'lucide-react';
 
@@ -82,11 +82,23 @@ export default function AlltUndirManager() {
     syncToStorage(state);
   }, [state]);
 
-  // Auto-save season record when tournament finishes
+  // Auto-save season record and mark date as completed when tournament finishes
   const prevStatusRef = useRef(state.status);
   useEffect(() => {
     if (prevStatusRef.current !== 'finished' && state.status === 'finished') {
       saveSeasonRecord(state);
+      // Mark this date as completed in tournament_statuses
+      const statusId = `allt-undir-${state.tournamentDate}`;
+      (supabase as any)
+        .from('tournament_statuses')
+        .upsert(
+          { tournament_id: statusId, status: 'completed', is_visible: true },
+          { onConflict: 'tournament_id' }
+        )
+        .then(({ error }: any) => {
+          if (error) console.error('Error marking date as completed:', error);
+          else console.log(`Date ${state.tournamentDate} marked as completed`);
+        });
     }
     prevStatusRef.current = state.status;
   }, [state.status]);

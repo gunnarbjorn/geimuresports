@@ -60,7 +60,7 @@ export function createSoloInitialState(date?: string): SoloTournamentState {
     killPointsPerKill: 2,
     raffleWinners: [],
     eliminationOrder: [],
-    tournamentDate: date || '2026-03-05',
+    tournamentDate: date || '2026-03-06',
     tournamentName: 'ALLT UNDIR – Solo',
   };
 }
