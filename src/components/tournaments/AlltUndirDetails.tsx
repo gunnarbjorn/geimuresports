@@ -772,11 +772,11 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                   {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr fara beint í verðlaunapottinn.
                 </p>
                 <p>
-                  <strong className="text-foreground">2.</strong> Custom matchmaking key er deilt í{" "}
+                  <strong className="text-foreground">2.</strong> Custom matchmaking key er deilt á{" "}
                   <a href={DISCORD_INVITE_URL} target="_blank" rel="noopener noreferrer" className={`text-[hsl(var(--${accent}))] underline`}>
                     Geimur Discord
                   </a>{" "}
-                  — aðeins skráðir leikmenn hafa aðgang.
+                  <strong className="text-foreground">30 mín fyrir leikbyrjun</strong> — aðeins skráðir leikmenn hafa aðgang.
                 </p>
                 <p>
                   <strong className="text-foreground">3.</strong> 1 leikur, Solo. Leikur byrjar kl. {TOURNAMENT_CONFIG.gameStartTime}.
