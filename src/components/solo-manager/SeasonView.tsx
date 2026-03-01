@@ -123,6 +123,13 @@ export default function SeasonView() {
 
   const totalPrizeAll = seasonPlayers.reduce((s, p) => s + p.totalPrize, 0);
 
+  const clearSeason = () => {
+    if (window.confirm('Ertu viss? Þetta eyðir allri season sögu.')) {
+      localStorage.removeItem(SEASON_KEY);
+      setHistory([]);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-8 p-6 max-w-5xl mx-auto pb-20">
       <div className="text-center">
@@ -139,6 +146,15 @@ export default function SeasonView() {
           <p className="text-lg font-bold mt-1" style={{ fontFamily: 'Rajdhani, sans-serif', color: '#22c55e' }}>
             Samtals útborgað: {formatKr(totalPrizeAll)}
           </p>
+        )}
+        {history.length > 0 && (
+          <button
+            onClick={clearSeason}
+            className="mt-3 px-4 py-1.5 text-xs font-bold rounded-lg"
+            style={{ background: '#1a1a1f', color: '#ef4444', border: '1px solid #2a2a30' }}
+          >
+            🗑 Hreinsa season sögu
+          </button>
         )}
       </div>
 
