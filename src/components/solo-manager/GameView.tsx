@@ -30,7 +30,20 @@ export default function SoloGameView({ state, dispatch }: Props) {
     .map(id => state.players.find(p => p.id === id)!)
     .filter(Boolean);
 
-  const ranked = getRankedSoloPlayers(state.players);
+  // Calculate preview placement points for current game based on elimination order
+  const getPreviewPlacementPoints = (playerId: string): number => {
+    const elimIndex = state.eliminationOrder.indexOf(playerId);
+    if (elimIndex === -1) return 0; // still alive, no placement yet
+    const placement = state.players.length - elimIndex;
+    return state.placementPointsConfig[placement - 1] || 0;
+  };
+
+  // For ranking during the game, include preview placement points
+  const getPlayerLiveTotal = (player: SoloPlayer): number => {
+    return getSoloPlayerTotalPoints(player) + getPreviewPlacementPoints(player.id);
+  };
+
+  const ranked = [...state.players].sort((a, b) => getPlayerLiveTotal(b) - getPlayerLiveTotal(a));
 
   // Detect winner
   useEffect(() => {
@@ -132,7 +145,7 @@ export default function SoloGameView({ state, dispatch }: Props) {
                 <p className="text-sm text-gray-500 truncate">{p.fullName}</p>
                 {p.gameKills > 0 && (
                   <p className="text-xs mt-0.5" style={{ color: '#e8341c' }}>
-                    {p.gameKills} fell í þessum leik
+                    {p.gameKills} {p.gameKills === 1 ? 'fella' : 'fellur'} í þessum leik
                   </p>
                 )}
               </div>
@@ -284,7 +297,7 @@ export default function SoloGameView({ state, dispatch }: Props) {
                     className="w-12 text-center font-bold text-lg"
                     style={{ fontFamily: 'Rajdhani, sans-serif', color: '#e8341c' }}
                   >
-                    {getSoloPlayerTotalPoints(player)}
+                    {getPlayerLiveTotal(player)}
                   </span>
                 </div>
               </div>
