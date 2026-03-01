@@ -855,7 +855,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                 <ul className="space-y-3 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <span className={`text-[hsl(var(--${accent}))] mt-0.5`}>•</span>
-                    <span>Aldurshámark: <strong className="text-foreground">13+</strong></span>
+                    <span>Aldurstakmark: <strong className="text-foreground">13+</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className={`text-[hsl(var(--${accent}))] mt-0.5`}>•</span>
