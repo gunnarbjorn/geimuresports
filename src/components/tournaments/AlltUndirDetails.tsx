@@ -361,8 +361,9 @@ function RegistrationForm({
 
               {/* Required checkboxes */}
               <div className="space-y-3">
-                <label className="flex items-start gap-3 cursor-pointer group">
+                <div className="flex items-start gap-3 group">
                   <input
+                    id="acceptRules"
                     type="checkbox"
                     checked={acceptRules}
                     onChange={(e) => setAcceptRules(e.target.checked)}
@@ -370,29 +371,32 @@ function RegistrationForm({
                     required
                   />
                   <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    Ég hef lesið og samþykki{" "}
+                    <label htmlFor="acceptRules" className="cursor-pointer">
+                      Ég hef lesið og samþykki{" "}
+                    </label>
                     <button
                       type="button"
                       className="text-[hsl(var(--arena-green))] underline"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        const item = document.querySelector('[data-value="reglur"]');
-                        if (item) {
-                          const trigger = item.querySelector('button[data-radix-collection-item]');
-                          if (trigger && item.getAttribute('data-state') !== 'open') {
-                            (trigger as HTMLButtonElement).click();
-                          }
-                          setTimeout(() => {
-                            item.scrollIntoView({ behavior: "smooth", block: "center" });
-                          }, 150);
+
+                        const item = document.getElementById("allt-undir-reglur-item");
+                        const trigger = document.getElementById("allt-undir-reglur-trigger");
+
+                        if (trigger && item?.getAttribute("data-state") !== "open") {
+                          (trigger as HTMLButtonElement).click();
                         }
+
+                        setTimeout(() => {
+                          item?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }, 220);
                       }}
                     >
                       reglurnar
                     </button>
                   </span>
-                </label>
+                </div>
                 <label className="flex items-start gap-3 cursor-pointer group">
                   <input
                     type="checkbox"
@@ -846,10 +850,11 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
         {/* Rules */}
         <Accordion type="single" collapsible className="space-y-3">
           <AccordionItem
+            id="allt-undir-reglur-item"
             value="reglur"
             className="bg-card border border-border rounded-xl overflow-hidden"
           >
-            <AccordionTrigger className="px-5 py-4 hover:no-underline hover:bg-muted/50">
+            <AccordionTrigger id="allt-undir-reglur-trigger" className="px-5 py-4 hover:no-underline hover:bg-muted/50">
               <div className="flex items-center gap-3">
                 <ShieldCheck className="h-5 w-5 text-primary shrink-0" />
                 <span className="font-display font-semibold text-left">
