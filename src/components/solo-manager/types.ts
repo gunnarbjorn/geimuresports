@@ -190,10 +190,20 @@ export function soloTournamentReducer(state: SoloTournamentState, action: SoloTo
       return { ...state, players, gameHistory: newHistory };
     }
 
-    case 'UPDATE_PLACEMENT_CONFIG':
-      return { ...state, placementPointsConfig: action.config };
-    case 'UPDATE_KILL_POINTS':
-      return { ...state, killPointsPerKill: action.killPointsPerKill };
+    case 'UPDATE_PLACEMENT_CONFIG': {
+      const newState = { ...state, placementPointsConfig: action.config };
+      if (newState.gameHistory.length > 0) {
+        newState.players = recalcPlayersFromHistory(state.players, newState.gameHistory, newState.killPointsPerKill, action.config);
+      }
+      return newState;
+    }
+    case 'UPDATE_KILL_POINTS': {
+      const newState = { ...state, killPointsPerKill: action.killPointsPerKill };
+      if (newState.gameHistory.length > 0) {
+        newState.players = recalcPlayersFromHistory(state.players, newState.gameHistory, action.killPointsPerKill, newState.placementPointsConfig);
+      }
+      return newState;
+    }
     case 'SET_RAFFLE_WINNERS':
       return { ...state, raffleWinners: action.winners };
     case 'SET_PLAYERS':
