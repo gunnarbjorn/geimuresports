@@ -76,6 +76,7 @@ interface Registration {
   created_at: string;
   type: string;
   data: RegistrationData;
+  verified?: boolean;
 }
 
 interface LanOrder {
@@ -106,6 +107,8 @@ const AdminPage = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingOrder, setEditingOrder] = useState<LanOrder | null>(null);
   const [editForm, setEditForm] = useState({ team_name: "", player1: "", player2: "", email: "" });
+  const [editingAlltUndir, setEditingAlltUndir] = useState<Registration | null>(null);
+  const [editAlltUndirForm, setEditAlltUndirForm] = useState({ fullName: "", fortniteName: "", gmail: "" });
   const [isSaving, setIsSaving] = useState(false);
   const [lanRegsOpen, setLanRegsOpen] = useState(false);
   const [elkoRegsOpen, setElkoRegsOpen] = useState(false);
@@ -184,6 +187,7 @@ const AdminPage = () => {
             id: item.id,
             created_at: item.created_at,
             type: item.type,
+            verified: item.verified,
             data: item.data as RegistrationData,
           }))
         );
@@ -276,6 +280,49 @@ const AdminPage = () => {
 
       toast.success("Skráning uppfærð!");
       setEditingOrder(null);
+      fetchRegistrations();
+    } catch (err) {
+      console.error("Error updating:", err);
+      toast.error("Villa við uppfærslu");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleEditAlltUndir = (reg: Registration) => {
+    setEditAlltUndirForm({
+      fullName: reg.data.fullName || "",
+      fortniteName: reg.data.fortniteName || "",
+      gmail: reg.data.email || (reg.data as any).gmail || "",
+    });
+    setEditingAlltUndir(reg);
+  };
+
+  const handleSaveAlltUndirEdit = async () => {
+    if (!editingAlltUndir) return;
+    setIsSaving(true);
+    try {
+      const currentData = editingAlltUndir.data as any;
+      const { error } = await supabase
+        .from("registrations")
+        .update({
+          data: {
+            ...currentData,
+            fullName: editAlltUndirForm.fullName.trim(),
+            fortniteName: editAlltUndirForm.fortniteName.trim(),
+            gmail: editAlltUndirForm.gmail.trim(),
+          },
+        })
+        .eq("id", editingAlltUndir.id);
+
+      if (error) {
+        console.error("Update error:", error);
+        toast.error("Villa við uppfærslu");
+        return;
+      }
+
+      toast.success("Skráning uppfærð!");
+      setEditingAlltUndir(null);
       fetchRegistrations();
     } catch (err) {
       console.error("Error updating:", err);
@@ -641,8 +688,21 @@ const AdminPage = () => {
                           <Users className="h-5 w-5 text-[hsl(var(--arena-green))]" />
                         </div>
                         <div>
-                          <p className="text-2xl font-bold">{alltUndirRegs.length}</p>
-                          <p className="text-xs text-muted-foreground">Skráðir leikmenn</p>
+                          <p className="text-2xl font-bold">{alltUndirRegs.filter(r => r.verified).length}</p>
+                          <p className="text-xs text-muted-foreground">Greiddir leikmenn</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                          <CreditCard className="h-5 w-5 text-accent" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{alltUndirRegs.filter(r => !r.verified).length}</p>
+                          <p className="text-xs text-muted-foreground">Ógreitt</p>
                         </div>
                       </div>
                     </CardContent>
@@ -726,10 +786,10 @@ const AdminPage = () => {
                               <TableHead className="w-12">#</TableHead>
                               <TableHead>Nafn</TableHead>
                               <TableHead>Fortnite nafn</TableHead>
-                              <TableHead>Gmail</TableHead>
+                              <TableHead className="hidden lg:table-cell">Gmail</TableHead>
                               <TableHead>Dagsetning</TableHead>
-                              <TableHead>Skráð</TableHead>
-                              <TableHead className="w-20">Eyða</TableHead>
+                              <TableHead>Staða</TableHead>
+                              <TableHead className="w-20"></TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -748,7 +808,7 @@ const AdminPage = () => {
                                     {reg.data.fortniteName || "—"}
                                   </div>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="hidden lg:table-cell">
                                   <div className="flex items-center gap-1 text-sm">
                                     <Mail className="h-3 w-3 text-muted-foreground" />
                                     {reg.data.email || (reg.data as any).gmail || "—"}
@@ -759,14 +819,22 @@ const AdminPage = () => {
                                     {reg.type.replace("allt-undir-", "")}
                                   </Badge>
                                 </TableCell>
-                                <TableCell className="text-sm text-muted-foreground">
-                                  <div className="flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
-                                    {new Date(reg.created_at).toLocaleDateString("is-IS")}
-                                  </div>
+                                <TableCell>
+                                  <Badge className={`text-[10px] ${
+                                    reg.verified
+                                      ? "bg-[hsl(var(--arena-green)/0.15)] text-[hsl(var(--arena-green))] border-[hsl(var(--arena-green)/0.3)]"
+                                      : "bg-accent/10 text-accent border-accent/30"
+                                  }`}>
+                                    {reg.verified ? "Greitt" : "Ógreitt"}
+                                  </Badge>
                                 </TableCell>
                                 <TableCell>
-                                  <DeleteButton reg={reg} />
+                                  <div className="flex items-center gap-0">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => handleEditAlltUndir(reg)}>
+                                      <Pencil className="h-3.5 w-3.5" />
+                                    </Button>
+                                    <DeleteButton reg={reg} />
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -1195,6 +1263,35 @@ const AdminPage = () => {
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingOrder(null)}>Hætta við</Button>
             <Button onClick={handleSaveEdit} disabled={isSaving}>
+              {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Vista...</> : "Vista breytingar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Allt Undir Dialog */}
+      <Dialog open={!!editingAlltUndir} onOpenChange={(open) => !open && setEditingAlltUndir(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Breyta Allt Undir skráningu</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="edit-au-name">Fullt nafn</Label>
+              <Input id="edit-au-name" value={editAlltUndirForm.fullName} onChange={(e) => setEditAlltUndirForm(f => ({ ...f, fullName: e.target.value }))} />
+            </div>
+            <div>
+              <Label htmlFor="edit-au-fortnite">Fortnite nafn</Label>
+              <Input id="edit-au-fortnite" value={editAlltUndirForm.fortniteName} onChange={(e) => setEditAlltUndirForm(f => ({ ...f, fortniteName: e.target.value }))} />
+            </div>
+            <div>
+              <Label htmlFor="edit-au-gmail">Gmail</Label>
+              <Input id="edit-au-gmail" type="email" value={editAlltUndirForm.gmail} onChange={(e) => setEditAlltUndirForm(f => ({ ...f, gmail: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingAlltUndir(null)}>Hætta við</Button>
+            <Button onClick={handleSaveAlltUndirEdit} disabled={isSaving}>
               {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Vista...</> : "Vista breytingar"}
             </Button>
           </DialogFooter>
