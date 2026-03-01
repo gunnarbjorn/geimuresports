@@ -52,7 +52,7 @@ const TOURNAMENT_CONFIG = {
   format: "Solo",
   formatLabel: "1 leikmaður",
   location: "Online",
-  ageLimit: "13+",
+  
   entryFee: 3057,
   prizeContribution: 3000,
   maxPlayers: 100,
@@ -796,7 +796,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
             {TOURNAMENT_CONFIG.name}
           </h2>
           <p className="text-muted-foreground mb-2">
-            {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format} · {TOURNAMENT_CONFIG.ageLimit}
+            {TOURNAMENT_CONFIG.game} · {TOURNAMENT_CONFIG.format}
           </p>
           {TOURNAMENT_DATES.length === 1 && (
             <p className="text-sm text-muted-foreground mb-4 flex items-center justify-center gap-1.5">
@@ -1156,10 +1156,6 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
             <AccordionContent className="px-5 pb-5">
               <div className="space-y-4">
                 <ul className="space-y-3 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <span className={`text-[hsl(var(--${accent}))] mt-0.5`}>•</span>
-                    <span>Aldurstakmark: <strong className="text-foreground">13+</strong></span>
-                  </li>
                   <li className="flex items-start gap-2">
                     <span className={`text-[hsl(var(--${accent}))] mt-0.5`}>•</span>
                     <span>Engin endurgreiðsla nema afbókun sé gerð a.m.k. 24 klukkustundum fyrir viðburð.</span>
