@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useState } from 'react';
+import { useReducer, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   SoloTournamentState,
@@ -10,11 +10,12 @@ import SoloDashboardView from '@/components/solo-manager/DashboardView';
 import SoloGameView from '@/components/solo-manager/GameView';
 import SoloBroadcastView from '@/components/solo-manager/BroadcastView';
 import SoloResultsView from '@/components/solo-manager/ResultsView';
+import SeasonView, { saveSeasonRecord } from '@/components/solo-manager/SeasonView';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Loader2, ShieldAlert } from 'lucide-react';
 
-type View = 'dashboard' | 'game' | 'broadcast' | 'results';
+type View = 'dashboard' | 'game' | 'broadcast' | 'results' | 'season';
 
 const STORAGE_KEY = 'allt-undir-tournament-state';
 
@@ -81,10 +82,19 @@ export default function AlltUndirManager() {
     syncToStorage(state);
   }, [state]);
 
+  // Auto-save season record when tournament finishes
+  const prevStatusRef = useRef(state.status);
+  useEffect(() => {
+    if (prevStatusRef.current !== 'finished' && state.status === 'finished') {
+      saveSeasonRecord(state);
+    }
+    prevStatusRef.current = state.status;
+  }, [state.status]);
+
   useEffect(() => {
     if (state.status === 'lobby' && view === 'game') setView('dashboard');
     if (state.status === 'active' && view === 'dashboard') setView('game');
-    if (state.status === 'finished' && view !== 'results' && view !== 'broadcast') setView('results');
+    if (state.status === 'finished' && view !== 'results' && view !== 'broadcast' && view !== 'season') setView('results');
   }, [state.status]);
 
   const openBroadcastTab = () => {
@@ -121,7 +131,7 @@ export default function AlltUndirManager() {
         style={{ background: '#0d0d0fee', borderBottom: '1px solid #1a1a1f' }}
       >
         <div className="flex items-center gap-1">
-          {(['dashboard', 'game', 'broadcast', 'results'] as View[]).map(v => (
+          {(['dashboard', 'game', 'broadcast', 'results', 'season'] as View[]).map(v => (
             <button
               key={v}
               onClick={() => setView(v)}
@@ -136,6 +146,7 @@ export default function AlltUndirManager() {
               {v === 'game' && '🎮 Leikur'}
               {v === 'broadcast' && '📺 Útsending'}
               {v === 'results' && '🏆 Niðurstöður'}
+              {v === 'season' && '🏆 Season'}
             </button>
           ))}
         </div>
@@ -160,6 +171,7 @@ export default function AlltUndirManager() {
         {view === 'game' && <SoloGameView state={state} dispatch={dispatch} />}
         {view === 'broadcast' && <SoloBroadcastView state={state} />}
         {view === 'results' && <SoloResultsView state={state} dispatch={dispatch} />}
+        {view === 'season' && <SeasonView />}
       </main>
     </div>
   );
