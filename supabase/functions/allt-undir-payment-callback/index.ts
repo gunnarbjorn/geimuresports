@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
                             <tr><td style="padding:8px;color:#888;">Pöntun:</td><td style="padding:8px;font-family:monospace;">${orderid}</td></tr>
                             <tr><td style="padding:8px;color:#888;">Fjöldi daga:</td><td style="padding:8px;">${matches.length}</td></tr>
                           </table>
-                          <p style="color:#888;font-size:14px;">Custom matchmaking key verður deilt í Geimur Discord fyrir kl. 18:00 á hverjum mótsdegi.</p>
+                          <p style="color:#888;font-size:14px;">Custom matchmaking key verður deilt í Geimur Discord 30 mínútum fyrir leikbyrjun.</p>
                           <hr style="border:none;border-top:1px solid #333;margin:20px 0;">
                           <p style="color:#666;font-size:12px;">Geimur Esports · geimuresports.is</p>
                         </div>
