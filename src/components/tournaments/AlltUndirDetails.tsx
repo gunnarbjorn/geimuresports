@@ -375,10 +375,15 @@ function RegistrationForm({
                       type="button"
                       className="text-[hsl(var(--arena-green))] underline"
                       onClick={() => {
-                        const el = document.querySelector('[data-value="reglur"]');
-                        if (el) {
-                          (el as HTMLButtonElement).click();
-                          el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        const item = document.querySelector('[data-value="reglur"]');
+                        if (item) {
+                          const trigger = item.querySelector('button[data-radix-collection-item]');
+                          if (trigger && item.getAttribute('data-state') !== 'open') {
+                            (trigger as HTMLButtonElement).click();
+                          }
+                          setTimeout(() => {
+                            item.scrollIntoView({ behavior: "smooth", block: "center" });
+                          }, 150);
                         }
                       }}
                     >
