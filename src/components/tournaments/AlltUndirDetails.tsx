@@ -36,6 +36,7 @@ import {
   Tv,
   Ban,
   Check,
+  ArrowRight,
 } from "lucide-react";
 
 const DISCORD_INVITE_URL = "https://discord.gg/AzwK64zz";
@@ -62,7 +63,6 @@ const TOURNAMENT_CONFIG = {
   gameStartTime: "18:00",
 };
 
-// Prize distribution
 const PRIZE_DIST = {
   first: 0.4167,
   second: 0.1667,
@@ -169,6 +169,20 @@ function PrizePoolWidget({ playerCount }: { playerCount: number }) {
   );
 }
 
+function DynamicSlotCounter({ count, max, isCompleted }: { count: number; max: number; isCompleted: boolean }) {
+  if (isCompleted) {
+    return <span className="text-sm text-muted-foreground">{count} keppendur</span>;
+  }
+  const remaining = max - count;
+  if (count >= 80) {
+    return <span className="text-sm font-semibold text-[hsl(var(--destructive))]">Aðeins {remaining} pláss eftir</span>;
+  }
+  if (count >= 50) {
+    return <span className="text-sm text-muted-foreground">Færri en {max - 49} pláss eftir</span>;
+  }
+  return <span className="text-sm text-muted-foreground">{remaining} laus pláss</span>;
+}
+
 function RegistrationForm({
   selectedDate,
   dateStatuses,
@@ -180,6 +194,7 @@ function RegistrationForm({
 }) {
   const [searchParams] = useSearchParams();
   const statusParam = searchParams.get("status");
+  const [step, setStep] = useState(1);
   const [fullName, setFullName] = useState("");
   const [kennitala, setKennitala] = useState("");
   const [fortniteName, setFortniteName] = useState("");
@@ -190,12 +205,10 @@ function RegistrationForm({
   const [confirmUsername, setConfirmUsername] = useState(false);
   const [selectedDates, setSelectedDates] = useState<string[]>([]);
 
-  // Initialize selectedDates with available (non-completed) dates when they load
   useEffect(() => {
     const availableDates = TOURNAMENT_DATES
       .filter(td => dateStatuses[td.date] !== 'completed')
       .map(td => td.date);
-    // Auto-select the currently selected date if available
     if (availableDates.includes(selectedDate)) {
       setSelectedDates([selectedDate]);
     } else if (availableDates.length > 0) {
@@ -211,10 +224,8 @@ function RegistrationForm({
 
   const totalPrice = selectedDates.length * TOURNAMENT_CONFIG.entryFee;
   const allCompleted = TOURNAMENT_DATES.every(td => dateStatuses[td.date] === 'completed');
-
   const registrationClosed = allCompleted || selectedDates.every(d => !getCountdown(d, TOURNAMENT_CONFIG.registrationCloseTime));
 
-  // If returning from successful payment
   if (statusParam === "success") {
     return (
       <Card className="border-[hsl(var(--arena-green)/0.4)] bg-card">
@@ -247,7 +258,6 @@ function RegistrationForm({
 
     setIsSubmitting(true);
 
-    // Basic validation
     const kt = kennitala.replace(/[\s-]/g, "");
     if (kt.length !== 10 || !/^\d{10}$/.test(kt)) {
       setError("Kennitala verður að vera 10 tölustafir");
@@ -273,7 +283,6 @@ function RegistrationForm({
         return;
       }
 
-      // Submit payment form to Teya/Borgun
       const form = document.createElement("form");
       form.method = "POST";
       form.action = data.paymentUrl;
@@ -293,6 +302,8 @@ function RegistrationForm({
       setIsSubmitting(false);
     }
   };
+
+  const accent = "arena-green";
 
   return (
     <>
@@ -318,6 +329,12 @@ function RegistrationForm({
               <CardTitle className="font-display text-lg">Skrá og greiða</CardTitle>
               <p className="text-sm text-muted-foreground">Solo — 1 leikmaður</p>
             </div>
+            {!allCompleted && (
+              <div className="ml-auto flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-[hsl(var(--arena-green))]' : 'bg-muted-foreground/30'}`} />
+                <span className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-[hsl(var(--arena-green))]' : 'bg-muted-foreground/30'}`} />
+              </div>
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-5 md:p-6">
@@ -326,206 +343,243 @@ function RegistrationForm({
               <p className="text-muted-foreground font-medium">Öllum leikjum lokið fyrir þetta tímabil.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">Fullt nafn</Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Nafnið þitt"
-                  required
-                  maxLength={100}
-                />
-              </div>
-              <div>
-                <Label htmlFor="kennitala">Kennitala</Label>
-                <Input
-                  id="kennitala"
-                  value={kennitala}
-                  onChange={(e) => setKennitala(e.target.value)}
-                  placeholder="0101001234"
-                  required
-                  maxLength={11}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Notað til að greiða út verðlaun.
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="fortniteName">
-                  <Gamepad2 className="inline h-3.5 w-3.5 mr-1" />
-                  Fortnite nafn
-                </Label>
-                <Input
-                  id="fortniteName"
-                  value={fortniteName}
-                  onChange={(e) => setFortniteName(e.target.value)}
-                  placeholder="Fortnite username"
-                  required
-                  maxLength={50}
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  ⚠️ Ekki er hægt að breyta Fortnite nafni eftir skráningu.
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="gmail">Gmail</Label>
-                <Input
-                  id="gmail"
-                  type="email"
-                  value={gmail}
-                  onChange={(e) => setGmail(e.target.value)}
-                  placeholder="netfang@gmail.com"
-                  required
-                  maxLength={100}
-                />
-              </div>
+            <form onSubmit={handleSubmit}>
+              {/* Step 1: Date selection */}
+              {step === 1 && (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-semibold">Veldu daga</Label>
+                    <div className="space-y-2">
+                      {TOURNAMENT_DATES.map((td) => {
+                        const isCompleted = dateStatuses[td.date] === 'completed';
+                        const isSelected = selectedDates.includes(td.date);
+                        return (
+                          <label
+                            key={td.date}
+                            className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
+                              isCompleted
+                                ? 'opacity-50 cursor-not-allowed border-border bg-muted/20'
+                                : isSelected
+                                ? `border-[hsl(var(--${accent})/0.5)] bg-[hsl(var(--${accent})/0.05)]`
+                                : `border-border hover:border-[hsl(var(--${accent})/0.3)] hover:bg-muted/30`
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                disabled={isCompleted}
+                                onChange={() => !isCompleted && toggleDate(td.date)}
+                                className={`h-4 w-4 rounded border-border accent-[hsl(var(--${accent}))]`}
+                              />
+                              <span className={`text-sm font-medium ${isCompleted ? 'text-muted-foreground line-through' : ''}`}>
+                                {td.short}
+                              </span>
+                              {isCompleted && (
+                                <Badge variant="secondary" className="text-[10px] px-2 py-0.5">
+                                  <Check className="h-3 w-3 mr-1" />
+                                  Lokið
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="text-right">
+                              <span className={`text-sm font-mono ${isCompleted ? 'text-muted-foreground' : 'text-foreground'}`}>
+                                {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
+                              </span>
+                              <p className="text-[10px] text-muted-foreground leading-tight">
+                                3.000 kr + 57 kr kortabóknanargjald
+                              </p>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-              {/* Date selection checkboxes */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold">Veldu daga</Label>
-                <div className="space-y-2">
-                  {TOURNAMENT_DATES.map((td) => {
-                    const isCompleted = dateStatuses[td.date] === 'completed';
-                    const isSelected = selectedDates.includes(td.date);
-                    return (
-                      <label
-                        key={td.date}
-                        className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
-                          isCompleted
-                            ? 'opacity-50 cursor-not-allowed border-border bg-muted/20'
-                            : isSelected
-                            ? 'border-[hsl(var(--arena-green)/0.5)] bg-[hsl(var(--arena-green)/0.05)]'
-                            : 'border-border hover:border-[hsl(var(--arena-green)/0.3)] hover:bg-muted/30'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            disabled={isCompleted}
-                            onChange={() => !isCompleted && toggleDate(td.date)}
-                            className="h-4 w-4 rounded border-border accent-[hsl(var(--arena-green))]"
-                          />
-                          <span className={`text-sm font-medium ${isCompleted ? 'text-muted-foreground line-through' : ''}`}>
-                            {td.short}
-                          </span>
-                          {isCompleted && (
-                            <Badge variant="secondary" className="text-[10px] px-2 py-0.5">
-                              <Check className="h-3 w-3 mr-1" />
-                              Lokið
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <span className={`text-sm font-mono ${isCompleted ? 'text-muted-foreground' : 'text-foreground'}`}>
-                            {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
-                          </span>
-                          <p className="text-[10px] text-muted-foreground leading-tight">
-                            3.000 kr + 57 kr kortabóknanargjald
-                          </p>
-                        </div>
-                      </label>
-                    );
-                  })}
+                  {/* Price summary */}
+                  <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        {selectedDates.length} {selectedDates.length === 1 ? 'dagur' : 'dagar'} valdir
+                      </span>
+                      <span className="font-bold text-foreground text-lg">
+                        {totalPrice.toLocaleString("is-IS")} kr
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      💡 {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr á leikmann fer í pottinn á hverjum degi.
+                    </p>
+                  </div>
+
+                  <Button
+                    type="button"
+                    size="lg"
+                    className="w-full btn-arena-gradient text-base"
+                    disabled={selectedDates.length === 0}
+                    onClick={() => {
+                      if (selectedDates.length > 0) {
+                        setStep(2);
+                      }
+                    }}
+                  >
+                    Áfram <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-
-              {/* Price summary */}
-              <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">
-                    {selectedDates.length} {selectedDates.length === 1 ? 'dagur' : 'dagar'} valdir
-                  </span>
-                  <span className="font-bold text-foreground text-lg">
-                    {totalPrice.toLocaleString("is-IS")} kr
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  💡 {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr á leikmann fer í pottinn á hverjum degi.
-                </p>
-              </div>
-
-              {/* Required checkboxes */}
-              <div className="space-y-3">
-                <div className="flex items-start gap-3 group">
-                  <input
-                    id="acceptRules"
-                    type="checkbox"
-                    checked={acceptRules}
-                    onChange={(e) => setAcceptRules(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-border accent-[hsl(var(--arena-green))]"
-                    required
-                  />
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    <label htmlFor="acceptRules" className="cursor-pointer">
-                      Ég hef lesið og samþykki{" "}
-                    </label>
-                    <button
-                      type="button"
-                      className="text-[hsl(var(--arena-green))] underline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        const item = document.getElementById("allt-undir-reglur-item");
-                        const trigger = document.getElementById("allt-undir-reglur-trigger");
-
-                        if (trigger && item?.getAttribute("data-state") !== "open") {
-                          (trigger as HTMLButtonElement).click();
-                        }
-
-                        setTimeout(() => {
-                          item?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }, 220);
-                      }}
-                    >
-                      reglurnar
-                    </button>
-                  </span>
-                </div>
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={confirmUsername}
-                    onChange={(e) => setConfirmUsername(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-border accent-[hsl(var(--arena-green))]"
-                    required
-                  />
-                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    Ég staðfesti að Fortnite notandanafnið mitt sé rétt og mun ekki breyta því fyrir mótið byrjar — annars fæ ég mögulega ekki stig
-                  </span>
-                </label>
-              </div>
-
-              {error && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
               )}
 
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full btn-arena-gradient text-base"
-                disabled={isSubmitting || !acceptRules || !confirmUsername || selectedDates.length === 0}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Vinnsla...
-                  </>
-                ) : (
-                  <>
-                    Skrá og greiða — {totalPrice.toLocaleString("is-IS")} kr
-                  </>
-                )}
-              </Button>
-              <p className="text-xs text-center text-muted-foreground">
-                {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr fara í verðlaunapott + kortaþóknun · Örugg greiðsla hjá Teya/Borgun
-              </p>
+              {/* Step 2: Personal info */}
+              {step === 2 && (
+                <div className="space-y-4">
+                  <button
+                    type="button"
+                    className={`text-sm text-[hsl(var(--${accent}))] hover:underline flex items-center gap-1`}
+                    onClick={() => setStep(1)}
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" /> Til baka
+                  </button>
+
+                  <div className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
+                    <span className="text-muted-foreground">
+                      {selectedDates.length} {selectedDates.length === 1 ? 'dagur' : 'dagar'} ·{" "}
+                    </span>
+                    <span className="font-bold text-foreground">
+                      {totalPrice.toLocaleString("is-IS")} kr
+                    </span>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="fullName">Fullt nafn</Label>
+                    <Input
+                      id="fullName"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Nafnið þitt"
+                      required
+                      maxLength={100}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="fortniteName">
+                      <Gamepad2 className="inline h-3.5 w-3.5 mr-1" />
+                      Fortnite nafn
+                    </Label>
+                    <Input
+                      id="fortniteName"
+                      value={fortniteName}
+                      onChange={(e) => setFortniteName(e.target.value)}
+                      placeholder="Fortnite username"
+                      required
+                      maxLength={50}
+                    />
+                    <p className="text-xs text-[hsl(var(--destructive))] mt-1 font-medium">
+                      ⚠️ Ekki er hægt að breyta Fortnite nafni eftir skráningu
+                    </p>
+                  </div>
+                  <div>
+                    <Label htmlFor="gmail">Netfang</Label>
+                    <Input
+                      id="gmail"
+                      type="email"
+                      value={gmail}
+                      onChange={(e) => setGmail(e.target.value)}
+                      placeholder="netfang@gmail.com"
+                      required
+                      maxLength={100}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="kennitala">Kennitala</Label>
+                    <Input
+                      id="kennitala"
+                      value={kennitala}
+                      onChange={(e) => setKennitala(e.target.value)}
+                      placeholder="0101001234"
+                      required
+                      maxLength={11}
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Notuð eingöngu við greiðslu verðlauna.
+                    </p>
+                  </div>
+
+                  {/* Required checkboxes */}
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 group">
+                      <input
+                        id="acceptRules"
+                        type="checkbox"
+                        checked={acceptRules}
+                        onChange={(e) => setAcceptRules(e.target.checked)}
+                        className={`mt-1 h-4 w-4 rounded border-border accent-[hsl(var(--${accent}))]`}
+                        required
+                      />
+                      <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                        <label htmlFor="acceptRules" className="cursor-pointer">
+                          Ég hef lesið og samþykki{" "}
+                        </label>
+                        <button
+                          type="button"
+                          className={`text-[hsl(var(--${accent}))] underline`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const item = document.getElementById("allt-undir-reglur-item");
+                            const trigger = document.getElementById("allt-undir-reglur-trigger");
+                            if (trigger && item?.getAttribute("data-state") !== "open") {
+                              (trigger as HTMLButtonElement).click();
+                            }
+                            setTimeout(() => {
+                              item?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            }, 220);
+                          }}
+                        >
+                          reglurnar
+                        </button>
+                      </span>
+                    </div>
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={confirmUsername}
+                        onChange={(e) => setConfirmUsername(e.target.checked)}
+                        className={`mt-1 h-4 w-4 rounded border-border accent-[hsl(var(--${accent}))]`}
+                        required
+                      />
+                      <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                        Ég staðfesti að Fortnite notandanafnið mitt sé rétt og mun ekki breyta því fyrir mótið byrjar — annars fæ ég mögulega ekki stig
+                      </span>
+                    </label>
+                  </div>
+
+                  {error && (
+                    <Alert variant="destructive">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full btn-arena-gradient text-base"
+                    disabled={isSubmitting || !acceptRules || !confirmUsername || selectedDates.length === 0}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Vinnsla...
+                      </>
+                    ) : (
+                      <>
+                        Greiða og staðfesta — {totalPrice.toLocaleString("is-IS")} kr
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground">
+                    {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr fara í verðlaunapott + kortaþóknun · Örugg greiðsla hjá Teya/Borgun
+                  </p>
+                </div>
+              )}
             </form>
           )}
         </CardContent>
@@ -539,7 +593,6 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
   const [registrationCounts, setRegistrationCounts] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Auto-select first non-completed date
   const selectedDate = useMemo(() => {
     const firstOpen = TOURNAMENT_DATES.find(td => dateStatuses[td.date] !== 'completed');
     return firstOpen?.date || TOURNAMENT_DATES[0].date;
@@ -547,14 +600,12 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
 
   const [activeDate, setActiveDate] = useState(selectedDate);
 
-  // Update activeDate when selectedDate changes (after statuses load)
   useEffect(() => {
     setActiveDate(selectedDate);
   }, [selectedDate]);
 
   const accent = "arena-green";
 
-  // Fetch date statuses from tournament_statuses table
   const fetchDateStatuses = async () => {
     try {
       const statusMap: Record<string, DateStatus> = {};
@@ -695,28 +746,18 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
               Leikur kl. {TOURNAMENT_CONFIG.gameStartTime}
             </Badge>
           </div>
-
-          {!isActiveDateCompleted && (
-            <Button
-              size="lg"
-              className="btn-arena-gradient text-base"
-              onClick={() => {
-                const el = document.getElementById("skraning-allt-undir");
-                if (el) {
-                  const offset = el.getBoundingClientRect().top + window.scrollY - 104;
-                  window.scrollTo({ top: offset, behavior: "smooth" });
-                }
-              }}
-            >
-              Skrá mig <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          )}
         </div>
 
-        {/* Live prize pool */}
-        <PrizePoolWidget playerCount={currentCount} />
+        {/* Registration form — moved right after hero */}
+        <div id="skraning-allt-undir" className="scroll-mt-24">
+          <RegistrationForm
+            selectedDate={activeDate}
+            dateStatuses={dateStatuses}
+            onSuccess={fetchCounts}
+          />
+        </div>
 
-        {/* Registration status */}
+        {/* Registration status with dynamic counter */}
         <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
           <CardContent className="p-5">
             <div className="flex items-center justify-between mb-3">
@@ -729,12 +770,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                   <Badge variant="secondary" className="text-[10px]">Lokið</Badge>
                 )}
               </div>
-              <span className="text-sm text-muted-foreground">
-                {isActiveDateCompleted
-                  ? `${currentCount} keppendur`
-                  : `${TOURNAMENT_CONFIG.maxPlayers - currentCount} laus pláss`
-                }
-              </span>
+              <DynamicSlotCounter count={currentCount} max={TOURNAMENT_CONFIG.maxPlayers} isCompleted={isActiveDateCompleted} />
             </div>
             <Progress
               value={(currentCount / TOURNAMENT_CONFIG.maxPlayers) * 100}
@@ -748,7 +784,10 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
           </CardContent>
         </Card>
 
-        {/* How it works */}
+        {/* Live prize pool */}
+        <PrizePoolWidget playerCount={currentCount} />
+
+        {/* Info accordions */}
         <Accordion type="single" collapsible>
           <AccordionItem
             value="hvernig"
@@ -949,7 +988,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
           </AccordionItem>
         </Accordion>
 
-        {/* How to compete - step by step (collapsible) */}
+        {/* How to compete */}
         <Accordion type="single" collapsible>
           <AccordionItem
             value="hvernig-keppa"
@@ -966,7 +1005,6 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
               </div>
             </AccordionTrigger>
             <AccordionContent className="px-5 pb-5 space-y-5">
-              {/* Tutorial video */}
               <div className="aspect-video rounded-lg overflow-hidden border border-border bg-muted/30">
                 <video
                   src="/clips/geimur-tutorial.mp4"
@@ -976,8 +1014,6 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                   className="w-full h-full object-contain"
                 />
               </div>
-
-              {/* Steps */}
               <ol className="space-y-3">
                 {[
                   "Opnaðu Fortnite",
@@ -998,15 +1034,6 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
-
-        {/* Registration form */}
-        <div id="skraning-allt-undir" className="scroll-mt-24">
-          <RegistrationForm
-            selectedDate={activeDate}
-            dateStatuses={dateStatuses}
-            onSuccess={fetchCounts}
-          />
-        </div>
 
         {/* Rules */}
         <Accordion type="single" collapsible className="space-y-3">
