@@ -77,11 +77,11 @@ export function soloTournamentReducer(state: SoloTournamentState, action: SoloTo
     }
 
     case 'ELIMINATE_PLAYER': {
-      const isStorm = action.killerPlayerId === '__storm__';
+      const isNoPoints = action.killerPlayerId === '__storm__' || action.killerPlayerId === '__fall_damage__';
       const kpp = state.killPointsPerKill;
       const players = state.players.map(p => {
         if (p.id === action.playerId) return { ...p, alive: false };
-        if (!isStorm && p.id === action.killerPlayerId) return { ...p, killPoints: p.killPoints + kpp, gameKills: p.gameKills + 1 };
+        if (!isNoPoints && p.id === action.killerPlayerId) return { ...p, killPoints: p.killPoints + kpp, gameKills: p.gameKills + 1 };
         return p;
       });
       const newElimOrder = !state.eliminationOrder.includes(action.playerId)
