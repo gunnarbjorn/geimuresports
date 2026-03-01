@@ -790,7 +790,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                   <Gamepad2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
                 </div>
                 <span className="font-display font-semibold text-left">
-                  Hvernig á að keppa
+                  Ég hef aldrei keppt áður, hjálp
                 </span>
               </div>
             </AccordionTrigger>
