@@ -28,8 +28,9 @@ export interface SeasonTournamentRecord {
 
 export function saveSeasonRecord(state: SoloTournamentState) {
   const history = loadSeasonHistory();
-  // Don't save duplicates
-  if (history.some(h => h.date === state.tournamentDate)) return;
+  // Use tournamentName + date as unique key to avoid true duplicates but allow multiple per day
+  const recordKey = `${state.tournamentDate}_${state.tournamentName}`;
+  if (history.some(h => `${h.date}_${h.name}` === recordKey)) return;
 
   const ranked = getRankedSoloPlayers(state.players);
   const totalPot = state.players.length * ENTRY_FEE;
