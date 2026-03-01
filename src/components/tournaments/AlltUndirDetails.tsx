@@ -387,7 +387,7 @@ function RegistrationForm({
                                 {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
                               </span>
                               <p className="text-[10px] text-muted-foreground leading-tight">
-                                3.000 kr + 57 kr kortabóknanargjald
+                                3.000 kr + 57 kr kortabókunargjald
                               </p>
                             </div>
                           </label>
@@ -822,7 +822,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
               <div className="space-y-4 text-sm text-muted-foreground">
                 <p>
                   <strong className="text-foreground">1.</strong> Skráðu þig og greiddu{" "}
-                  {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr (+ 57 kr kortabóknanargjald).{" "}
+                  {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr (+ 57 kr kortabókunargjald).{" "}
                   {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr fara beint í verðlaunapottinn.
                 </p>
                 <p>
@@ -878,7 +878,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                       á leikmann fer í pottinn
                     </p>
                     <p className="text-[10px] text-muted-foreground">
-                      (greitt: {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr — 57 kr er kortabóknanargjald)
+                      (greitt: {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr — 57 kr er kortabókunargjald)
                     </p>
                   </div>
                 </div>
