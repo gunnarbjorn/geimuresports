@@ -55,7 +55,7 @@ export const tournaments: Tournament[] = [
     dates: ["5. mars"],
     category: "Solo",
     format: "Solo",
-    ageLimit: "13+",
+    
     location: "Online",
     description: "Solo keppni á netinu. 1 leikur, verðlaunapottur byggist á fjölda skráðra. Á hverjum fimmtudegi í mars.",
     entryFee: "3.057 kr",
