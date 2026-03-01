@@ -701,7 +701,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
           </p>
 
           {/* Date selector pills */}
-          <div className="flex flex-wrap justify-center gap-2 mb-4">
+          <div className="grid grid-cols-2 justify-center gap-2 mb-4 max-w-xs mx-auto sm:flex sm:max-w-none">
             {TOURNAMENT_DATES.map((td) => {
               const isCompleted = dateStatuses[td.date] === 'completed';
               const isActive = activeDate === td.date;
@@ -746,16 +746,25 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
               Leikur kl. {TOURNAMENT_CONFIG.gameStartTime}
             </Badge>
           </div>
+          {!isActiveDateCompleted && (
+            <Button
+              size="lg"
+              className="btn-arena-gradient text-base"
+              onClick={() => {
+                const el = document.getElementById("skraning-allt-undir");
+                if (el) {
+                  const offset = el.getBoundingClientRect().top + window.scrollY - 104;
+                  window.scrollTo({ top: offset, behavior: "smooth" });
+                }
+              }}
+            >
+              Skrá mig <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          )}
         </div>
 
-        {/* Registration form — moved right after hero */}
-        <div id="skraning-allt-undir" className="scroll-mt-24">
-          <RegistrationForm
-            selectedDate={activeDate}
-            dateStatuses={dateStatuses}
-            onSuccess={fetchCounts}
-          />
-        </div>
+        {/* Live prize pool */}
+        <PrizePoolWidget playerCount={currentCount} />
 
         {/* Registration status with dynamic counter */}
         <Card className={`bg-card border-[hsl(var(--${accent})/0.3)]`}>
@@ -784,8 +793,14 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
           </CardContent>
         </Card>
 
-        {/* Live prize pool */}
-        <PrizePoolWidget playerCount={currentCount} />
+        {/* Registration form */}
+        <div id="skraning-allt-undir" className="scroll-mt-24">
+          <RegistrationForm
+            selectedDate={activeDate}
+            dateStatuses={dateStatuses}
+            onSuccess={fetchCounts}
+          />
+        </div>
 
         {/* Info accordions */}
         <Accordion type="single" collapsible>
