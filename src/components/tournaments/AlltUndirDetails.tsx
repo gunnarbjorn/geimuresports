@@ -180,6 +180,8 @@ function RegistrationForm({
   const [gmail, setGmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [acceptRules, setAcceptRules] = useState(false);
+  const [confirmUsername, setConfirmUsername] = useState(false);
 
   const registrationClosed = !getCountdown(selectedDate, TOURNAMENT_CONFIG.registrationCloseTime);
 
@@ -357,6 +359,47 @@ function RegistrationForm({
                 </p>
               </div>
 
+              {/* Required checkboxes */}
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={acceptRules}
+                    onChange={(e) => setAcceptRules(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-border accent-[hsl(var(--arena-green))]"
+                    required
+                  />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                    Ég hef lesið og samþykki{" "}
+                    <button
+                      type="button"
+                      className="text-[hsl(var(--arena-green))] underline"
+                      onClick={() => {
+                        const el = document.querySelector('[data-value="reglur"]');
+                        if (el) {
+                          (el as HTMLButtonElement).click();
+                          el.scrollIntoView({ behavior: "smooth", block: "center" });
+                        }
+                      }}
+                    >
+                      reglurnar
+                    </button>
+                  </span>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={confirmUsername}
+                    onChange={(e) => setConfirmUsername(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-border accent-[hsl(var(--arena-green))]"
+                    required
+                  />
+                  <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                    Ég staðfesti að Fortnite notandanafnið mitt sé rétt og mun ekki breyta því fyrir mótið byrjar — annars fæ ég mögulega ekki stig
+                  </span>
+                </label>
+              </div>
+
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -368,7 +411,7 @@ function RegistrationForm({
                 type="submit"
                 size="lg"
                 className="w-full btn-arena-gradient text-base"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !acceptRules || !confirmUsername}
               >
                 {isSubmitting ? (
                   <>
@@ -734,6 +777,46 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+
+        {/* How to compete - step by step */}
+        <Card className={`border-[hsl(var(--${accent})/0.3)] bg-card overflow-hidden`}>
+          <CardHeader className="bg-gradient-to-r from-[hsl(var(--arena-green)/0.1)] to-transparent border-b border-border">
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full bg-[hsl(var(--${accent})/0.1)] flex items-center justify-center`}>
+                <Gamepad2 className={`h-4 w-4 text-[hsl(var(--${accent}))]`} />
+              </div>
+              <CardTitle className="font-display text-lg">Hvernig á að keppa</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-5 md:p-6 space-y-5">
+            {/* Video placeholder */}
+            <div className="aspect-video rounded-lg bg-muted/50 border border-border flex items-center justify-center overflow-hidden">
+              <div className="text-center space-y-2">
+                <Tv className="h-10 w-10 text-muted-foreground mx-auto" />
+                <p className="text-sm text-muted-foreground">Leiðbeiningamyndband kemur fljótlega</p>
+              </div>
+            </div>
+
+            {/* Steps */}
+            <ol className="space-y-3">
+              {[
+                "Opnaðu Fortnite",
+                "Scrollaðu niður og leitaðu að Tournament",
+                "Smelltu á Battle Royale Tournament Settings",
+                "Ýttu á Select",
+                "Scrollaðu niður og ýttu á Custom Key — sláðu inn lyklinn sem kemur á Discord",
+                "Ýttu á Play og bíddu eftir að Geimur byrjar leikinn",
+              ].map((step, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className={`flex-shrink-0 w-7 h-7 rounded-full bg-[hsl(var(--${accent})/0.15)] text-[hsl(var(--${accent}))] flex items-center justify-center text-sm font-bold`}>
+                    {i + 1}
+                  </span>
+                  <span className="text-sm text-muted-foreground pt-1">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
 
         {/* Registration form */}
         <div id="skraning-allt-undir" className="scroll-mt-24">
