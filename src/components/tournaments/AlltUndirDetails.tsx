@@ -761,7 +761,7 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
               <div className="space-y-4 text-sm text-muted-foreground">
                 <p>
                   <strong className="text-foreground">1.</strong> Skráðu þig og greiddu{" "}
-                  {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr.{" "}
+                  {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr ({TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr + kortaþóknun).{" "}
                   {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr fara beint í verðlaunapottinn.
                 </p>
                 <p>
@@ -812,6 +812,9 @@ export function AlltUndirDetails({ onBack }: { onBack?: () => void }) {
                   <div className="text-right">
                     <p className={`text-xl font-bold text-[hsl(var(--${accent}))]`}>
                       {TOURNAMENT_CONFIG.entryFee.toLocaleString("is-IS")} kr
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {TOURNAMENT_CONFIG.prizeContribution.toLocaleString("is-IS")} kr + kortaþóknun
                     </p>
                   </div>
                 </div>
