@@ -4,9 +4,10 @@ import { useState } from 'react';
 interface Props {
   state: SoloTournamentState;
   dispatch: React.Dispatch<SoloTournamentAction>;
+  onRefetchPlayers?: () => void;
 }
 
-export default function SoloDashboardView({ state, dispatch }: Props) {
+export default function SoloDashboardView({ state, dispatch, onRefetchPlayers }: Props) {
   const [showSettings, setShowSettings] = useState(false);
   const [config, setConfig] = useState(state.placementPointsConfig);
   const [killPts, setKillPts] = useState(state.killPointsPerKill);
@@ -16,6 +17,7 @@ export default function SoloDashboardView({ state, dispatch }: Props) {
   const handleReset = () => {
     if (window.confirm('Ertu viss? Þetta eyðir öllum stigum og byrjar upp á nýtt.')) {
       dispatch({ type: 'RESET_TOURNAMENT' });
+      onRefetchPlayers?.();
     }
   };
 
