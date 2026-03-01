@@ -39,6 +39,7 @@ export default function AlltUndirManager() {
     return loadFromStorage() || createSoloInitialState();
   });
   const [view, setView] = useState<View>('dashboard');
+  const [fetchTrigger, setFetchTrigger] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) navigate('/auth');
@@ -72,7 +73,9 @@ export default function AlltUndirManager() {
       } catch {}
     }
     fetchPlayers();
-  }, [isAdmin]);
+  }, [isAdmin, fetchTrigger]);
+
+  const handleRefetchPlayers = () => setFetchTrigger(t => t + 1);
 
   useEffect(() => {
     syncToStorage(state);
@@ -153,7 +156,7 @@ export default function AlltUndirManager() {
       </nav>
 
       <main className={view === 'game' ? 'pb-20' : ''}>
-        {view === 'dashboard' && <SoloDashboardView state={state} dispatch={dispatch} />}
+        {view === 'dashboard' && <SoloDashboardView state={state} dispatch={dispatch} onRefetchPlayers={handleRefetchPlayers} />}
         {view === 'game' && <SoloGameView state={state} dispatch={dispatch} />}
         {view === 'broadcast' && <SoloBroadcastView state={state} />}
         {view === 'results' && <SoloResultsView state={state} dispatch={dispatch} />}
