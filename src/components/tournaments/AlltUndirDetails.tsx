@@ -314,7 +314,7 @@ function RegistrationForm({
                   maxLength={11}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Notað til að greiða út verðlaun. Aldurshámark: 13+.
+                  Notað til að greiða út verðlaun.
                 </p>
               </div>
               <div>
