@@ -28,7 +28,22 @@ function syncToStorage(state: SoloTournamentState) {
 function loadFromStorage(): SoloTournamentState | null {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as SoloTournamentState;
+
+    // Never trust old local demo/test players before the tournament starts.
+    if (parsed.status === 'lobby' && parsed.gameHistory.length === 0) {
+      return {
+        ...createSoloInitialState(parsed.tournamentDate),
+        totalGames: parsed.totalGames || 1,
+        killPointsPerKill: parsed.killPointsPerKill || 2,
+        placementPointsConfig: parsed.placementPointsConfig || createSoloInitialState(parsed.tournamentDate).placementPointsConfig,
+        raffleWinners: parsed.raffleWinners || [],
+      };
+    }
+
+    return parsed;
   } catch {}
   return null;
 }
@@ -49,32 +64,43 @@ export default function AlltUndirManager() {
   // Fetch registered players from DB
   useEffect(() => {
     if (!isAdmin) return;
+
     async function fetchPlayers() {
       try {
         const { data } = await (supabase as any).rpc('get_allt_undir_players', {
           p_date: state.tournamentDate,
         });
-        if (data && data.length > 0) {
-          const existingNames = new Set(state.players.map(p => p.name.toLowerCase()));
-          const dbPlayers: SoloPlayer[] = data
-            .filter((row: any) => !existingNames.has((row.fortnite_name || '').toLowerCase()))
-            .map((row: any) => ({
-              id: row.id,
-              name: row.fortnite_name || row.full_name,
-              fullName: row.full_name,
-              killPoints: 0,
-              placementPoints: 0,
-              alive: true,
-              gameKills: 0,
-            }));
-          if (dbPlayers.length > 0) {
-            dispatch({ type: 'SET_PLAYERS', players: [...state.players, ...dbPlayers] });
+
+        const dbPlayers: SoloPlayer[] = (data || []).map((row: any) => ({
+          id: row.id,
+          name: row.fortnite_name || row.full_name,
+          fullName: row.full_name,
+          killPoints: 0,
+          placementPoints: 0,
+          alive: true,
+          gameKills: 0,
+        }));
+
+        const shouldReplacePlayers = state.status === 'lobby' && state.gameHistory.length === 0;
+
+        if (shouldReplacePlayers) {
+          dispatch({ type: 'SET_PLAYERS', players: dbPlayers });
+          return;
+        }
+
+        if (dbPlayers.length > 0) {
+          const existingIds = new Set(state.players.map((p) => p.id));
+          const newPlayers = dbPlayers.filter((player) => !existingIds.has(player.id));
+
+          if (newPlayers.length > 0) {
+            dispatch({ type: 'SET_PLAYERS', players: [...state.players, ...newPlayers] });
           }
         }
       } catch {}
     }
+
     fetchPlayers();
-  }, [isAdmin, fetchTrigger]);
+  }, [isAdmin, fetchTrigger, state.tournamentDate, state.status, state.gameHistory.length, state.players]);
 
   const handleRefetchPlayers = () => setFetchTrigger(t => t + 1);
 
